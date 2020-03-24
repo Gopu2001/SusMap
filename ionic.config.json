@@ -1,5 +1,7 @@
 {
   "name": "susMap",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
