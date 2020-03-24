@@ -3,6 +3,8 @@ import { ToastController, Platform } from '@ionic/angular';
 import { GoogleMaps, GoogleMap, GoogleMapsEvent, Marker, GoogleMapsAnimation, MyLocation, ILatLng, PolygonOptions, Polygon } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
 import { HTTP } from '@ionic-native/http/ngx';
+import { MenuController } from '@ionic/angular';
+import { EventService } from './../events/event.service';
 
 @Component({
   selector: 'app-home',
@@ -11,16 +13,35 @@ import { HTTP } from '@ionic-native/http/ngx';
 })
 export class HomePage {
 
+    public filters = [
+      {
+        title: 'Economical',
+        active: false
+      },
+      {
+        title: 'Environmental',
+        active: false
+      }
+    ];
     map: GoogleMap;
     environmentalMarkers = [];
 
     constructor(
       public toastCtrl: ToastController,
       private platform: Platform,
-      private http: HTTP
+      private http: HTTP,
+      private menu: MenuController,
+      private events: EventService
       ) { }
 
     ngOnInit() {
+      this.menu.enable(true,'insideMap');
+      for (let i = 0; i < this.filters.length; i++) {
+        this.events.subscribe(this.filters[i].title, (data: any) => {
+          //update active status
+          this.filters[i].active = !data.active;
+        });
+      }
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       this.platform.ready();
@@ -118,56 +139,11 @@ export class HomePage {
       this.map.trigger(cluster);
     }
 
+    printData() {
+      for (let i = 0; i < this.filters.length; i++) {
+        console.log("title: " + this.filters[i].title + ", active: " + this.filters[i].active);
+      }
+    }
 
-    // goToMyLocation(){
-    //   this.map.clear();
-    //
-    //   // Get the location of you
-    //   this.map.getMyLocation().then((location: MyLocation) => {
-    //     console.log(JSON.stringify(location, null ,2));
-    //
-    //     // Move the map camera to the location with animation
-    //     this.map.animateCamera({
-    //       target: location.latLng,
-    //       zoom: 17,
-    //       duration: 5000
-    //     });
-    //
-    //     //add a marker
-    //     let marker: Marker = this.map.addMarkerSync({
-    //       title: '@ionic-native/google-maps plugin!',
-    //       snippet: 'This plugin is awesome!',
-    //       position: location.latLng,
-    //       animation: GoogleMapsAnimation.BOUNCE
-    //     });
-    //
-    //     //show the infoWindow
-    //     marker.showInfoWindow();
-    //
-    //     //If clicked it, display the alert
-    //     marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-    //       this.showToast('clicked!');
-    //     });
-    //
-    //     this.map.on(GoogleMapsEvent.MAP_READY).subscribe(
-    //       (data) => {
-    //           console.log("Click MAP",data);
-    //       }
-    //     );
-    //   })
-    //   .catch(err => {
-    //     //this.loading.dismiss();
-    //     this.showToast(err.error_message);
-    //   });
-    // }
-
-    // async showToast(message: string) {
-    //   let toast = await this.toastCtrl.create({
-    //     message: message,
-    //     duration: 2000,
-    //     position: 'middle'
-    //   });
-    //   toast.present();
-    // }
 
 }
