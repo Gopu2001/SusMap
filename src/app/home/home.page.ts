@@ -5,6 +5,7 @@ import { mapStyle } from './mapStyle';
 import { HTTP } from '@ionic-native/http/ngx';
 import { MenuController } from '@ionic/angular';
 import { EventService } from './../events/event.service';
+import { AppDataService } from './../services/app-data.service';
 
 @Component({
   selector: 'app-home',
@@ -12,17 +13,18 @@ import { EventService } from './../events/event.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-
-    public filters = [
-      {
-        title: 'Economical',
-        active: false
-      },
-      {
-        title: 'Environmental',
-        active: false
-      }
-    ];
+    //data:image/jpg;base64,
+    public buildings = [];
+    public filters = []
+    //   {
+    //     Name: 'Economic',
+    //     active: false
+    //   },
+    //   {
+    //     Name: 'Environmental',
+    //     active: false
+    //   }
+    // ];
     map: GoogleMap;
     environmentalMarkers = [];
 
@@ -31,17 +33,36 @@ export class HomePage {
       private platform: Platform,
       private http: HTTP,
       private menu: MenuController,
-      private events: EventService
-      ) { }
+      private events: EventService,
+      private appData: AppDataService
+    ) { }
 
-    ngOnInit() {
+    async ngOnInit() {
       this.menu.enable(true,'insideMap');
+
+      //getting the data
+      await this.appData.getFilterData(true).then((filt) => {
+        if(filt) {
+          this.filters = filt;
+        }
+        this.appData.getBuildingData(true).then((build) => {
+          if(build) {
+            this.buildings = build;
+          }
+        });
+      });
+
       for (let i = 0; i < this.filters.length; i++) {
         this.events.subscribe(this.filters[i].title, (data: any) => {
           //update active status
-          this.filters[i].active = !data.active;
+          this.filters[i].active = data.active;
+          //updated markers
+          //....
         });
       }
+
+      console.log("in home page")
+
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       this.platform.ready();
@@ -74,14 +95,8 @@ export class HomePage {
 
       });
 
-      // this.goToMyLocation();
-      this.getData();
       this.addBuildings();
       this.addEnvironmentalMarkers();
-    }
-
-    getData() {
-      // this.http
     }
 
     addBuildings() {
@@ -117,18 +132,13 @@ export class HomePage {
 
       this.environmentalMarkers.push(marker);
 
-      // buildings[0].addEventListener("buildings").subscribe(() => {
-      //   console.log("trigger");
-      //   marker.setVisible(false);
-      //   // marker.setVisible(!marker.isVisible());
-      // });
 
       this.environmentalMarkers[0].addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
         console.log("Marker: " + marker.isVisible());
 
       });
 
-      this.map.addEventListener("environmental").subscribe(() => {
+      this.map.addEventListener("Environmental").subscribe(() => {
         for(var i = 0; i < this.environmentalMarkers.length; i++) {
           this.environmentalMarkers[0].setVisible(!marker.isVisible());
         }

@@ -5,6 +5,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Environment } from '@ionic-native/google-maps';
 import { Storage } from '@ionic/storage';
 import { EventService } from './events/event.service';
+import { AppDataService } from './services/app-data.service';
 
 @Component({
   selector: 'app-root',
@@ -13,58 +14,75 @@ import { EventService } from './events/event.service';
 })
 
 export class AppComponent implements OnInit {
-  public selectedIndex = 3;
-  public buildings = [
-    {
-      title: 'Cob1',
-      url: '/folder/Cob1',
-      active: false
-    },
-    {
-      title: 'KL',
-      url: '/folder/KL',
-      active: false
-    }
-  ];
-  public filters = [
-    {
-      title: 'Economical',
-      active: false
-    },
-    {
-      title: 'Environmental',
-      active: false
-    }
-  ];
+  public selectedIndex = -1;
+  public buildings = [];
+  //   {
+  //     title: 'Cob1',
+  //     url: '/folder/Cob1'
+  //   },
+  //   {
+  //     title: 'KL',
+  //     url: '/folder/KL'
+  //   }
+  // ];
+  public filters = [];
+  //   {
+  //     title: 'Economical',
+  //     active: false
+  //   },
+  //   {
+  //     title: 'Environmental',
+  //     active: false
+  //   }
+  // ];
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private storage: Storage,
-    private events: EventService
+    private events: EventService,
+    private appData: AppDataService
   ) {
     this.initializeApp();
   }
 
-  initializeApp() {
+  async initializeApp() {
+    // get filter and building data
+    await this.appData.getFilterDataSimple().then((filt) => {
+      // console.log(val);
+      if(filt) {
+        this.filters = filt;
+      }
+
+      this.appData.getBuildingDataSimple().then((build) => {
+        if(build) {
+          this.buildings = build;
+        }
+      });
+    });
+    console.log("in app component");
+
     this.platform.ready().then(() => {
 
+      // google maps
       Environment.setEnv({
         // api key for server
-        //test is AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU
-        //actual is
         'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU',
 
         // api key for local development
         'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU'
       });
 
+
+
       this.events.subscribe('clear', (data: any) => {
         for (let index = 0; index < this.filters.length; index++) {
           this.filters[index].active = false;
         }
+        this.appData.updateFilterData(this.filters);
       });
+
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
@@ -79,6 +97,7 @@ export class AppComponent implements OnInit {
 
   publishEvent(eventName: string, data: any) {
     this.events.publish(eventName, data);
+    this.appData.updateFilterData(this.filters);
   }
 
   // test() {
