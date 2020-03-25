@@ -7,31 +7,31 @@ import { Papa } from 'ngx-papaparse';
 })
 export class AppDataService {
 
+  filters = [];
+
   constructor(
     private storage: Storage,
     private papa: Papa
   ) { }
 
   async getFilterData(refresh: boolean): Promise<any> {
-    var filters = [];
     return await new Promise<any>((resolve, reject) => {
       this.storage.get("filters").then((val) => {
         if(val && !refresh) {
-          filters = val;
-          resolve(filters);
+          this.filters = val;
+          resolve(this.filters);
         } else {
           this.papa.parse('https://raw.githubusercontent.com/Apro123/GhettoDatabase/master/filters.csv', {
             download: true,
             header: true,
             skipEmptyLines: 'greedy',
             complete: result => {
-              filters = result.data;
-              filters[0]['active'] = true;
-              for (let i = 1; i < filters.length; i++) {
-                filters[i]['active'] = false;
+              this.filters = result.data;
+              for (let i = 0; i < this.filters.length; i++) {
+                this.filters[i]['active'] = false;
               }
-              this.storage.set("filters", filters);
-              resolve(filters);
+              this.storage.set("filters", this.filters);
+              resolve(this.filters);
             },
             error: err => {
               console.log(err);
@@ -43,8 +43,8 @@ export class AppDataService {
     });
   }
 
-  async getFilterDataSimple(): Promise<any> {
-    return this.storage.get("filters");
+  getFilterDataSimple() {
+    return this.filters;
     // return await new Promise<any>((resolve, reject) => {
     //   this.storage.get("filters").then((val) => {
     //     if(val) {
@@ -61,7 +61,8 @@ export class AppDataService {
   }
 
   updateFilterData(filters) {
-    this.storage.set("filters", filters);
+    this.filters = filters;
+    this.storage.set("filters", this.filters);
   }
 
   async getBuildingData(refresh: boolean): Promise<any> {
@@ -109,5 +110,9 @@ export class AppDataService {
     //     reject();
     //   })
     // });
+  }
+
+  getSpecificFilterData(filterName) {
+
   }
 }

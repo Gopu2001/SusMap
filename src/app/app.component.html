@@ -19,8 +19,9 @@
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
             <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" [class.selected]="selectedIndex == i">
-              <ion-icon slot="start" name="business-outline"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
+              <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
+              <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>
+              <ion-label>{{ p.Full_Name }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
@@ -44,7 +45,8 @@
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
             <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" [class.selected]="selectedIndex == i">
-              <ion-icon slot="start" [ios]="business-outline" [md]="business-sharp"></ion-icon>
+              <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
+              <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>
               <ion-label>{{ p.Full_Name }}</ion-label>
             </ion-item>
           </ion-menu-toggle>

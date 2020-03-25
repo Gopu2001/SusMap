@@ -15,7 +15,7 @@ import { AppDataService } from './../services/app-data.service';
 export class HomePage {
     //data:image/jpg;base64,
     public buildings = [];
-    public filters = []
+    public filters = [];
     //   {
     //     Name: 'Economic',
     //     active: false
@@ -26,6 +26,7 @@ export class HomePage {
     //   }
     // ];
     map: GoogleMap;
+    filterData = []; //mapped in order in filters array
     environmentalMarkers = [];
 
     constructor(
@@ -50,6 +51,14 @@ export class HomePage {
             this.buildings = build;
           }
         });
+
+        // filters.forEach(element => {
+        //   var specificFilterData = [];
+        //   this.appData.getSpecificFilterData(element['Name']).then((val) => {
+        //
+        //   });
+        // });
+
       });
 
       for (let i = 0; i < this.filters.length; i++) {
@@ -151,7 +160,7 @@ export class HomePage {
 
     printData() {
       for (let i = 0; i < this.filters.length; i++) {
-        console.log("title: " + this.filters[i].title + ", active: " + this.filters[i].active);
+        console.log("Name: " + this.filters[i].Name + ", active: " + this.filters[i].active);
       }
     }
 

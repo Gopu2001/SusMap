@@ -49,15 +49,14 @@ export class AppComponent implements OnInit {
 
   async initializeApp() {
     // get filter and building data
-    await this.appData.getFilterDataSimple().then((filt) => {
-      // console.log(val);
-      if(filt) {
-        this.filters = filt;
+    await this.appData.getBuildingDataSimple().then((build) => {
+      if(build) {
+        this.buildings = build;
       }
 
-      this.appData.getBuildingDataSimple().then((build) => {
-        if(build) {
-          this.buildings = build;
+      this.appData.getFilterData(true).then((filt) => {
+        if(filt) {
+          this.filters = filt;
         }
       });
     });
@@ -91,7 +90,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     const path = window.location.pathname.split('folder/')[1];
     if (path !== undefined) {
-      this.selectedIndex = this.buildings.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
+      this.selectedIndex = this.buildings.findIndex(page => page['BUILDING_ID'] === path);
     }
   }
 
