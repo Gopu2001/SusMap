@@ -21,6 +21,7 @@ export class FolderPage implements OnInit {
     this.menu.enable(true,'outsideMap');
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
     this.events.publish('clear', []);
+    this.events.publish('page', Number(this.folder));
   }
 
 }

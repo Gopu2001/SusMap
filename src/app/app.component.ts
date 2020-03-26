@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
 
   async initializeApp() {
     // get filter and building data
-    await this.appData.getBuildingDataSimple().then((build) => {
+    await this.appData.getBuildingData(true).then((build) => {
       if(build) {
         this.buildings = build;
       }
@@ -60,10 +60,8 @@ export class AppComponent implements OnInit {
         }
       });
     });
-    console.log("in app component");
 
     this.platform.ready().then(() => {
-
       // google maps
       Environment.setEnv({
         // api key for server
@@ -80,6 +78,10 @@ export class AppComponent implements OnInit {
           this.filters[index].active = false;
         }
         this.appData.updateFilterData(this.filters);
+      });
+
+      this.events.subscribe('page', (data: number) => {
+        this.selectedIndex = data-1;
       });
 
       this.statusBar.styleDefault();

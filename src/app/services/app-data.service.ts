@@ -35,29 +35,15 @@ export class AppDataService {
             },
             error: err => {
               console.log(err);
-              reject();
+              resolve(val); //no internet
             }
           });
         }
+      }).catch((err) => {
+        console.log(err);
+        reject();
       });
     });
-  }
-
-  getFilterDataSimple() {
-    return this.filters;
-    // return await new Promise<any>((resolve, reject) => {
-    //   this.storage.get("filters").then((val) => {
-    //     if(val) {
-    //       resolve(val);
-    //     } else {
-    //       console.log(val);
-    //       reject();
-    //     }
-    //   }).catch((err) => {
-    //     console.log(err);
-    //     reject();
-    //   })
-    // });
   }
 
   updateFilterData(filters) {
@@ -87,10 +73,13 @@ export class AppDataService {
             },
             error: err => {
               console.log(err);
-              reject();
+              resolve(val); //no internet
             }
           });
         }
+      }).catch((err) => {
+        console.log(err);
+        reject();
       });
     });
   }
@@ -112,7 +101,31 @@ export class AppDataService {
     // });
   }
 
-  getSpecificFilterData(filterName) {
-
+  async getSpecificFilterData(filterName: string, refresh: boolean): Promise<any> {
+    var temp = [];
+    return await new Promise<any>((resolve, reject) => {
+      this.storage.get(filterName).then((val) => {
+        if(val && !refresh) {
+          resolve(val);
+        } else {
+          this.papa.parse('https://raw.githubusercontent.com/Apro123/GhettoDatabase/master/' + filterName + '.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: 'greedy',
+            complete: result => {
+              this.storage.set(filterName, result.data);
+              resolve(result.data);
+            },
+            error: err => {
+              console.log(err);
+              resolve(val); //no internet
+            }
+          });
+        }
+      }).catch((err) => {
+        console.log(err);
+        reject();
+      });
+    });
   }
 }

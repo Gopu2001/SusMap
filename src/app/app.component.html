@@ -6,7 +6,7 @@
           <ion-list-header>Filters</ion-list-header>
           <ion-note>*Note: You can click on multiple filters</ion-note>
 
-          <ion-item *ngFor="let filter of filters" lines="none" (click)="filter.active = !filter.active; publishEvent(filter.title, filter);">
+          <ion-item *ngFor="let filter of filters" lines="none" (click)="filter.active = !filter.active; publishEvent(filter.Name, filter);">
             <ion-icon *ngIf="!filter.active" slot="start" name="bookmark-outline"></ion-icon>
             <ion-icon *ngIf="filter.active" slot="start" name="bookmark"></ion-icon>
             <ion-label>{{ filter.Name }}</ion-label>
