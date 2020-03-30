@@ -84,7 +84,7 @@ export class HomePage {
           // update active status
           this.filters[i].active = data.active;
           // update markers
-          //....
+          this.changeStatus(this.filters[i].Name);
         });
       }
 
@@ -210,13 +210,13 @@ export class HomePage {
           // this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
         });
 
-        this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
-          this.buildings[i]['htmlInfoWindow'].close();
-          // if(Poly.containsLocation(params[0], this.buildings[i]['coors'])) {
-          //   console.log("polygon clicked");
-          //   this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
-          // }
-        });
+        // this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
+        //   this.buildings[i]['htmlInfoWindow'].close();
+        //   // if(Poly.containsLocation(params[0], this.buildings[i]['coors'])) {
+        //   //   console.log("polygon clicked");
+        //   //   this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
+        //   // }
+        // });
 
         // when long clicked, polygon goes straight to its specific page
         // this.map.on(GoogleMapsEvent.MAP_LONG_CLICK).subscribe((params: any[]) => {
@@ -281,6 +281,13 @@ export class HomePage {
           });
 
         }
+
+        this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
+          for (let j = 0; j < this.filterData[i].length; j++) {
+            console.log(this.filterData[i][j]['title']);
+            this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
+          }
+        });
       }
     }
 
