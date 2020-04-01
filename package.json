@@ -1,8 +1,8 @@
 {
   "name": "susMap",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Armaan Kapoor",
+  "homepage": "https://github.com/Apro123/SusMap",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -27,8 +27,6 @@
     "@ionic/angular": "^5.0.0",
     "@ionic/storage": "^2.2.0",
     "cordova-browser": "6.0.0",
-    "cordova-plugin-advanced-http": "^2.4.1",
-    "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-googlemaps": "^2.6.2",
     "cordova-sqlite-storage": "^5.0.0",
     "core-js": "^2.5.4",
@@ -38,7 +36,7 @@
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.803.20",
+    "@angular-devkit/build-angular": "^0.901.0",
     "@angular/cli": "~8.3.23",
     "@angular/compiler": "~8.2.14",
     "@angular/compiler-cli": "~8.2.14",
@@ -76,7 +74,6 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-advanced-http": {},
       "cordova-sqlite-storage": {}
     },
     "platforms": [

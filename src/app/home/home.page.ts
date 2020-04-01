@@ -84,6 +84,7 @@ export class HomePage {
           // update active status
           this.filters[i].active = data.active;
           // update markers
+          console.log(this.filters[i].Name);
           this.changeStatus(this.filters[i].Name);
         });
       }
@@ -92,6 +93,8 @@ export class HomePage {
       // you have to wait the event.
       await this.platform.ready();
       await this.loadMap();
+      await this.addBuildings();
+      await this.addFilterMarkers();
     }
 
     loadMap() {
@@ -129,8 +132,7 @@ export class HomePage {
       //   //alert("Camera target has been changed");
       // });
 
-      this.addBuildings();
-      this.addFilterMarkers();
+
       // this.addEnvironmentalMarkers();
     }
 
@@ -248,6 +250,7 @@ export class HomePage {
     }
 
     addFilterMarkers() {
+      console.log(this.filterData);
       for (let i = 0; i < this.filterData.length; i++) {
         const filt = this.filterData[i];
         for (let j = 0; j < filt.length; j++) {
@@ -263,18 +266,23 @@ export class HomePage {
           });
 
           this.filterData[i][j]['marker'] = marker;
+          console.log("adding marker for filter: " + this.filters[i].Name);
 
           marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
             // html info window when marker is clicked
             let frame: HTMLElement = document.createElement('div');
             frame.innerHTML = `
-            <h1>` + item['title'] + `</h1>
-            <p>` + item['description'] + `</p>
+            <h5>` + item['title'] + `</h5>
+            <p><small>` + item['description'] + `<small></p>
             `;
 
             this.htmlInfoWindow.setContent(frame, {
               'border-radius': '25px',
-              'text-align': 'center'
+              'text-align': 'center',
+              'min-height': '10vh',
+              'max-height': '30vh',
+              'min-width': '45vh',
+              'max-width': '55vh',
             });
 
             this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
@@ -283,6 +291,8 @@ export class HomePage {
         }
 
         this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
+          console.log(this.filterData[i]);
+          console.log(this.filters[i]['Name']);
           for (let j = 0; j < this.filterData[i].length; j++) {
             console.log(this.filterData[i][j]['title']);
             this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
@@ -330,6 +340,7 @@ export class HomePage {
       for (let i = 0; i < this.filters.length; i++) {
         console.log("Name: " + this.filters[i].Name + ", active: " + this.filters[i].active);
       }
+      console.log(this.filterData);
     }
 
 
