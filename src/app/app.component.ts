@@ -107,20 +107,20 @@ export class AppComponent implements OnInit {
     this.appData.updateFilterData(this.filters);
   }
 
-  goToPage(id) {
-    // console.log(id);
-    this.selectedIndex = id;
-    if(id == -1) {
-      this.zone.run(async () => {
-        await this.router.navigate(['/']);
-        this.menu.enable(true,'insideMap');
-      });
-    } else {
-      this.zone.run(async () => {
-        await this.router.navigate(['/folder/' + id]);
-      });
-    }
-  }
+  // goToPage(id) {
+  //   // console.log(id);
+  //   this.selectedIndex = id;
+  //   if(id == -1) {
+  //     this.zone.run(async () => {
+  //       await this.router.navigate(['/']);
+  //       this.menu.enable(true,'insideMap');
+  //     });
+  //   } else {
+  //     this.zone.run(async () => {
+  //       await this.router.navigate(['/folder/' + id]);
+  //     });
+  //   }
+  // }
 
   // test() {
   //   console.log("app");

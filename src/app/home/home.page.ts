@@ -92,10 +92,10 @@ export class HomePage implements OnInit {
       console.log("before platform ready");
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
+      await this.platform.ready();
       await this.loadMap();
       await this.addBuildings();
       await this.addFilterMarkers();
-      await this.platform.ready();
 
 
 
@@ -264,61 +264,58 @@ export class HomePage implements OnInit {
 
     }
 
-    async addFilterMarkers() {
+    addFilterMarkers() {
       console.log("before")
-      return await new Promise<any>((resolve, reject) => {
-        var marker;
-        for (let i = 0; i < this.filterData.length; i++) {
-          const filt = this.filterData[i];
-          for (let j = 0; j < filt.length; j++) {
-            const item = filt[j];
+      var marker;
+      for (let i = 0; i < this.filterData.length; i++) {
+        const filt = this.filterData[i];
+        for (let j = 0; j < filt.length; j++) {
+          const item = filt[j];
 
-            marker = this.map.addMarkerSync({
-              position: {
-                lat: item['latitude'],
-                lng: item['longitude']
-              },
-              visible: false,
-              zIndex: 2
-            });
-
-            this.filterData[i][j]['marker'] = marker;
-            console.log("adding marker for filter: " + this.filters[i].Name);
-
-            marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-              // html info window when marker is clicked
-              let frame: HTMLElement = document.createElement('div');
-              frame.innerHTML = `
-              <h5>` + item['title'] + `</h5>
-              <p><small>` + item['description'] + `<small></p>
-              `;
-
-              this.htmlInfoWindow.setContent(frame, {
-                'border-radius': '25px',
-                'text-align': 'center',
-                'min-height': '10vh',
-                'max-height': '30vh',
-                'min-width': '65vw',
-                'max-width': '85vw',
-              });
-
-              this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
-            });
-
-          }
-
-          this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
-            // console.log(this.filterData[i]);
-            // console.log(this.filters[i]['Name']);
-            for (let j = 0; j < this.filterData[i].length; j++) {
-              // console.log(this.filterData[i][j]['title']);
-              this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
-            }
+          marker = this.map.addMarkerSync({
+            position: {
+              lat: item['latitude'],
+              lng: item['longitude']
+            },
+            visible: false,
+            zIndex: 2
           });
+
+          this.filterData[i][j]['marker'] = marker;
+          console.log("adding marker for filter: " + this.filters[i].Name);
+
+          marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+            // html info window when marker is clicked
+            let frame: HTMLElement = document.createElement('div');
+            frame.innerHTML = `
+            <h5>` + item['title'] + `</h5>
+            <p><small>` + item['description'] + `<small></p>
+            `;
+
+            this.htmlInfoWindow.setContent(frame, {
+              'border-radius': '25px',
+              'text-align': 'center',
+              'min-height': '10vh',
+              'max-height': '30vh',
+              'min-width': '65vw',
+              'max-width': '85vw',
+            });
+
+            this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
+          });
+
         }
-        console.log(this.filterData);
-        resolve();
-      });
+
+        this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
+          // console.log(this.filterData[i]);
+        // console.log(this.filters[i]['Name']);
+          for (let j = 0; j < this.filterData[i].length; j++) {
+            // console.log(this.filterData[i][j]['title']);
+            this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
+          }
+        });
+      }
+      console.log("after");
     }
 
     // addEnvironmentalMarkers() {
