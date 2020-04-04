@@ -84,21 +84,22 @@ export class AppDataService {
     });
   }
 
-  async getBuildingDataSimple(): Promise<any> {
+  async getSpecificBuildingDataSimple(id): Promise<any> {
     return this.storage.get("buildings");
-    // return await new Promise<any>((resolve, reject) => {
-    //   this.storage.get("buildings").then((val) => {
-    //     if(val) {
-    //       resolve(val);
-    //     } else {
-    //       console.log(val);
-    //       reject();
-    //     }
-    //   }).catch((err) => {
-    //     console.log(err);
-    //     reject();
-    //   })
-    // });
+    return await new Promise<any>((resolve, reject) => {
+      this.storage.get("buildings").then((val) => {
+        if(val) {
+          const ind = val.findIndex(building => building['BUILDING_ID'] == id)
+          resolve(val[ind]);
+        } else {
+          console.log(val);
+          reject();
+        }
+      }).catch((err) => {
+        console.log(err);
+        reject();
+      })
+    });
   }
 
   async getSpecificFilterData(filterName: string, refresh: boolean): Promise<any> {

@@ -10,6 +10,7 @@ import { EventService } from './../events/event.service';
 })
 export class FolderPage implements OnInit {
   public folder: string;
+  public id;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -22,6 +23,7 @@ export class FolderPage implements OnInit {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
     this.events.publish('clear', []);
     this.events.publish('page', Number(this.folder));
+    this.id = Number(this.folder);
   }
 
 }

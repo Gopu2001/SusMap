@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { ToastController, Platform } from '@ionic/angular';
 import { GoogleMaps,
   GoogleMap,
@@ -13,7 +13,7 @@ import { GoogleMaps,
   Poly,
   HtmlInfoWindow } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
-import { HTTP } from '@ionic-native/http/ngx';
+// import { HTTP } from '@ionic-native/http/ngx';
 import { MenuController } from '@ionic/angular';
 import { EventService } from './../events/event.service';
 import { AppDataService } from './../services/app-data.service';
@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
     //data:image/jpg;base64,
     public htmlInfoWindow = new HtmlInfoWindow();
     public buildings = [];
@@ -45,11 +45,12 @@ export class HomePage {
     constructor(
       public toastCtrl: ToastController,
       private platform: Platform,
-      private http: HTTP,
+      // private http: HTTP,
       private menu: MenuController,
       private events: EventService,
       private appData: AppDataService,
-      private router: Router
+      private router: Router,
+      private zone: NgZone
     ) { }
 
     async ngOnInit() {
@@ -88,13 +89,30 @@ export class HomePage {
           this.changeStatus(this.filters[i].Name);
         });
       }
-
+      console.log("before platform ready");
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
-      await this.platform.ready();
       await this.loadMap();
       await this.addBuildings();
       await this.addFilterMarkers();
+      await this.platform.ready();
+
+
+
+      // setTimeout(() => {
+      //   console.log("animating camera");
+      //   this.map.animateCamera({
+      //     target: {lat: 37.363595, lng: -120.425361},
+      //     zoom: 16.5,
+      //     tilt: 0,
+      //     // bearing: 140,
+      //     duration: 15000
+      //   }).then(() => {
+      //     alert("Camera target has been changed");
+      //   });
+      // }, 20000);
+
+
     }
 
     loadMap() {
@@ -116,22 +134,11 @@ export class HomePage {
         styles: style,
         preferences: {
           zoom: {
-            minZoom: 14.5,
-            maxZoom: 18
+            minZoom: 15,
+            maxZoom: 17.5
           },
         }
       });
-
-      // this.map.animateCamera({
-      //   target: {lat: 37.422359, lng: -122.084344},
-      //   zoom: 15.5,
-      //   tilt: 0,
-      //   bearing: 140,
-      //   duration: 5000
-      // }).then(() => {
-      //   //alert("Camera target has been changed");
-      // });
-
 
       // this.addEnvironmentalMarkers();
     }
@@ -170,13 +177,11 @@ export class HomePage {
 
 
 
-        let centerMarker = this.map.addMarkerSync({
-          position: (new LatLngBounds(buildingCoor)).getCenter(),
-          visible: false,
-          zIndex: 0
-        });
-
-        this.buildings[i]['center'] = centerMarker;
+        // let centerMarker = this.map.addMarkerSync({
+        //   position: (new LatLngBounds(buildingCoor)).getCenter(),
+        //   visible: false,
+        //   zIndex: 0
+        // });
 
         // when clicked open htmlinfo window.
         polygon.on(GoogleMapsEvent.POLYGON_CLICK).subscribe((data) => {
@@ -184,7 +189,7 @@ export class HomePage {
           // html info window when polygon is clicked
           let frame: HTMLElement = document.createElement('div');
           frame.innerHTML = `
-          <ion-card class="ion-no-padding" no-padding button=true (click)="goToPage(` + building['BUILDING_ID'] + `);">
+          <ion-card class="infoWindow ion-no-padding" no-padding button=true (click)="goToPage(` + building['BUILDING_ID'] + `);">
             <ion-card-header>
               <ion-card-title>` + building['Full_Name'] + `</ion-card-title>
               <ion-card-subtitle>` + building['Shortened_Name'] + `</ion-card-subtitle>
@@ -196,18 +201,28 @@ export class HomePage {
             </ion-card-content>
           </ion-card>`;
 
-          this.htmlInfoWindow.setContent(frame, {
-            height: '40vh',
-            width: '50vh',
-            'border-radius': '25px'
+          frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
+            //open modal instead
+            this.goToPage(building['BUILDING_ID']);
+            this.htmlInfoWindow.close();
           });
 
-          // add center marker where html info window is going to display from
+          this.htmlInfoWindow.setContent(frame, {
+            'height': '40vh',
+            'width': '50vw',
+            'padding': '0px',
+            'margin': '0px',
+          });
+
+
           let centerMarker = this.map.addMarkerSync({
             position: (new LatLngBounds(this.buildings[i]['coors'])).getCenter(),
             visible: false,
             zIndex: 0
           });
+
+          this.buildings[i]['center'] = centerMarker;
+
           this.htmlInfoWindow.open(this.buildings[i]['center']);
           // this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
         });
@@ -249,56 +264,61 @@ export class HomePage {
 
     }
 
-    addFilterMarkers() {
-      console.log(this.filterData);
-      for (let i = 0; i < this.filterData.length; i++) {
-        const filt = this.filterData[i];
-        for (let j = 0; j < filt.length; j++) {
-          const item = filt[j];
+    async addFilterMarkers() {
+      console.log("before")
+      return await new Promise<any>((resolve, reject) => {
+        var marker;
+        for (let i = 0; i < this.filterData.length; i++) {
+          const filt = this.filterData[i];
+          for (let j = 0; j < filt.length; j++) {
+            const item = filt[j];
 
-          let marker = this.map.addMarkerSync({
-            position: {
-              lat: item['latitude'],
-              lng: item['longitude']
-            },
-            visible: false,
-            zIndex: 2
-          });
-
-          this.filterData[i][j]['marker'] = marker;
-          console.log("adding marker for filter: " + this.filters[i].Name);
-
-          marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-            // html info window when marker is clicked
-            let frame: HTMLElement = document.createElement('div');
-            frame.innerHTML = `
-            <h5>` + item['title'] + `</h5>
-            <p><small>` + item['description'] + `<small></p>
-            `;
-
-            this.htmlInfoWindow.setContent(frame, {
-              'border-radius': '25px',
-              'text-align': 'center',
-              'min-height': '10vh',
-              'max-height': '30vh',
-              'min-width': '45vh',
-              'max-width': '55vh',
+            marker = this.map.addMarkerSync({
+              position: {
+                lat: item['latitude'],
+                lng: item['longitude']
+              },
+              visible: false,
+              zIndex: 2
             });
 
-            this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
-          });
+            this.filterData[i][j]['marker'] = marker;
+            console.log("adding marker for filter: " + this.filters[i].Name);
 
-        }
+            marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+              // html info window when marker is clicked
+              let frame: HTMLElement = document.createElement('div');
+              frame.innerHTML = `
+              <h5>` + item['title'] + `</h5>
+              <p><small>` + item['description'] + `<small></p>
+              `;
 
-        this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
-          console.log(this.filterData[i]);
-          console.log(this.filters[i]['Name']);
-          for (let j = 0; j < this.filterData[i].length; j++) {
-            console.log(this.filterData[i][j]['title']);
-            this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
+              this.htmlInfoWindow.setContent(frame, {
+                'border-radius': '25px',
+                'text-align': 'center',
+                'min-height': '10vh',
+                'max-height': '30vh',
+                'min-width': '65vw',
+                'max-width': '85vw',
+              });
+
+              this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
+            });
+
           }
-        });
-      }
+
+          this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
+            // console.log(this.filterData[i]);
+            // console.log(this.filters[i]['Name']);
+            for (let j = 0; j < this.filterData[i].length; j++) {
+              // console.log(this.filterData[i][j]['title']);
+              this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
+            }
+          });
+        }
+        console.log(this.filterData);
+        resolve();
+      });
     }
 
     // addEnvironmentalMarkers() {
@@ -333,6 +353,10 @@ export class HomePage {
     }
 
     goToPage(id) {
+      // console.log(id);
+      // this.zone.run(async () => {
+      //   await this.router.navigate(['/folder/' + id]);
+      // });
       this.router.navigate(['/folder/' + id]);
     }
 

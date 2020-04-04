@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -6,6 +6,8 @@ import { Environment } from '@ionic-native/google-maps';
 import { Storage } from '@ionic/storage';
 import { EventService } from './events/event.service';
 import { AppDataService } from './services/app-data.service';
+import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
@@ -42,7 +44,10 @@ export class AppComponent implements OnInit {
     private statusBar: StatusBar,
     private storage: Storage,
     private events: EventService,
-    private appData: AppDataService
+    private appData: AppDataService,
+    private router: Router,
+    private zone: NgZone,
+    private menu: MenuController
   ) {
     this.initializeApp();
   }
@@ -82,6 +87,7 @@ export class AppComponent implements OnInit {
 
       this.events.subscribe('page', (data: number) => {
         this.selectedIndex = data-1;
+        // this.selectedIndex = data;
       });
 
       this.statusBar.styleDefault();
@@ -99,6 +105,21 @@ export class AppComponent implements OnInit {
   publishEvent(eventName: string, data: any) {
     this.events.publish(eventName, data);
     this.appData.updateFilterData(this.filters);
+  }
+
+  goToPage(id) {
+    // console.log(id);
+    this.selectedIndex = id;
+    if(id == -1) {
+      this.zone.run(async () => {
+        await this.router.navigate(['/']);
+        this.menu.enable(true,'insideMap');
+      });
+    } else {
+      this.zone.run(async () => {
+        await this.router.navigate(['/folder/' + id]);
+      });
+    }
   }
 
   // test() {

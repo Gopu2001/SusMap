@@ -9,8 +9,8 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { HttpClientModule } from '@angular/common/http';
-import { HTTP } from '@ionic-native/http/ngx';
+// import { HttpClientModule } from '@angular/common/http';
+// import { HTTP } from '@ionic-native/http/ngx';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { AppDataService } from './services/app-data.service'
@@ -25,7 +25,7 @@ import { EventService } from './events/event.service'
       mode: 'ios'
     }),
     AppRoutingModule,
-    HttpClientModule,
+    // HttpClientModule,
     IonicStorageModule.forRoot( {
       name: 'awesome_db',
       driverOrder: ['indexeddb', 'websql', 'sqlite']
@@ -34,7 +34,7 @@ import { EventService } from './events/event.service'
   providers: [
     StatusBar,
     SplashScreen,
-    HTTP,
+    // HTTP,
     AppDataService,
     EventService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
