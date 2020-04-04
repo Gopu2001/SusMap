@@ -54,6 +54,7 @@ export class HomePage implements OnInit {
     ) { }
 
     async ngOnInit() {
+      console.log(this.filterData);
       this.menu.enable(true,'insideMap');
 
       // getting filter data
@@ -97,8 +98,6 @@ export class HomePage implements OnInit {
       await this.addBuildings();
       await this.addFilterMarkers();
 
-
-
       // setTimeout(() => {
       //   console.log("animating camera");
       //   this.map.animateCamera({
@@ -111,7 +110,6 @@ export class HomePage implements OnInit {
       //     alert("Camera target has been changed");
       //   });
       // }, 20000);
-
 
     }
 
@@ -208,8 +206,8 @@ export class HomePage implements OnInit {
           });
 
           this.htmlInfoWindow.setContent(frame, {
-            'height': '40vh',
-            'width': '50vw',
+            'height': '70vh',
+            'width': '55vw',
             'padding': '0px',
             'margin': '0px',
           });
@@ -354,7 +352,7 @@ export class HomePage implements OnInit {
       // this.zone.run(async () => {
       //   await this.router.navigate(['/folder/' + id]);
       // });
-      this.router.navigate(['/folder/' + id]);
+      // this.router.navigate(['/folder/' + id]);
     }
 
     printData() {
