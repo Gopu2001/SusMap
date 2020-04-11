@@ -52,25 +52,22 @@ export class HomePage implements OnInit {
       private appData: AppDataService,
       private router: Router,
       private zone: NgZone
-    ) {
-      this.initializeApp();
-    }
+    ) { }
 
     ionViewWillEnter() {
-      this.menu.enable(true,'insideMap');
       console.log("ionViewWillEnter");
     }
 
-    ionViewDidEnter() {
+    async ionViewDidEnter() {
+      if(await this.menu.isOpen()) {
+        this.menu.enable(true,'insideMap');
+      }
       console.log("ionViewDidEnter");
     }
 
-    ngOnInit() {
+    async ngOnInit() {
       console.log("ngOnInit");
-    }
-
-    async initializeApp() {
-      console.log("initializeApp");
+      this.menu.enable(true,'insideMap');
 
       // getting filter data
       await this.appData.getFilterData(true).then((filt) => {
@@ -83,7 +80,8 @@ export class HomePage implements OnInit {
       for (let i = 0; i < this.filters.length; i++) {
         this.appData.getSpecificFilterData(this.filters[i]['Name'], true).then((val) => {
           if(val) {
-            this.filterData.push(val);
+            this.filters[i]['data'] = val;
+            // this.filterData.push(val);
           }
         });
       }
@@ -97,14 +95,15 @@ export class HomePage implements OnInit {
 
       // updated event filters active status from menu
       for (let i = 0; i < this.filters.length; i++) {
-        await this.events.subscribe(this.filters[i].Name, (data: any) => {
+        await this.events.subscribe(this.filters[i]['Name'], (data: any) => {
           // update active status
           this.filters[i].active = data.active;
-          // update markers
-          console.log(this.filters[i].Name);
+          console.log(this.filters[i]['Name']);
+
+          // update markers in here
 
 
-          this.changeStatus(this.filters[i].Name);
+          // this.changeStatus(this.filters[i]['Name']);
         });
       }
       console.log("before platform ready");
@@ -113,8 +112,8 @@ export class HomePage implements OnInit {
       await this.platform.ready();
       await this.loadMap();
       await this.addBuildings();
-      await this.addFilterMarkers();
-      console.log("end of initializeApp");
+      // await this.addFilterMarkers();
+      console.log("end of ngOnInit");
 
       // setTimeout(() => {
       //   console.log("animating camera");

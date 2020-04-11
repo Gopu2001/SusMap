@@ -58,12 +58,12 @@ export class AppComponent implements OnInit {
       if(build) {
         this.buildings = build;
       }
+    });
 
-      this.appData.getFilterData(true).then((filt) => {
-        if(filt) {
-          this.filters = filt;
-        }
-      });
+    await this.appData.getFilterData(true).then((filt) => {
+      if(filt) {
+        this.filters = filt;
+      }
     });
 
     this.platform.ready().then(() => {
@@ -82,7 +82,7 @@ export class AppComponent implements OnInit {
         for (let index = 0; index < this.filters.length; index++) {
           this.filters[index].active = false;
         }
-        this.appData.updateFilterData(this.filters);
+        // this.appData.updateFilterData(this.filters);
       });
 
       this.events.subscribe('page', (data: number) => {
@@ -107,25 +107,7 @@ export class AppComponent implements OnInit {
 
   publishEvent(eventName: string, data: any) {
     this.events.publish(eventName, data);
-    this.appData.updateFilterData(this.filters);
+    // this.appData.updateFilterData(this.filters);
   }
 
-  // goToPage(id) {
-  //   // console.log(id);
-  //   this.selectedIndex = id;
-  //   if(id == -1) {
-  //     this.zone.run(async () => {
-  //       await this.router.navigate(['/']);
-  //       this.menu.enable(true,'insideMap');
-  //     });
-  //   } else {
-  //     this.zone.run(async () => {
-  //       await this.router.navigate(['/folder/' + id]);
-  //     });
-  //   }
-  // }
-
-  // test() {
-  //   console.log("app");
-  // }
 }

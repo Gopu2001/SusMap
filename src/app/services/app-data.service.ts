@@ -14,6 +14,16 @@ export class AppDataService {
     private papa: Papa
   ) { }
 
+  triggerFilterApiCalls() {
+    for (let i = 0; i < this.filters.length; i++) {
+      this.getSpecificFilterData(this.filters[i]['Name'], true).then((val) => {
+        if(val) {
+          this.filters[i]['data'] = val;
+        }
+      });
+    }
+  }
+
   async getFilterData(refresh: boolean): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
       this.storage.get("filters").then((val) => {
@@ -85,7 +95,7 @@ export class AppDataService {
   }
 
   async getSpecificBuildingDataSimple(id): Promise<any> {
-    return this.storage.get("buildings");
+    // return this.storage.get("buildings");
     return await new Promise<any>((resolve, reject) => {
       this.storage.get("buildings").then((val) => {
         if(val) {
