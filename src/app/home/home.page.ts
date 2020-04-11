@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implments Oninit {
+export class HomePage implements OnInit {
     //data:image/jpg;base64,
     public htmlInfoWindow = new HtmlInfoWindow();
     public buildings = [];
@@ -32,6 +32,7 @@ export class HomePage implments Oninit {
     //   {
     //     Name: 'Economic',
     //     active: false
+    //     data: { all the filter data }
     //   },
     //   {
     //     Name: 'Environmental',
