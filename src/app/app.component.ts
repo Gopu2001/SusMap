@@ -92,7 +92,10 @@ export class AppComponent implements OnInit {
 
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+      console.log("inside plaform");
     });
+    console.log("after plaform");
   }
 
   ngOnInit() {

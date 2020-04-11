@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implments Oninit {
     //data:image/jpg;base64,
     public htmlInfoWindow = new HtmlInfoWindow();
     public buildings = [];
@@ -51,11 +51,25 @@ export class HomePage implements OnInit {
       private appData: AppDataService,
       private router: Router,
       private zone: NgZone
-    ) { }
+    ) {
+      this.initializeApp();
+    }
 
-    async ngOnInit() {
-      console.log(this.filterData);
+    ionViewWillEnter() {
       this.menu.enable(true,'insideMap');
+      console.log("ionViewWillEnter");
+    }
+
+    ionViewDidEnter() {
+      console.log("ionViewDidEnter");
+    }
+
+    ngOnInit() {
+      console.log("ngOnInit");
+    }
+
+    async initializeApp() {
+      console.log("initializeApp");
 
       // getting filter data
       await this.appData.getFilterData(true).then((filt) => {
@@ -87,6 +101,8 @@ export class HomePage implements OnInit {
           this.filters[i].active = data.active;
           // update markers
           console.log(this.filters[i].Name);
+
+
           this.changeStatus(this.filters[i].Name);
         });
       }
@@ -97,6 +113,7 @@ export class HomePage implements OnInit {
       await this.loadMap();
       await this.addBuildings();
       await this.addFilterMarkers();
+      console.log("end of initializeApp");
 
       // setTimeout(() => {
       //   console.log("animating camera");
@@ -206,8 +223,8 @@ export class HomePage implements OnInit {
           });
 
           this.htmlInfoWindow.setContent(frame, {
-            'height': '70vh',
-            'width': '55vw',
+            'height': '50vh',
+            'width': '75vw',
             'padding': '0px',
             'margin': '0px',
           });
@@ -316,32 +333,6 @@ export class HomePage implements OnInit {
       console.log("after");
     }
 
-    // addEnvironmentalMarkers() {
-    //   let marker = this.map.addMarkerSync({
-    //     title: 'efuwioef',
-    //     icon: 'blue',
-    //     animation: 'drop',
-    //     position: {
-    //       lat: 37.36590,
-    //       lng: -120.423800 //from 333
-    //     },
-    //     zIndex: 1
-    //   });
-    //
-    //   this.environmentalMarkers.push(marker);
-    //
-    //
-    //   this.environmentalMarkers[0].addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-    //     console.log("Marker: " + marker.isVisible());
-    //
-    //   });
-    //
-    //   this.map.addEventListener("Environmental").subscribe(() => {
-    //     for(var i = 0; i < this.environmentalMarkers.length; i++) {
-    //       this.environmentalMarkers[i].setVisible(!marker.isVisible());
-    //     }
-    //   })
-    // }
 
     changeStatus(cluster) {
       this.map.trigger(cluster);
