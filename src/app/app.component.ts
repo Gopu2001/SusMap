@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   //     url: '/folder/KL'
   //   }
   // ];
-  public filters = [];
+  public filters = []; //names
   //   {
   //     title: 'Economical',
   //     active: false
@@ -54,16 +54,9 @@ export class AppComponent implements OnInit {
 
   async initializeApp() {
     // get filter and building data
-    await this.appData.getBuildingData(true).then((build) => {
-      if(build) {
-        this.buildings = build;
-      }
-    });
-
-    await this.appData.getFilterData(true).then((filt) => {
-      if(filt) {
-        this.filters = filt;
-      }
+    await this.appData.getBuildingFilterNames((data: []) => {
+      this.buildings = data[0];
+      this.filters = data[1];
     });
 
     this.platform.ready().then(() => {
@@ -80,14 +73,14 @@ export class AppComponent implements OnInit {
 
       this.events.subscribe('clear', (data: any) => {
         for (let index = 0; index < this.filters.length; index++) {
-          this.filters[index].active = false;
+          this.filters[index]["ACTIVE"] = false;
         }
         // this.appData.updateFilterData(this.filters);
       });
 
+      //moved to a new building page
       this.events.subscribe('page', (data: number) => {
         this.selectedIndex = data-1;
-        // this.selectedIndex = data;
       });
 
       this.statusBar.styleDefault();

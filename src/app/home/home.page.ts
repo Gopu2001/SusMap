@@ -25,7 +25,7 @@ import { Router } from '@angular/router';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-    //data:image/jpg;base64,
+
     public htmlInfoWindow = new HtmlInfoWindow();
     public buildings = [];
     public filters = [];
