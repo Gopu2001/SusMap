@@ -18,7 +18,7 @@
           <ion-note>*Note: You can also click and hold the building on the map*</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
-            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']" lines="none" detail="false" [class.selected]="selectedIndex == i">
+            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false" [class.selected]="selectedIndex == i">
             <!-- <ion-item (click)="selectedIndex = i; goToPage(selectedIndex)" lines="none" detail="false" [class.selected]="selectedIndex == i"> -->
               <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
               <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>
@@ -47,7 +47,7 @@
           <ion-note>*Note: You can also click and hold the building on the map*</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
-            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']" lines="none" detail="false" [class.selected]="selectedIndex == i">
+            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false" [class.selected]="selectedIndex == i">
             <!-- <ion-item (click)="selectedIndex = i; goToPage(selectedIndex)" lines="none" detail="false" [class.selected]="selectedIndex == i"> -->
               <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
               <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>
