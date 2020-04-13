@@ -15,6 +15,6 @@ export class BuildingResolverService implements Resolve<any> {
   ) { }
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.info.getSpecificBuildingDataSimple(route.paramMap.get("id"));
+    return this.info.getSpecificBuildingData(Number(route.paramMap.get("id")));
   }
 }

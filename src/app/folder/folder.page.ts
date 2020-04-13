@@ -21,16 +21,18 @@ export class FolderPage implements OnInit {
     private info: AppDataService
   ) { }
 
-  async ngOnInit() {
+  ionViewDidEnter() {
     this.menu.enable(true,'outsideMap');
+  }
+
+  async ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id');
     this.events.publish('clear', []);
     this.events.publish('page', Number(this.folder));
     this.id = Number(this.folder);
-    await this.info.getSpecificBuildingDataSimple(this.id).then((data) => {
+    await this.info.getSpecificBuildingData(this.id).then((data) => {
       if(data) {
         this.building = data;
-        console.log(this.building);
       }
     });
   }
