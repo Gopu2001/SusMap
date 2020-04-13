@@ -6,10 +6,10 @@
           <ion-list-header>Filters</ion-list-header>
           <ion-note>*Note: You can click on multiple filters</ion-note>
 
-          <ion-item *ngFor="let filter of filters" lines="none" (click)="publishEvent(filter.title, filter); filter.active = !filter.active">
-            <ion-icon *ngIf="!filter.active" slot="start" name="bookmark-outline"></ion-icon>
-            <ion-icon *ngIf="filter.active" slot="start" name="bookmark"></ion-icon>
-            <ion-label>{{ filter.title }}</ion-label>
+          <ion-item *ngFor="let filter of filters" lines="none" (click)="filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);">
+            <ion-icon *ngIf="!filter['ACTIVE']" slot="start" name="bookmark-outline"></ion-icon>
+            <ion-icon *ngIf="filter['ACTIVE']" slot="start" name="bookmark"></ion-icon>
+            <ion-label>{{ filter['FILTER_NAME'] }}</ion-label>
           </ion-item>
         </ion-list>
 
@@ -18,9 +18,12 @@
           <ion-note>*Note: You can also click and hold the building on the map*</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
-            <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" [class.selected]="selectedIndex == i">
-              <ion-icon slot="start" [ios]="business-outline" [md]="business-sharp"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
+            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false" [class.selected]="selectedIndex == i">
+            <!-- <ion-item (click)="selectedIndex = i; goToPage(selectedIndex)" lines="none" detail="false" [class.selected]="selectedIndex == i"> -->
+              <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
+              <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>
+              <ion-label>{{ p['SHORTENED_NAME'] }}</ion-label>
+              <ion-label class="ion-text-wrap"><p>{{ p['FULL_NAME'] }}</p></ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
@@ -32,7 +35,8 @@
       <ion-content>
 
         <ion-menu-toggle auto-hide="false">
-          <ion-item routerDirection="root" [routerLink]="['/']" lines="none" detail="false">
+          <ion-item (click)="selectedIndex = -1" routerDirection="backward" [routerLink]="['/']" lines="none" detail="false">
+          <!-- <ion-item (click)="selectedIndex = -1; goToPage(selectedIndex)" lines="none" detail="false"> -->
             <ion-icon slot="start" name="map-outline"></ion-icon>
             <ion-label>Back to Map</ion-label>
           </ion-item>
@@ -43,9 +47,13 @@
           <ion-note>*Note: You can also click and hold the building on the map*</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
-            <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" [class.selected]="selectedIndex == i">
-              <ion-icon slot="start" [ios]="business-outline" [md]="business-sharp"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
+            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false" [class.selected]="selectedIndex == i">
+            <!-- <ion-item (click)="selectedIndex = i; goToPage(selectedIndex)" lines="none" detail="false" [class.selected]="selectedIndex == i"> -->
+              <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
+              <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>
+              <!-- <ion-label>{{ p.Full_Name }}</ion-label> -->
+              <ion-label>{{ p['SHORTENED_NAME'] }}</ion-label>
+              <ion-label class="ion-text-wrap"><p>{{ p['FULL_NAME'] }}</p></ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>

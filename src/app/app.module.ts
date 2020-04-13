@@ -10,10 +10,10 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { HttpClientModule } from '@angular/common/http';
-import { HTTP } from '@ionic-native/http/ngx';
+// import { HTTP } from '@ionic-native/http/ngx';
 
 import { IonicStorageModule } from '@ionic/storage';
-
+import { AppDataService } from './services/app-data.service'
 import { EventService } from './events/event.service'
 
 @NgModule({
@@ -26,12 +26,16 @@ import { EventService } from './events/event.service'
     }),
     AppRoutingModule,
     HttpClientModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot( {
+      name: 'awesome_db',
+      driverOrder: ['indexeddb', 'websql', 'sqlite']
+    })
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    HTTP,
+    // HTTP,
+    AppDataService,
     EventService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
