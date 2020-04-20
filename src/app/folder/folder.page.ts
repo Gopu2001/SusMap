@@ -10,9 +10,9 @@ import { AppDataService } from './../services/app-data.service';
   styleUrls: ['./folder.page.scss'],
 })
 export class FolderPage implements OnInit {
-  public folder: string;
   public id;
   public building = {};
+  public leedText: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -26,13 +26,15 @@ export class FolderPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.folder = this.activatedRoute.snapshot.paramMap.get('id');
+    var folder: string;
+    folder = this.activatedRoute.snapshot.paramMap.get('id');
     this.events.publish('clear', []);
-    this.events.publish('page', Number(this.folder));
-    this.id = Number(this.folder);
+    this.events.publish('page', Number(folder));
+    this.id = Number(folder);
     await this.info.getSpecificBuildingData(this.id).then((data) => {
       if(data) {
         this.building = data;
+        this.leedText = "LEED certification: " + this.building['LEED_CERTIFICATION'];
       }
     });
   }
