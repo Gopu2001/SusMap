@@ -36,18 +36,21 @@
       <ion-item>{{building["DESCRIPTION"]}}</ion-item>
     </ion-item>
   </ion-list> -->
-  <br><br>
+  <div *ngIf="building['PICTURE']">
+    <br><br>
+  </div>
   <div class="ion-text-center">
     <div class="ion-text-wrap" lines="none">
       <!-- <ion-label> -->
         <h1>
-          Name: {{building["FULL_NAME"]}}
+          {{building["FULL_NAME"]}}
         </h1>
       <!-- </ion-label> -->
     </div>
 
-    <ion-marquee speed="30" style="height:5vh" [text]="leedText"></ion-marquee>
-<!-- LEED certification: {{building['LEED_CERTIFICATION']}} -->
+    <marquee *ngIf="building['LEED_CERTIFICATION']" hspace="10vw" truespeed scrollamount="15">
+      LEED CERTIFICATION: {{building['LEED_CERTIFICATION']}}
+    </marquee>
 
   </div>
 

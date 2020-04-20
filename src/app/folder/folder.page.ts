@@ -12,7 +12,6 @@ import { AppDataService } from './../services/app-data.service';
 export class FolderPage implements OnInit {
   public id;
   public building = {};
-  public leedText: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -34,7 +33,6 @@ export class FolderPage implements OnInit {
     await this.info.getSpecificBuildingData(this.id).then((data) => {
       if(data) {
         this.building = data;
-        this.leedText = "LEED certification: " + this.building['LEED_CERTIFICATION'];
       }
     });
   }
