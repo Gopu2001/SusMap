@@ -55,14 +55,6 @@ export class AppComponent implements OnInit {
         'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU'
       });
 
-
-
-      // this.events.subscribe('clear', (data: any) => {
-      //   for (let index = 0; index < this.filters.length; index++) {
-      //     this.filters[index]["ACTIVE"] = false;
-      //   }
-      // });
-
       //moved to a new building page
       this.events.subscribe('page', (data: number) => {
         this.selectedIndex = data-1;

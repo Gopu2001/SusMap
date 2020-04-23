@@ -65,20 +65,15 @@ export class HomePage implements OnInit {
     }
 
     ionViewWillEnter() {
-      // console.log("ionViewWillEnter");
     }
 
     ionViewDidEnter() {
-      // if(await this.menu.isOpen()) {
       this.menu.enable(true,'insideMap');
-      // }
-      // console.log("ionViewDidEnter");
     }
 
     async ngOnInit() {
-      // console.log("ngOnInit");
-      // this.menu.enable(true,'insideMap');
 
+      //get building data and filter names
       await this.appData.getBuildingFilterNames(true).then((data) => {
         this.buildings = data[0];
         this.filters = data[1];
@@ -92,29 +87,6 @@ export class HomePage implements OnInit {
         backdropDismiss: false
       });
 
-      // getting filter data
-      // await this.appData.getFilterData(true).then((filt) => {
-      //   if(filt) {
-      //     this.filters = filt;
-      //   }
-      // });
-      //
-      // // get the specific filter data for each one
-      // for (let i = 0; i < this.filters.length; i++) {
-      //   this.appData.getSpecificFilterData(this.filters[i]['Name'], true).then((val) => {
-      //     if(val) {
-      //       this.filters[i]['data'] = val;
-      //       // this.filterData.push(val);
-      //     }
-      //   });
-      // }
-      //
-      // // get building data
-      // await this.appData.getBuildingData(true).then((build) => {
-      //   if(build) {
-      //     this.buildings = build;
-      //   }
-      // });
 
       //get the data whenever
       this.appData.getAllFilterData(true).then((data: []) => {
@@ -228,7 +200,6 @@ export class HomePage implements OnInit {
         }
       });
 
-      // this.addEnvironmentalMarkers();
     }
 
     addBuildings() {
@@ -293,43 +264,11 @@ export class HomePage implements OnInit {
           this.buildings[i]['CENTER'] = centerMarker;
 
           this.htmlInfoWindow.open(this.buildings[i]['CENTER']);
-          // this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
         });
 
-        // this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
-        //   this.buildings[i]['htmlInfoWindow'].close();
-        //   // if(Poly.containsLocation(params[0], this.buildings[i]['coors'])) {
-        //   //   console.log("polygon clicked");
-        //   //   this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
-        //   // }
-        // });
-
-        // when long clicked, polygon goes straight to its specific page
-        // this.map.on(GoogleMapsEvent.MAP_LONG_CLICK).subscribe((params: any[]) => {
-        //   console.log("long click");
-        //   this.buildings[i]['htmlInfoWindow'].close();
-        //   if(Poly.containsLocation(params[0], this.buildings[i]['coors'])) {
-        //     this.goToPage(this.buildings[i]['BUILDING_ID']);
-        //   }
-        // });
 
         this.buildings[i]['polygon'] = polygon;
       }
-      //cob1
-      // let cob1: ILatLng[] = [
-      //   {lat: 37.366656, lng: -120.423602},
-      //   {lat: 37.367002, lng: -120.423993},
-      //   {lat: 37.367466, lng: -120.423028},
-      //   {lat: 37.367245, lng: -120.422783}
-      // ];
-      //
-      // let polygon: Polygon = this.map.addPolygonSync({
-      //   points: cob1,
-      //   strokeColor : '#AA00FF',
-      //   fillColor : '#00FFAA',
-      //   strokeWidth: 10,
-      //   zIndex: 1
-      // });
 
     }
 
@@ -373,74 +312,6 @@ export class HomePage implements OnInit {
         }
       });
     }
-
-    // addVisibleListener() {
-    //   for (let i = 0; i < array.length; i++) {
-    //     this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
-    //       // console.log(this.filterData[i]);
-    //       // console.log(this.filters[i]['Name']);
-    //       for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-    //         // console.log(this.filterData[i][j]['title']);
-    //         this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
-    //       }
-    //     });
-    //   }
-    // }
-
-    // addFilterMarkers() {
-    //   console.log("before")
-    //   var marker;
-    //   for (let i = 0; i < this.filterData.length; i++) {
-    //     const filt = this.filterData[i];
-    //     for (let j = 0; j < filt.length; j++) {
-    //       const item = filt[j];
-    //
-    //       marker = this.map.addMarkerSync({
-    //         position: {
-    //           lat: item['latitude'],
-    //           lng: item['longitude']
-    //         },
-    //         visible: false,
-    //         zIndex: 2
-    //       });
-    //
-    //       this.filterData[i][j]['marker'] = marker;
-    //       console.log("adding marker for filter: " + this.filters[i].Name);
-    //
-    //       marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-    //         // html info window when marker is clicked
-    //         let frame: HTMLElement = document.createElement('div');
-    //         frame.innerHTML = `
-    //         <h5>` + item['title'] + `</h5>
-    //         <p><small>` + item['description'] + `<small></p>
-    //         `;
-    //
-    //         this.htmlInfoWindow.setContent(frame, {
-    //           'border-radius': '25px',
-    //           'text-align': 'center',
-    //           'min-height': '10vh',
-    //           'max-height': '30vh',
-    //           'min-width': '65vw',
-    //           'max-width': '85vw',
-    //         });
-    //
-    //         this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
-    //       });
-    //
-    //     }
-    //
-    //     this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
-    //       // console.log(this.filterData[i]);
-    //     // console.log(this.filters[i]['Name']);
-    //       for (let j = 0; j < this.filterData[i].length; j++) {
-    //         // console.log(this.filterData[i][j]['title']);
-    //         this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
-    //       }
-    //     });
-    //   }
-    //   console.log("after");
-    // }
-
 
     changeStatus(cluster) {
       this.map.trigger(cluster);
