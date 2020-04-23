@@ -329,8 +329,9 @@ export class HomePage implements OnInit {
       });
 
       modal.onDidDismiss().then((detail: OverlayEventDetail) => {
-        // console.log(detail.data);
-        // this.router.navigate(['/folder/' + id]);
+        if(detail.data.redirect) {
+          this.router.navigate(['/folder/' + buildingData['BUILDING_ID']])
+        }
       });
 
       await modal.present();

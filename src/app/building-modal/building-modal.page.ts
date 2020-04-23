@@ -29,11 +29,11 @@ export class BuildingModalPage implements OnInit {
     this.description += "...";
   }
 
-  dismiss() {
+  dismiss(redirect: boolean) {
     const data = "name: " + this.building['FULL_NAME'];
     this.modalController.dismiss({
       'dismissed': true,
-      'data': data
+      'redirect': redirect
     });
   }
 
