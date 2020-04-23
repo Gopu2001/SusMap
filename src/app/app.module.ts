@@ -13,8 +13,10 @@ import { HttpClientModule } from '@angular/common/http';
 // import { HTTP } from '@ionic-native/http/ngx';
 
 import { IonicStorageModule } from '@ionic/storage';
-import { AppDataService } from './services/app-data.service'
-import { EventService } from './events/event.service'
+import { AppDataService } from './services/app-data.service';
+import { EventService } from './events/event.service';
+
+import { BuildingModalPageModule } from './building-modal/building-modal.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,10 +28,11 @@ import { EventService } from './events/event.service'
     }),
     AppRoutingModule,
     HttpClientModule,
-    IonicStorageModule.forRoot( {
+    IonicStorageModule.forRoot({
       name: 'awesome_db',
       driverOrder: ['indexeddb', 'websql', 'sqlite']
-    })
+    }),
+    BuildingModalPageModule
   ],
   providers: [
     StatusBar,

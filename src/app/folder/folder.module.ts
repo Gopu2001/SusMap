@@ -9,7 +9,6 @@ import { FolderPageRoutingModule } from './folder-routing.module';
 import { FolderPage } from './folder.page';
 
 import { IonicHeaderParallaxModule } from 'ionic-header-parallax';
-import { IonMarqueeModule } from 'ionic-marquee';
 
 @NgModule({
   imports: [
@@ -17,8 +16,7 @@ import { IonMarqueeModule } from 'ionic-marquee';
     FormsModule,
     IonicModule,
     FolderPageRoutingModule,
-    IonicHeaderParallaxModule,
-    IonMarqueeModule
+    IonicHeaderParallaxModule
   ],
   declarations: [FolderPage]
 })

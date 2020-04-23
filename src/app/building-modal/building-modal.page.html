@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-button left (click)="dismiss()">Back</ion-button>
+    <ion-title>building-modal</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="ion-text-center">
+    <ion-list-header>{{building["FULL_NAME"]}}</ion-list-header>
+    <ion-item-group>
+
+      <ion-item-divider>
+        <ion-label class="ion-text-center">{{building['SHORTENED_NAME'] }}</ion-label>
+      </ion-item-divider>
+    </ion-item-group>
+
+    <ion-item class="ion-text-wrap ion-text-left" lines="none">
+      <ion-item>{{building["DESCRIPTION"]}}</ion-item>
+    </ion-item>
+  </ion-list>
+</ion-content>

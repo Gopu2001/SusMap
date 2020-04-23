@@ -20,6 +20,9 @@ import { AppDataService } from './../services/app-data.service';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+import { BuildingModalPage } from './../building-modal/building-modal.page';
+import { OverlayEventDetail } from '@ionic/core';
 
 @Component({
   selector: 'app-home',
@@ -56,23 +59,24 @@ export class HomePage implements OnInit {
       private appData: AppDataService,
       private router: Router,
       private zone: NgZone,
-      public loadingController: LoadingController
+      public loadingController: LoadingController,
+      private modalController: ModalController
     ) {
     }
 
     ionViewWillEnter() {
-      console.log("ionViewWillEnter");
+      // console.log("ionViewWillEnter");
     }
 
     ionViewDidEnter() {
       // if(await this.menu.isOpen()) {
       this.menu.enable(true,'insideMap');
       // }
-      console.log("ionViewDidEnter");
+      // console.log("ionViewDidEnter");
     }
 
     async ngOnInit() {
-      console.log("ngOnInit");
+      // console.log("ngOnInit");
       // this.menu.enable(true,'insideMap');
 
       await this.appData.getBuildingFilterNames(true).then((data) => {
@@ -114,7 +118,6 @@ export class HomePage implements OnInit {
 
       //get the data whenever
       this.appData.getAllFilterData(true).then((data: []) => {
-        console.log("started");
         this.filters = data;
 
         var promArr = []
@@ -124,11 +127,10 @@ export class HomePage implements OnInit {
 
         forkJoin(promArr).subscribe((data: []) => {
           for (let i = 0; i < this.filters.length; i++) {
+
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
-              // console.log(this.filterData[i]);
-              // console.log(this.filters[i]['Name']);
               for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-                // console.log(this.filterData[i][j]['title']);
+                //set each marker visible according to active status
                 this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
               }
             });
@@ -146,6 +148,7 @@ export class HomePage implements OnInit {
 
       // updated event filters active status from menu
       for (let i = 0; i < this.filters.length; i++) {
+        //make filter active/not active
         await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
           // update active status
           this.filters[i]['ACTIVE'] = data['ACTIVE'];
@@ -169,19 +172,21 @@ export class HomePage implements OnInit {
           }
 
         });
+
+      }
+      //clear filter status
+      this.events.subscribe('clear') {
+        //loop inside to avoid to much computation in ngOnInit
+        for(let i = 0; i < filters.length; i++) {
+          this.filters[i]['ACTIVE'] = false;
+        }
       }
 
-      console.log("before platform ready");
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       await this.platform.ready();
       await this.loadMap();
       await this.addBuildings();
-      // await this.addFilterMarkers();
-      console.log("end of ngOnInit");
-
-      // this.addVisibleListener();
-
 
       // setTimeout(() => {
       //   console.log("animating camera");
@@ -227,7 +232,7 @@ export class HomePage implements OnInit {
     }
 
     addBuildings() {
-      console.log(this.buildings);
+      // console.log(this.buildings);
       for (let i = 0; i < this.buildings.length; i++) {
         const building = this.buildings[i];
 
@@ -257,16 +262,6 @@ export class HomePage implements OnInit {
           clickable: true
         });
 
-//data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAM1BMVEXMzMzPz8+vr6/Ly8vAwMCRkZHDw8PGxsaWlpaenp6Tk5PCwsK2trahoaG6urqsrKympqZJMGkaAAAFGElEQVR4nO2dbZfbKAyFEWAD5vX//9q9giT2ZLbT9pw2TXfv0zMuiWUfXQsJ/EUxhhBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQ8lsR8OXwi+vks/F3r3s5bRyxeqfD0OPR9/mts2mr/ovLJI94pOKejVs6YnO/1+Wfo8UtqVM6TltMW5ruWR3GLySGeMQUN/tk3CA7xvL7/f5hJB0lhLbVYKRtfQ/9KJhlOdYcylG/OeGkI9rBJ9V1MQ718MEfKbxSw9fkrRv1N+7GJXXMVQTR9W2Hv317eHpLrofikDTW4vE8LsZ4SHg+6/guLGekbFl8HDLFNgk16rBFe/M0WKtis73PvzyNTcDlF2MZh6ZxiN8O/ssJWT2XEXconE9ewxLS8n/9p6QZnPoIjlvXtY/GUuf8dCO+j0Ile3t0B29nrdCw7Ct4F4U+Hk78Nq5VMvgSkb8XY0nTwPXjrRTKdhxpx0ydM8y4zco+yw0ys96N4LR1NfqL54joceCLi7HEfqvEr5XwHVRhtA656NZHi/ozVw+p6REzH1OP48N1CRciZhdjmXXLiN3eakU04kpEHp4xNJ9jqCE+4sdFQKQl5O6/xvC9FGoB3TwkZB1f8tCdeQiw33nOLqwL9mos8f3ysLUZl7Y1lPs521Yt7U+VRpe+I51+5zKv04BfjKXWd6ulWCbWZgvrYZ6ein2sh+ZcD1VATId9XFfWuuEe6+E0njuHuR14H4VlJtH0bG1TTEVddWs3Y7dzY1pibzHt94+37UFbe5q7MYQ30XDbt1GIrEu7oFjo7NItKeaqFswWuyCo8bRLkDHOICKkTTR8/oPxHhP2dynmPyDlG2AHHee7hT50vGbUbRXMsUUM2+NtsW+YwuF4uI7oHakeK1gXY1TcGs8H8Q6EnuDrrDHGw7m6VIUBueVR88Om2qDz3HCWhBelbp6MncVblX2jVwvgQs53j8L+GLpzqJ/8PpeBfHljVGP3yRjD/d0WQ0IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEELIm5PLefzL8N7/SI85Pxvw+aeeibOnmwu7n3eZN9p3/N3Pu331ggs+u3UKw1/o/I8g0dq+r3byZ9NrWQe5d8IWyXeFcjfRP+vnl83WYb02uDVuJJFHd8zebYeJH310MxsRO7u9uLEkvJFSpNcu0p144zDwtQcjvaTdde1EiKNdCuFqlt0iIKtbqNdumJBts2iT2iAQeyos1kkIJkCls0WqbRL6q9ufLoVwBRJKc9HkLm0YD53JGhnN9KbHOhXmtOcRTPdS7FRYMD2LKvTabLhZN8IZQ7n18fWzmWSVFIaz7dXtwOcsDXV64HrrpXmxw9oIP9fZYfUpPPJQ4+aH6bPlt1qqwVKYDDTKFwoF+syrG7xKyj7AFYEHMuw+MN+szTlrdPHncw5wHbNvKuxLDCbtvBjGM0VvCqVEfyrEtNeWrqgwmP7SOr7WxumvV7jyC/+QecPYirwZfs5S0UzypQnKRVoKYynaEdqvRqj3SvNQKDKPMaO0ShRXC8oQ7jKQnm4+Mnm5QjNXOIRIW5t6b3b1OSCK64xrtqAAFttWT/dWtIvyykIVp0K1/s9Bud0Qk8BiLuNjwIV6BncJ5/k/w8cHe/kpkqffTTCrNfR3bnb5OZRPN/wbyKn9XQ7/PP91fYT8j/gHpIIpSX4o390AAAAASUVORK5CYII=
-
-
-
-        // let centerMarker = this.map.addMarkerSync({
-        //   position: (new LatLngBounds(buildingCoor)).getCenter(),
-        //   visible: false,
-        //   zIndex: 0
-        // });
-
         // when clicked open htmlinfo window.
         polygon.on(GoogleMapsEvent.POLYGON_CLICK).subscribe((data) => {
           console.log("polygon clicked");
@@ -274,26 +269,18 @@ export class HomePage implements OnInit {
           let frame: HTMLElement = document.createElement('div');
           //animate later class="animated infinite pulse"
           frame.innerHTML = `
-          <div class="infoWindow">
-            <h1`+ building['FULL_NAME'] +` </h1>
-            <p >(`+ building['SHORTENED_NAME'] +`)</p>
-            <small>`+ building['DESCRIPTION'] +`<small>
+          <div class="infoWindow ion-text-nowrap">
+            <p>`+ building['SHORTENED_NAME'] +`</p>
           </div>`;
-
 
           frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
             //open modal instead
-            this.goToPage(building['BUILDING_ID']);
+            this.goToPage(building);
             this.htmlInfoWindow.close();
           });
 
           this.htmlInfoWindow.setContent(frame, {
-            'max-height': '50vh',
-            'min-height': '100px',
-            'min-width': '20vw',
-            'max-width': '70vw',
-            'padding': '0px',
-            'margin': '10px',
+
           });
 
 
@@ -365,17 +352,13 @@ export class HomePage implements OnInit {
             // html info window when marker is clicked
             let frame: HTMLElement = document.createElement('div');
             frame.innerHTML = `
-            <h5>` + arr[j]['TITLE'] + `</h5>
-            <p><small>` + arr[j]['DESCRIPTION'] + `<small></p>
+            <div class="markerInfoWindow">
+              <h5>` + arr[j]['TITLE'] + `</h5>
+              <p><small>` + arr[j]['DESCRIPTION'] + `<small></p>
+            </div>
             `;
 
             this.htmlInfoWindow.setContent(frame, {
-              'border-radius': '25px',
-              'text-align': 'center',
-              'min-height': '10vh',
-              'max-height': '30vh',
-              'min-width': '65vw',
-              'max-width': '85vw',
             });
 
             this.htmlInfoWindow.open(arr[j]['MARKER']);
@@ -461,12 +444,23 @@ export class HomePage implements OnInit {
       this.map.trigger(cluster);
     }
 
-    goToPage(id) {
-      // console.log(id);
-      // this.zone.run(async () => {
-      //   await this.router.navigate(['/folder/' + id]);
-      // });
-      // this.router.navigate(['/folder/' + id]);
+    async goToPage(buildingData) {
+      // console.log(buildingData);
+      const modal = await this.modalController.create({
+        component: BuildingModalPage,
+        componentProps: {
+          building: buildingData
+        },
+        swipeToClose: true,
+        cssClass: 'my-modal'
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        // console.log(detail.data);
+        // this.router.navigate(['/folder/' + id]);
+      });
+
+      await modal.present();
     }
 
     printData() {

@@ -18,25 +18,7 @@ import { MenuController } from '@ionic/angular';
 export class AppComponent implements OnInit {
   public selectedIndex = -1;
   public buildings = [];
-  //   {
-  //     title: 'Cob1',
-  //     url: '/folder/Cob1'
-  //   },
-  //   {
-  //     title: 'KL',
-  //     url: '/folder/KL'
-  //   }
-  // ];
-  public filters = []; //names
-  //   {
-  //     title: 'Economical',
-  //     active: false
-  //   },
-  //   {
-  //     title: 'Environmental',
-  //     active: false
-  //   }
-  // ];
+  public filters = [];
 
   constructor(
     private platform: Platform,
@@ -79,7 +61,6 @@ export class AppComponent implements OnInit {
         for (let index = 0; index < this.filters.length; index++) {
           this.filters[index]["ACTIVE"] = false;
         }
-        // this.appData.updateFilterData(this.filters);
       });
 
       //moved to a new building page

@@ -52,6 +52,11 @@
       LEED CERTIFICATION: {{building['LEED_CERTIFICATION']}}
     </marquee>
 
+    <ion-item *ngIf="!building['LEED_CERTIFICATION']" (click)="openLeedModal()" class="ion-text-center" lines="none">
+      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+      <ion-label>No LEED CERTIFICATION</ion-label>
+    </ion-item>
+
   </div>
 
   <!-- {{building["BUILDING_ID"]}} -->
