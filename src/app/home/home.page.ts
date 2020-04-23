@@ -226,9 +226,9 @@ export class HomePage implements OnInit {
         // create polygon
         let polygon: Polygon = this.map.addPolygonSync({
           points: buildingCoor,
-          strokeColor : '#AA00FF',
-          fillColor : '#00FFAA',
-          strokeWidth: 10,
+          strokeColor : '#537ed0',
+          fillColor : '#bfcfee',
+          strokeWidth: 5,
           zIndex: 1,
           clickable: true
         });

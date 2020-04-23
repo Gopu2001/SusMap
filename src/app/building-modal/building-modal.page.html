@@ -6,7 +6,12 @@
 </ion-header> -->
 
 <ion-content>
-  <ion-list class="ion-text-center">
+  <h1 class="ion-text-center">{{building["FULL_NAME"]}}</h1>
+  <h4 class="ion-text-center" *ngIf="building['SHORTENED_NAME'] != building['FULL_NAME']">({{building['SHORTENED_NAME']}})</h4>
+
+  <p class="ion-text-wrap ion-align-self-stretch">{{description}} <a color="blue" (click)="dismiss(true)">... more</a> </p>
+
+  <!-- <ion-list class="ion-text-center">
     <ion-list-header class="ion-text-center">{{building["FULL_NAME"]}}</ion-list-header>
     <ion-item-group class="ion-text-center">
 
@@ -19,5 +24,5 @@
       {{description}} <a color="blue" (click)="dismiss(true)">See More</a>
     </ion-item>
 
-  </ion-list>
+  </ion-list> -->
 </ion-content>

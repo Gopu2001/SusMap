@@ -29,7 +29,8 @@
   top: 30vh;
   left: 10vw;
   --width: 80vw;
-  --height: 40vh;
-  --border-width: 1vh;
+  --min-height: 20vh;
+  --max-height: 30vh;
+  --border-width: 3vh;
   --border-color: var(--ion-color-success);
 }

@@ -26,7 +26,7 @@ export class BuildingModalPage implements OnInit {
     } else {
       this.description = this.building['DESCRIPTION'];
     }
-    this.description += "...";
+    // this.description += "...";
   }
 
   dismiss(redirect: boolean) {
