@@ -36,8 +36,8 @@ export class AppComponent implements OnInit {
 
   async initializeApp() {
     // get filter and building data
-    await this.appData.getBuildingFilterNames(true).then((data) => {
-      console.log(data);
+    await this.appData.getBuildingFilterNames(false).then((data) => {
+      // console.log(data);
       this.buildings = data[0];
       for (let i = 0; i < this.buildings.length; i++) {
         this.buildings[i]['URL'] = "/folder/" + this.buildings[i]['BUILDING_ID'];

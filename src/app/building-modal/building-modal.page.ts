@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -13,7 +14,8 @@ export class BuildingModalPage implements OnInit {
   leedInfo: boolean;
 
   constructor(
-    private modalController: ModalController
+    private modalController: ModalController,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -30,10 +32,11 @@ export class BuildingModalPage implements OnInit {
   }
 
   dismiss(redirect: boolean) {
-    const data = "name: " + this.building['FULL_NAME'];
+    if(redirect) {
+      this.router.navigate(['/folder/' + this.building['BUILDING_ID']]);
+    }
     this.modalController.dismiss({
-      'dismissed': true,
-      'redirect': redirect
+      'dismissed': true
     });
   }
 

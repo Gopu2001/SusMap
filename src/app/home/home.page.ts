@@ -11,7 +11,8 @@ import { GoogleMaps,
   PolygonOptions,
   Polygon,
   Poly,
-  HtmlInfoWindow } from '@ionic-native/google-maps';
+  HtmlInfoWindow,
+  MarkerIcon } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
 // import { HTTP } from '@ionic-native/http/ngx';
 import { MenuController } from '@ionic/angular';
@@ -64,7 +65,13 @@ export class HomePage implements OnInit {
     ) {
     }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
+      // try {
+      //   const modal = await this.modalController.getTop(); // not needed
+      //   modal.dismiss();
+      // } catch (error) {
+      //   console.log("no modal to dismiss: " + error);
+      // }
     }
 
     ionViewDidEnter() {
@@ -74,7 +81,7 @@ export class HomePage implements OnInit {
     async ngOnInit() {
 
       //get building data and filter names
-      await this.appData.getBuildingFilterNames(true).then((data) => {
+      await this.appData.getBuildingFilterNames(false).then((data) => {
         this.buildings = data[0];
         this.filters = data[1];
       });
@@ -185,7 +192,7 @@ export class HomePage implements OnInit {
             lat: 37.363595,
             lng: -120.425361
           },
-          zoom: 16.5,
+          zoom: 16,
           tilt: 0,
         },
         'gestures': {
@@ -194,7 +201,7 @@ export class HomePage implements OnInit {
         styles: style,
         preferences: {
           zoom: {
-            minZoom: 15.5,
+            minZoom: 15,
             maxZoom: 17.5
           },
         }
@@ -227,7 +234,7 @@ export class HomePage implements OnInit {
         let polygon: Polygon = this.map.addPolygonSync({
           points: buildingCoor,
           strokeColor : '#537ed0',
-          fillColor : '#bfcfee',
+          fillColor : '#eaf0ff',
           strokeWidth: 5,
           zIndex: 1,
           clickable: true
@@ -276,11 +283,33 @@ export class HomePage implements OnInit {
     async createFilterMarkers(arr): Promise<any> {
       return await new Promise<any>((resolve, reject) => {
         for (let j = 0; j < arr.length; j++) {
+          var icon;
+          var iconURL;
+          if(arr[j]['ICON'].slice(0,3) == "data") {
+            iconURL = arr[j]['ICON']; //base64 data
+          } else {
+            iconURL = 'assets/icon/'+arr[j]['ICON']+'.png';
+          }
+          if(arr[j]['ICON']) {
+            icon = {
+              url: iconURL,
+              size: {
+                width: 35,
+                height: 35
+              }
+            }
+          } else {
+            icon = "red";
+          }
+
+
+
           var marker = this.map.addMarkerSync({
             position: {
               lat: arr[j]['LATITUDE'],
               lng: arr[j]['LONGITUDE']
             },
+            icon: icon,
             visible: false,
             zIndex: 2
           });
@@ -329,8 +358,11 @@ export class HomePage implements OnInit {
       });
 
       modal.onDidDismiss().then((detail: OverlayEventDetail) => {
-        if(detail.data.redirect) {
-          this.router.navigate(['/folder/' + buildingData['BUILDING_ID']])
+        try {
+          if(detail.data.redirect) {
+          }
+        } catch (error) {
+          console.log("no redirect")
         }
       });
 

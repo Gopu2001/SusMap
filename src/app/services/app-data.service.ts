@@ -102,6 +102,10 @@ export class AppDataService {
 
   async getBuildingFilterNames(refresh: boolean): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
+      if(this.filterNames.length != 0 && this.buildings.length != 0 && !refresh) {
+        resolve([this.buildings, this.filterNames]);
+      }
+
       var promArr = [this.buildPromise("BUILDINGS", refresh)];
       if(this.filterNames.length == 0) {
         //doesnt exist
@@ -119,7 +123,7 @@ export class AppDataService {
           }
         }
 
-        resolve([this.buildings, this.filterNames])
+        resolve([this.buildings, this.filterNames]);
       });
 
     });
