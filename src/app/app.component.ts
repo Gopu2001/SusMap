@@ -57,11 +57,11 @@ export class AppComponent implements OnInit {
 
 
 
-      this.events.subscribe('clear', (data: any) => {
-        for (let index = 0; index < this.filters.length; index++) {
-          this.filters[index]["ACTIVE"] = false;
-        }
-      });
+      // this.events.subscribe('clear', (data: any) => {
+      //   for (let index = 0; index < this.filters.length; index++) {
+      //     this.filters[index]["ACTIVE"] = false;
+      //   }
+      // });
 
       //moved to a new building page
       this.events.subscribe('page', (data: number) => {

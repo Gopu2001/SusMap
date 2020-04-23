@@ -175,12 +175,12 @@ export class HomePage implements OnInit {
 
       }
       //clear filter status
-      this.events.subscribe('clear') {
-        //loop inside to avoid to much computation in ngOnInit
-        for(let i = 0; i < filters.length; i++) {
-          this.filters[i]['ACTIVE'] = false;
-        }
-      }
+      // this.events.subscribe('clear', (data: any) => {
+      //   //loop inside to avoid to much computation in ngOnInit
+      //   for(let i = 0; i < this.filters.length; i++) {
+      //     this.filters[i]['ACTIVE'] = false;
+      //   }
+      // });
 
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
@@ -359,6 +359,8 @@ export class HomePage implements OnInit {
             `;
 
             this.htmlInfoWindow.setContent(frame, {
+              'min-height': '10vh',
+              'max-height': '20vh',
             });
 
             this.htmlInfoWindow.open(arr[j]['MARKER']);

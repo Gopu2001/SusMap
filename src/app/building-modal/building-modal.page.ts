@@ -9,7 +9,8 @@ import { ModalController } from '@ionic/angular';
 export class BuildingModalPage implements OnInit {
 
   building = {};
-  description: string
+  description: string;
+  leedInfo: boolean;
 
   constructor(
     private modalController: ModalController
@@ -19,7 +20,7 @@ export class BuildingModalPage implements OnInit {
   }
 
   ionViewWillEnter() {
-
+    var length = this.building['DESCRIPTION'].length;
   }
 
   dismiss() {
