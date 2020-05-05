@@ -66,12 +66,14 @@ export class HomePage implements OnInit {
     }
 
     async ionViewWillEnter() {
-      // try {
-      //   const modal = await this.modalController.getTop(); // not needed
-      //   modal.dismiss();
-      // } catch (error) {
-      //   console.log("no modal to dismiss: " + error);
-      // }
+      try {
+        // const modal = await this.modalController.getTop(); // not needed
+        // modal.dismiss();
+        this.htmlInfoWindow.close();
+        
+      } catch (error) {
+        // console.log("no modal to dismiss: " + error);
+      }
     }
 
     ionViewDidEnter() {
@@ -301,8 +303,6 @@ export class HomePage implements OnInit {
           } else {
             icon = "red";
           }
-
-
 
           var marker = this.map.addMarkerSync({
             position: {

@@ -45,20 +45,6 @@ export class AppDataService {
     });
   }
 
-  // arrayToJSONWithHeaders(values: []) {
-  //   var tempArr = []; //returning this value
-  //   for(let i = 1; i < values.length; i++) {
-  //     var tempJSON = {}; //temp data to insert into tempArr
-  //
-  //     for (let j = 0; j < values[i].length; j++) {
-  //       tempJSON[(values[0][j]+"").toUpperCase()] = values[i][j];
-  //     }
-  //
-  //     tempArr.push(tempJSON);
-  //   }
-  //   return tempArr;
-  // }
-
   async buildPromise(name: string, refresh: boolean): Promise<any> {
     name = (""+name).toUpperCase();//just in case
     return await new Promise<any>((res,rej) => {

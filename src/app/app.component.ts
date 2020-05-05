@@ -47,6 +47,7 @@ export class AppComponent implements OnInit {
 
     this.platform.ready().then(() => {
       // google maps
+      //test api AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU
       Environment.setEnv({
         // api key for server
         'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU',
