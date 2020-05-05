@@ -14,7 +14,6 @@ import { GoogleMaps,
   HtmlInfoWindow,
   MarkerIcon } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
-// import { HTTP } from '@ionic-native/http/ngx';
 import { MenuController } from '@ionic/angular';
 import { EventService } from './../events/event.service';
 import { AppDataService } from './../services/app-data.service';
@@ -46,15 +45,12 @@ export class HomePage implements OnInit {
     //   }
     // ];
     public map: GoogleMap;
-    // filterData = []; //mapped in order in filters array. also contains markers
-    // environmentalMarkers = [];
     private dataFlag = false;
     public loading;
 
     constructor(
       public toastCtrl: ToastController,
       private platform: Platform,
-      // private http: HTTP,
       private menu: MenuController,
       private events: EventService,
       private appData: AppDataService,
@@ -67,12 +63,8 @@ export class HomePage implements OnInit {
 
     async ionViewWillEnter() {
       try {
-        // const modal = await this.modalController.getTop(); // not needed
-        // modal.dismiss();
         this.htmlInfoWindow.close();
-        
       } catch (error) {
-        // console.log("no modal to dismiss: " + error);
       }
     }
 
@@ -155,14 +147,6 @@ export class HomePage implements OnInit {
         });
 
       }
-      //clear filter status
-      // this.events.subscribe('clear', (data: any) => {
-      //   //loop inside to avoid to much computation in ngOnInit
-      //   for(let i = 0; i < this.filters.length; i++) {
-      //     this.filters[i]['ACTIVE'] = false;
-      //   }
-      // });
-
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       await this.platform.ready();
