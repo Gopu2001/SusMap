@@ -10,7 +10,6 @@ import { AppDataService } from './../services/app-data.service';
   styleUrls: ['./folder.page.scss'],
 })
 export class FolderPage implements OnInit {
-  public folder: string;
   public id;
   public building = {};
 
@@ -26,15 +25,17 @@ export class FolderPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.folder = this.activatedRoute.snapshot.paramMap.get('id');
-    this.events.publish('clear', []);
-    this.events.publish('page', Number(this.folder));
-    this.id = Number(this.folder);
+    var folder: string;
+    folder = this.activatedRoute.snapshot.paramMap.get('id');
+
+    this.events.publish('page', Number(folder));
+    this.id = Number(folder);
     await this.info.getSpecificBuildingData(this.id).then((data) => {
       if(data) {
         this.building = data;
       }
     });
   }
+
 
 }

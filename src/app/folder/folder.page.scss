@@ -1,5 +1,14 @@
+@function invert-linear($color) {
+  @if (lightness($color) > 50) {
+    @return #000000;
+  } @else {
+    @return #ffffff;
+  }
+}
+
 ion-menu-button {
   color: var(--ion-color-primary);
+  --background: none;
 }
 
 #container {
@@ -27,6 +36,24 @@ ion-menu-button {
   text-decoration: none;
 }
 
-ion-content ion-toolbar {
-  --background: transparent;
+ion-toolbar {
+  --background: #ffffff;
+}
+
+.leed {
+  --background: none;
+}
+
+.leed.platinum {
+  --background: linear-gradient(#9f49fe, #ffffff);
+  // color: linear-gradient(#ffffff, #7902fd);
+}
+
+.leed.gold {
+  --background: linear-gradient(#fff30d, #ffffff);
+  // color: linear-gradient(#ffffff, #fff30d);
+}
+
+ion-item {
+  --background: none;
 }

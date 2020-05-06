@@ -18,25 +18,7 @@ import { MenuController } from '@ionic/angular';
 export class AppComponent implements OnInit {
   public selectedIndex = -1;
   public buildings = [];
-  //   {
-  //     title: 'Cob1',
-  //     url: '/folder/Cob1'
-  //   },
-  //   {
-  //     title: 'KL',
-  //     url: '/folder/KL'
-  //   }
-  // ];
-  public filters = []; //names
-  //   {
-  //     title: 'Economical',
-  //     active: false
-  //   },
-  //   {
-  //     title: 'Environmental',
-  //     active: false
-  //   }
-  // ];
+  public filters = [];
 
   constructor(
     private platform: Platform,
@@ -55,7 +37,7 @@ export class AppComponent implements OnInit {
   async initializeApp() {
     // get filter and building data
     await this.appData.getBuildingFilterNames(true).then((data) => {
-      console.log(data);
+      // console.log(data);
       this.buildings = data[0];
       for (let i = 0; i < this.buildings.length; i++) {
         this.buildings[i]['URL'] = "/folder/" + this.buildings[i]['BUILDING_ID'];
@@ -65,21 +47,13 @@ export class AppComponent implements OnInit {
 
     this.platform.ready().then(() => {
       // google maps
+      //test api AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU
       Environment.setEnv({
         // api key for server
         'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU',
 
         // api key for local development
         'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU'
-      });
-
-
-
-      this.events.subscribe('clear', (data: any) => {
-        for (let index = 0; index < this.filters.length; index++) {
-          this.filters[index]["ACTIVE"] = false;
-        }
-        // this.appData.updateFilterData(this.filters);
       });
 
       //moved to a new building page
@@ -104,7 +78,7 @@ export class AppComponent implements OnInit {
 
   publishEvent(eventName: string, data: any) {
     this.events.publish(eventName, data);
-    this.appData.updateFilterData(this.filters);
+    // this.appData.updateFilterData(this.filters);
   }
 
 }

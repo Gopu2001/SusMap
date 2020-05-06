@@ -11,15 +11,18 @@ import { GoogleMaps,
   PolygonOptions,
   Polygon,
   Poly,
-  HtmlInfoWindow } from '@ionic-native/google-maps';
+  HtmlInfoWindow,
+  MarkerIcon } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
-// import { HTTP } from '@ionic-native/http/ngx';
 import { MenuController } from '@ionic/angular';
 import { EventService } from './../events/event.service';
 import { AppDataService } from './../services/app-data.service';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+import { BuildingModalPage } from './../building-modal/building-modal.page';
+import { OverlayEventDetail } from '@ionic/core';
 
 @Component({
   selector: 'app-home',
@@ -42,39 +45,36 @@ export class HomePage implements OnInit {
     //   }
     // ];
     public map: GoogleMap;
-    // filterData = []; //mapped in order in filters array. also contains markers
-    // environmentalMarkers = [];
     private dataFlag = false;
     public loading;
 
     constructor(
       public toastCtrl: ToastController,
       private platform: Platform,
-      // private http: HTTP,
       private menu: MenuController,
       private events: EventService,
       private appData: AppDataService,
       private router: Router,
       private zone: NgZone,
-      public loadingController: LoadingController
+      public loadingController: LoadingController,
+      private modalController: ModalController
     ) {
     }
 
-    ionViewWillEnter() {
-      console.log("ionViewWillEnter");
+    async ionViewWillEnter() {
+      try {
+        this.htmlInfoWindow.close();
+      } catch (error) {
+      }
     }
 
     ionViewDidEnter() {
-      // if(await this.menu.isOpen()) {
       this.menu.enable(true,'insideMap');
-      // }
-      console.log("ionViewDidEnter");
     }
 
     async ngOnInit() {
-      console.log("ngOnInit");
-      // this.menu.enable(true,'insideMap');
 
+      //get building data and filter names
       await this.appData.getBuildingFilterNames(true).then((data) => {
         this.buildings = data[0];
         this.filters = data[1];
@@ -88,33 +88,9 @@ export class HomePage implements OnInit {
         backdropDismiss: false
       });
 
-      // getting filter data
-      // await this.appData.getFilterData(true).then((filt) => {
-      //   if(filt) {
-      //     this.filters = filt;
-      //   }
-      // });
-      //
-      // // get the specific filter data for each one
-      // for (let i = 0; i < this.filters.length; i++) {
-      //   this.appData.getSpecificFilterData(this.filters[i]['Name'], true).then((val) => {
-      //     if(val) {
-      //       this.filters[i]['data'] = val;
-      //       // this.filterData.push(val);
-      //     }
-      //   });
-      // }
-      //
-      // // get building data
-      // await this.appData.getBuildingData(true).then((build) => {
-      //   if(build) {
-      //     this.buildings = build;
-      //   }
-      // });
 
-      //get the data whenever
+      //get the filter data whenever
       this.appData.getAllFilterData(true).then((data: []) => {
-        console.log("started");
         this.filters = data;
 
         var promArr = []
@@ -123,17 +99,17 @@ export class HomePage implements OnInit {
         }
 
         forkJoin(promArr).subscribe((data: []) => {
+          //following must be included after the filters
           for (let i = 0; i < this.filters.length; i++) {
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
-              // console.log(this.filterData[i]);
-              // console.log(this.filters[i]['Name']);
               for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-                // console.log(this.filterData[i][j]['title']);
+                //set each marker visible according to active status
                 this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
               }
             });
           }
           this.dataFlag = true;
+          //try to dismiss the loading if it is necessary
           try {
             this.loading.dismiss();
           } catch (error) {
@@ -146,6 +122,7 @@ export class HomePage implements OnInit {
 
       // updated event filters active status from menu
       for (let i = 0; i < this.filters.length; i++) {
+        //make filter active/not active
         await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
           // update active status
           this.filters[i]['ACTIVE'] = data['ACTIVE'];
@@ -169,31 +146,25 @@ export class HomePage implements OnInit {
           }
 
         });
-      }
 
-      console.log("before platform ready");
+      }
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       await this.platform.ready();
       await this.loadMap();
       await this.addBuildings();
-      // await this.addFilterMarkers();
-      console.log("end of ngOnInit");
-
-      // this.addVisibleListener();
-
 
       // setTimeout(() => {
-        console.log("animating camera");
-        this.map.animateCamera({
-          target: {lat: 37.363595, lng: -120.425361},
-          zoom: 16.5,
-          tilt: 0,
-          // bearing: 140,
-          duration: 15000
-        }).then(() => {
-          alert("Camera target has been changed");
-        });
+      //   console.log("animating camera");
+      //   this.map.animateCamera({
+      //     target: {lat: 37.363595, lng: -120.425361},
+      //     zoom: 16.5,
+      //     tilt: 0,
+      //     // bearing: 140,
+      //     duration: 15000
+      //   }).then(() => {
+      //     alert("Camera target has been changed");
+      //   });
       // }, 8000);
 
     }
@@ -204,11 +175,11 @@ export class HomePage implements OnInit {
 
       this.map = GoogleMaps.create('map_canvas', {
         camera: {
-          // target: {
-          //   lat: 37.363595,
-          //   lng: -120.425361
-          // },
-          // zoom: 15.5,
+          target: {
+            lat: 37.363595,
+            lng: -120.425361
+          },
+          zoom: 16,
           tilt: 0,
         },
         'gestures': {
@@ -217,17 +188,16 @@ export class HomePage implements OnInit {
         styles: style,
         preferences: {
           zoom: {
-            minZoom: 16,
+            minZoom: 15,
             maxZoom: 17.5
           },
         }
       });
 
-      // this.addEnvironmentalMarkers();
     }
 
     addBuildings() {
-      console.log(this.buildings);
+      // console.log(this.buildings);
       for (let i = 0; i < this.buildings.length; i++) {
         const building = this.buildings[i];
 
@@ -250,52 +220,32 @@ export class HomePage implements OnInit {
         // create polygon
         let polygon: Polygon = this.map.addPolygonSync({
           points: buildingCoor,
-          strokeColor : '#AA00FF',
-          fillColor : '#00FFAA',
-          strokeWidth: 10,
+          strokeColor : '#537ed0',
+          fillColor : '#eaf0ff',
+          strokeWidth: 5,
           zIndex: 1,
           clickable: true
         });
-
-//data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAM1BMVEXMzMzPz8+vr6/Ly8vAwMCRkZHDw8PGxsaWlpaenp6Tk5PCwsK2trahoaG6urqsrKympqZJMGkaAAAFGElEQVR4nO2dbZfbKAyFEWAD5vX//9q9giT2ZLbT9pw2TXfv0zMuiWUfXQsJ/EUxhhBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQ8lsR8OXwi+vks/F3r3s5bRyxeqfD0OPR9/mts2mr/ovLJI94pOKejVs6YnO/1+Wfo8UtqVM6TltMW5ruWR3GLySGeMQUN/tk3CA7xvL7/f5hJB0lhLbVYKRtfQ/9KJhlOdYcylG/OeGkI9rBJ9V1MQ718MEfKbxSw9fkrRv1N+7GJXXMVQTR9W2Hv317eHpLrofikDTW4vE8LsZ4SHg+6/guLGekbFl8HDLFNgk16rBFe/M0WKtis73PvzyNTcDlF2MZh6ZxiN8O/ssJWT2XEXconE9ewxLS8n/9p6QZnPoIjlvXtY/GUuf8dCO+j0Ile3t0B29nrdCw7Ct4F4U+Hk78Nq5VMvgSkb8XY0nTwPXjrRTKdhxpx0ydM8y4zco+yw0ys96N4LR1NfqL54joceCLi7HEfqvEr5XwHVRhtA656NZHi/ozVw+p6REzH1OP48N1CRciZhdjmXXLiN3eakU04kpEHp4xNJ9jqCE+4sdFQKQl5O6/xvC9FGoB3TwkZB1f8tCdeQiw33nOLqwL9mos8f3ysLUZl7Y1lPs521Yt7U+VRpe+I51+5zKv04BfjKXWd6ulWCbWZgvrYZ6ein2sh+ZcD1VATId9XFfWuuEe6+E0njuHuR14H4VlJtH0bG1TTEVddWs3Y7dzY1pibzHt94+37UFbe5q7MYQ30XDbt1GIrEu7oFjo7NItKeaqFswWuyCo8bRLkDHOICKkTTR8/oPxHhP2dynmPyDlG2AHHee7hT50vGbUbRXMsUUM2+NtsW+YwuF4uI7oHakeK1gXY1TcGs8H8Q6EnuDrrDHGw7m6VIUBueVR88Om2qDz3HCWhBelbp6MncVblX2jVwvgQs53j8L+GLpzqJ/8PpeBfHljVGP3yRjD/d0WQ0IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEELIm5PLefzL8N7/SI85Pxvw+aeeibOnmwu7n3eZN9p3/N3Pu331ggs+u3UKw1/o/I8g0dq+r3byZ9NrWQe5d8IWyXeFcjfRP+vnl83WYb02uDVuJJFHd8zebYeJH310MxsRO7u9uLEkvJFSpNcu0p144zDwtQcjvaTdde1EiKNdCuFqlt0iIKtbqNdumJBts2iT2iAQeyos1kkIJkCls0WqbRL6q9ufLoVwBRJKc9HkLm0YD53JGhnN9KbHOhXmtOcRTPdS7FRYMD2LKvTabLhZN8IZQ7n18fWzmWSVFIaz7dXtwOcsDXV64HrrpXmxw9oIP9fZYfUpPPJQ4+aH6bPlt1qqwVKYDDTKFwoF+syrG7xKyj7AFYEHMuw+MN+szTlrdPHncw5wHbNvKuxLDCbtvBjGM0VvCqVEfyrEtNeWrqgwmP7SOr7WxumvV7jyC/+QecPYirwZfs5S0UzypQnKRVoKYynaEdqvRqj3SvNQKDKPMaO0ShRXC8oQ7jKQnm4+Mnm5QjNXOIRIW5t6b3b1OSCK64xrtqAAFttWT/dWtIvyykIVp0K1/s9Bud0Qk8BiLuNjwIV6BncJ5/k/w8cHe/kpkqffTTCrNfR3bnb5OZRPN/wbyKn9XQ7/PP91fYT8j/gHpIIpSX4o390AAAAASUVORK5CYII=
-
-
-
-        // let centerMarker = this.map.addMarkerSync({
-        //   position: (new LatLngBounds(buildingCoor)).getCenter(),
-        //   visible: false,
-        //   zIndex: 0
-        // });
 
         // when clicked open htmlinfo window.
         polygon.on(GoogleMapsEvent.POLYGON_CLICK).subscribe((data) => {
           console.log("polygon clicked");
           // html info window when polygon is clicked
           let frame: HTMLElement = document.createElement('div');
+          //animate later class="animated infinite pulse"
           frame.innerHTML = `
-          <ion-card class="infoWindow ion-no-padding" no-padding button=true (click)="goToPage(` + building['BUILDING_ID'] + `);">
-            <ion-card-header>
-              <ion-card-title>` + building['FULL_NAME'] + `</ion-card-title>
-              <ion-card-subtitle>` + building['SHORTENED_NAME'] + `</ion-card-subtitle>
-            </ion-card-header>
-            <ion-card-content>
-              <img alt=" " height="100vh" width="110vh" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAM1BMVEXMzMzPz8+vr6/Ly8vAwMCRkZHDw8PGxsaWlpaenp6Tk5PCwsK2trahoaG6urqsrKympqZJMGkaAAAFGElEQVR4nO2dbZfbKAyFEWAD5vX//9q9giT2ZLbT9pw2TXfv0zMuiWUfXQsJ/EUxhhBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQ8lsR8OXwi+vks/F3r3s5bRyxeqfD0OPR9/mts2mr/ovLJI94pOKejVs6YnO/1+Wfo8UtqVM6TltMW5ruWR3GLySGeMQUN/tk3CA7xvL7/f5hJB0lhLbVYKRtfQ/9KJhlOdYcylG/OeGkI9rBJ9V1MQ718MEfKbxSw9fkrRv1N+7GJXXMVQTR9W2Hv317eHpLrofikDTW4vE8LsZ4SHg+6/guLGekbFl8HDLFNgk16rBFe/M0WKtis73PvzyNTcDlF2MZh6ZxiN8O/ssJWT2XEXconE9ewxLS8n/9p6QZnPoIjlvXtY/GUuf8dCO+j0Ile3t0B29nrdCw7Ct4F4U+Hk78Nq5VMvgSkb8XY0nTwPXjrRTKdhxpx0ydM8y4zco+yw0ys96N4LR1NfqL54joceCLi7HEfqvEr5XwHVRhtA656NZHi/ozVw+p6REzH1OP48N1CRciZhdjmXXLiN3eakU04kpEHp4xNJ9jqCE+4sdFQKQl5O6/xvC9FGoB3TwkZB1f8tCdeQiw33nOLqwL9mos8f3ysLUZl7Y1lPs521Yt7U+VRpe+I51+5zKv04BfjKXWd6ulWCbWZgvrYZ6ein2sh+ZcD1VATId9XFfWuuEe6+E0njuHuR14H4VlJtH0bG1TTEVddWs3Y7dzY1pibzHt94+37UFbe5q7MYQ30XDbt1GIrEu7oFjo7NItKeaqFswWuyCo8bRLkDHOICKkTTR8/oPxHhP2dynmPyDlG2AHHee7hT50vGbUbRXMsUUM2+NtsW+YwuF4uI7oHakeK1gXY1TcGs8H8Q6EnuDrrDHGw7m6VIUBueVR88Om2qDz3HCWhBelbp6MncVblX2jVwvgQs53j8L+GLpzqJ/8PpeBfHljVGP3yRjD/d0WQ0IIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEELIm5PLefzL8N7/SI85Pxvw+aeeibOnmwu7n3eZN9p3/N3Pu331ggs+u3UKw1/o/I8g0dq+r3byZ9NrWQe5d8IWyXeFcjfRP+vnl83WYb02uDVuJJFHd8zebYeJH310MxsRO7u9uLEkvJFSpNcu0p144zDwtQcjvaTdde1EiKNdCuFqlt0iIKtbqNdumJBts2iT2iAQeyos1kkIJkCls0WqbRL6q9ufLoVwBRJKc9HkLm0YD53JGhnN9KbHOhXmtOcRTPdS7FRYMD2LKvTabLhZN8IZQ7n18fWzmWSVFIaz7dXtwOcsDXV64HrrpXmxw9oIP9fZYfUpPPJQ4+aH6bPlt1qqwVKYDDTKFwoF+syrG7xKyj7AFYEHMuw+MN+szTlrdPHncw5wHbNvKuxLDCbtvBjGM0VvCqVEfyrEtNeWrqgwmP7SOr7WxumvV7jyC/+QecPYirwZfs5S0UzypQnKRVoKYynaEdqvRqj3SvNQKDKPMaO0ShRXC8oQ7jKQnm4+Mnm5QjNXOIRIW5t6b3b1OSCK64xrtqAAFttWT/dWtIvyykIVp0K1/s9Bud0Qk8BiLuNjwIV6BncJ5/k/w8cHe/kpkqffTTCrNfR3bnb5OZRPN/wbyKn9XQ7/PP91fYT8j/gHpIIpSX4o390AAAAASUVORK5CYII="/>
-              <br>
-              ` + building['DESCRIPTION'] + `
-            </ion-card-content>
-          </ion-card>`;
+          <div class="infoWindow ion-text-nowrap">
+            <p>`+ building['SHORTENED_NAME'] +`</p>
+          </div>`;
 
           frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
             //open modal instead
-            this.goToPage(building['BUILDING_ID']);
+            this.goToPage(building);
             this.htmlInfoWindow.close();
           });
 
           this.htmlInfoWindow.setContent(frame, {
-            'height': '50vh',
-            'width': '75vw',
-            'padding': '0px',
-            'margin': '0px',
+            //css here
           });
 
 
@@ -308,43 +258,11 @@ export class HomePage implements OnInit {
           this.buildings[i]['CENTER'] = centerMarker;
 
           this.htmlInfoWindow.open(this.buildings[i]['CENTER']);
-          // this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
         });
 
-        // this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
-        //   this.buildings[i]['htmlInfoWindow'].close();
-        //   // if(Poly.containsLocation(params[0], this.buildings[i]['coors'])) {
-        //   //   console.log("polygon clicked");
-        //   //   this.buildings[i]['htmlInfoWindow'].open(this.buildings[i]['center']);
-        //   // }
-        // });
-
-        // when long clicked, polygon goes straight to its specific page
-        // this.map.on(GoogleMapsEvent.MAP_LONG_CLICK).subscribe((params: any[]) => {
-        //   console.log("long click");
-        //   this.buildings[i]['htmlInfoWindow'].close();
-        //   if(Poly.containsLocation(params[0], this.buildings[i]['coors'])) {
-        //     this.goToPage(this.buildings[i]['BUILDING_ID']);
-        //   }
-        // });
 
         this.buildings[i]['polygon'] = polygon;
       }
-      //cob1
-      // let cob1: ILatLng[] = [
-      //   {lat: 37.366656, lng: -120.423602},
-      //   {lat: 37.367002, lng: -120.423993},
-      //   {lat: 37.367466, lng: -120.423028},
-      //   {lat: 37.367245, lng: -120.422783}
-      // ];
-      //
-      // let polygon: Polygon = this.map.addPolygonSync({
-      //   points: cob1,
-      //   strokeColor : '#AA00FF',
-      //   fillColor : '#00FFAA',
-      //   strokeWidth: 10,
-      //   zIndex: 1
-      // });
 
     }
 
@@ -352,11 +270,31 @@ export class HomePage implements OnInit {
     async createFilterMarkers(arr): Promise<any> {
       return await new Promise<any>((resolve, reject) => {
         for (let j = 0; j < arr.length; j++) {
+          var icon;
+          var iconURL;
+          if(arr[j]['ICON'].slice(0,3) == "data") {
+            iconURL = arr[j]['ICON']; //base64 data
+          } else {
+            iconURL = 'assets/icon/'+arr[j]['ICON']+'.png';
+          }
+          if(arr[j]['ICON']) {
+            icon = {
+              url: iconURL,
+              size: {
+                width: 35,
+                height: 35
+              }
+            }
+          } else {
+            icon = "red";
+          }
+
           var marker = this.map.addMarkerSync({
             position: {
               lat: arr[j]['LATITUDE'],
               lng: arr[j]['LONGITUDE']
             },
+            icon: icon,
             visible: false,
             zIndex: 2
           });
@@ -367,17 +305,14 @@ export class HomePage implements OnInit {
             // html info window when marker is clicked
             let frame: HTMLElement = document.createElement('div');
             frame.innerHTML = `
-            <h5>` + arr[j]['TITLE'] + `</h5>
-            <p><small>` + arr[j]['DESCRIPTION'] + `<small></p>
+            <div class="markerInfoWindow">
+              <h5>` + arr[j]['TITLE'] + `</h5>
+              <p><small>` + arr[j]['DESCRIPTION'] + `<small></p>
+            </div>
             `;
 
             this.htmlInfoWindow.setContent(frame, {
-              'border-radius': '25px',
-              'text-align': 'center',
-              'min-height': '10vh',
-              'max-height': '30vh',
-              'min-width': '65vw',
-              'max-width': '85vw',
+              //css here
             });
 
             this.htmlInfoWindow.open(arr[j]['MARKER']);
@@ -391,84 +326,31 @@ export class HomePage implements OnInit {
       });
     }
 
-    // addVisibleListener() {
-    //   for (let i = 0; i < array.length; i++) {
-    //     this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
-    //       // console.log(this.filterData[i]);
-    //       // console.log(this.filters[i]['Name']);
-    //       for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-    //         // console.log(this.filterData[i][j]['title']);
-    //         this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
-    //       }
-    //     });
-    //   }
-    // }
-
-    // addFilterMarkers() {
-    //   console.log("before")
-    //   var marker;
-    //   for (let i = 0; i < this.filterData.length; i++) {
-    //     const filt = this.filterData[i];
-    //     for (let j = 0; j < filt.length; j++) {
-    //       const item = filt[j];
-    //
-    //       marker = this.map.addMarkerSync({
-    //         position: {
-    //           lat: item['latitude'],
-    //           lng: item['longitude']
-    //         },
-    //         visible: false,
-    //         zIndex: 2
-    //       });
-    //
-    //       this.filterData[i][j]['marker'] = marker;
-    //       console.log("adding marker for filter: " + this.filters[i].Name);
-    //
-    //       marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-    //         // html info window when marker is clicked
-    //         let frame: HTMLElement = document.createElement('div');
-    //         frame.innerHTML = `
-    //         <h5>` + item['title'] + `</h5>
-    //         <p><small>` + item['description'] + `<small></p>
-    //         `;
-    //
-    //         this.htmlInfoWindow.setContent(frame, {
-    //           'border-radius': '25px',
-    //           'text-align': 'center',
-    //           'min-height': '10vh',
-    //           'max-height': '30vh',
-    //           'min-width': '65vw',
-    //           'max-width': '85vw',
-    //         });
-    //
-    //         this.htmlInfoWindow.open(this.filterData[i][j]['marker']);
-    //       });
-    //
-    //     }
-    //
-    //     this.map.addEventListener(this.filters[i]['Name']).subscribe(() => {
-    //       // console.log(this.filterData[i]);
-    //     // console.log(this.filters[i]['Name']);
-    //       for (let j = 0; j < this.filterData[i].length; j++) {
-    //         // console.log(this.filterData[i][j]['title']);
-    //         this.filterData[i][j]['marker'].setVisible(this.filters[i]['active']);
-    //       }
-    //     });
-    //   }
-    //   console.log("after");
-    // }
-
-
     changeStatus(cluster) {
       this.map.trigger(cluster);
     }
 
-    goToPage(id) {
-      // console.log(id);
-      // this.zone.run(async () => {
-      //   await this.router.navigate(['/folder/' + id]);
-      // });
-      // this.router.navigate(['/folder/' + id]);
+    async goToPage(buildingData) { //open modal
+      // console.log(buildingData);
+      const modal = await this.modalController.create({
+        component: BuildingModalPage,
+        componentProps: {
+          building: buildingData
+        },
+        swipeToClose: true,
+        cssClass: 'my-modal'
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        try {
+          if(detail.data.redirect) {
+          }
+        } catch (error) {
+          console.log("no redirect")
+        }
+      });
+
+      await modal.present();
     }
 
     printData() {

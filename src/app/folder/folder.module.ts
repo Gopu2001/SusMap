@@ -8,12 +8,15 @@ import { FolderPageRoutingModule } from './folder-routing.module';
 
 import { FolderPage } from './folder.page';
 
+import { IonicHeaderParallaxModule } from 'ionic-header-parallax';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    FolderPageRoutingModule
+    FolderPageRoutingModule,
+    IonicHeaderParallaxModule
   ],
   declarations: [FolderPage]
 })

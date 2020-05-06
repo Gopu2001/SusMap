@@ -15,7 +15,7 @@
 
         <ion-list>
           <ion-list-header>Buildings</ion-list-header>
-          <ion-note>*Note: You can also click and hold the building on the map*</ion-note>
+          <ion-note>*Note: You can click on the building tool tip to view the building details*</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
             <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false" [class.selected]="selectedIndex == i">
