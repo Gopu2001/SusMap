@@ -75,7 +75,7 @@ export class HomePage implements OnInit {
     async ngOnInit() {
 
       //get building data and filter names
-      await this.appData.getBuildingFilterNames(false).then((data) => {
+      await this.appData.getBuildingFilterNames(true).then((data) => {
         this.buildings = data[0];
         this.filters = data[1];
       });
@@ -89,7 +89,7 @@ export class HomePage implements OnInit {
       });
 
 
-      //get the data whenever
+      //get the filter data whenever
       this.appData.getAllFilterData(true).then((data: []) => {
         this.filters = data;
 
@@ -99,8 +99,8 @@ export class HomePage implements OnInit {
         }
 
         forkJoin(promArr).subscribe((data: []) => {
+          //following must be included after the filters
           for (let i = 0; i < this.filters.length; i++) {
-
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
               for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
                 //set each marker visible according to active status
@@ -109,6 +109,7 @@ export class HomePage implements OnInit {
             });
           }
           this.dataFlag = true;
+          //try to dismiss the loading if it is necessary
           try {
             this.loading.dismiss();
           } catch (error) {
@@ -244,7 +245,7 @@ export class HomePage implements OnInit {
           });
 
           this.htmlInfoWindow.setContent(frame, {
-
+            //css here
           });
 
 
@@ -330,7 +331,7 @@ export class HomePage implements OnInit {
       this.map.trigger(cluster);
     }
 
-    async goToPage(buildingData) {
+    async goToPage(buildingData) { //open modal
       // console.log(buildingData);
       const modal = await this.modalController.create({
         component: BuildingModalPage,

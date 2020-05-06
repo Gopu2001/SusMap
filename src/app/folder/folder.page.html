@@ -21,19 +21,7 @@
 [class.platinum]="building['LEED_CERTIFICATION'] == 'PLATINUM'"
 [class.gold]="building['LEED_CERTIFICATION'] == 'GOLD'"
 >
-  <!-- <ion-list>
-    <ion-list-header class="ion-text-center">{{building["FULL_NAME"]}}</ion-list-header>
-    <ion-item-group class="ion-text-center">
 
-      <ion-item-divider>
-        <ion-label>{{ building['SHORTENED_NAME'] }}</ion-label>
-      </ion-item-divider>
-    </ion-item-group>
-
-    <ion-item class="ion-text-wrap ion-text-left" lines="none">
-      <ion-item>{{building["DESCRIPTION"]}}</ion-item>
-    </ion-item>
-  </ion-list> -->
   <div *ngIf="building['PICTURE']">
     <br><br>
   </div>
@@ -46,32 +34,83 @@
       <!-- </ion-label> -->
     </div>
 
-    <marquee *ngIf="building['LEED_CERTIFICATION']" hspace="10vw" truespeed scrollamount="15">
+    <marquee *ngIf="building['LEED_CERTIFICATION']" hspace="10vw" truespeed scrollamount="10">
       LEED CERTIFICATION: {{building['LEED_CERTIFICATION']}}
     </marquee>
 
     <ion-item *ngIf="!building['LEED_CERTIFICATION']" (click)="openLeedModal()" class="ion-text-center" lines="none">
       <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-      <ion-label>No LEED CERTIFICATION</ion-label>
+      <ion-label class="ion-text-wrap">No LEED CERTIFICATION</ion-label>
     </ion-item>
 
   </div>
 
-  <!-- {{building["BUILDING_ID"]}} -->
-  <p>{{building["DESCRIPTION"]}}</p>
+  <div class="ion-text-wrap ion-padding">
+    <p *ngFor="let d of building['DESCRIPTION']">
+      {{d}}
+    </p>
 
-  <!-- <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ folder }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <ion-item-group *ngIf="building['LEED HIGHLIGHTS'] != '' " >
+      <ion-item-divider>
+        <ion-label>LEED Highlights</ion-label>
+      </ion-item-divider>
 
-  <div id="container">
-    <strong class="capitalize">{{ folder }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div> -->
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <ion-item class="ion-text-wrap" *ngFor="let lh of building['LEED HIGHLIGHTS']; let i = index" lines="none">
+        <ion-note color="dark" slot="start">{{i+1}}.</ion-note>
+        <ion-label class="ion-text-wrap">{{lh}}</ion-label>
+      </ion-item>
+    </ion-item-group>
+
+    <br>
+
+    <ion-item-group *ngIf="building['SIZE'] && building['CONSTRUCTION COST'] && building['COMPLETION DATE']">
+      <ion-item-divider>
+        <ion-icon slot="start" name="business"></ion-icon>
+        <ion-label class="ion-text-wrap">Building Details</ion-label>
+      </ion-item-divider>
+
+      <ion-item lines="inset">
+        <ion-icon slot="start" name="expand-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">Size: {{building["SIZE"]}}</ion-label>
+      </ion-item>
+
+      <ion-item lines="inset">
+        <ion-icon slot="start" name="construct-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">Construction Cost: {{building["CONSTRUCTION COST"]}}</ion-label>
+      </ion-item>
+
+      <ion-item lines="inset">
+        <ion-icon slot="start" name="construct"></ion-icon>
+        <ion-label class="ion-text-wrap">Completion Date: {{building["COMPLETION DATE"]}}</ion-label>
+      </ion-item>
+    </ion-item-group>
+
+    <br>
+
+    <ion-item-group *ngIf="building['AWARDS'] != ''">
+      <ion-item-divider>
+        <ion-icon slot="start" name="trophy-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">Awards</ion-label>
+      </ion-item-divider>
+
+      <ion-item lines="inset" *ngFor="let award of building['AWARDS']; let i = index">
+        <ion-note color="dark" slot="start">{{i+1}}.</ion-note>
+        <ion-label class="ion-text-wrap">{{award}}</ion-label>
+      </ion-item>
+    </ion-item-group>
+
+    <ion-item-group *ngIf="building['PROJECT TEAM'] != ''">
+      <ion-item-divider>
+        <ion-icon slot="start" name="people"></ion-icon>
+        <ion-label class="ion-text-wrap">Project Team</ion-label>
+      </ion-item-divider>
+
+      <ion-item lines="inset" *ngFor="let team of building['PROJECT TEAM']; let i = index">
+        <ion-note color="dark" slot="start">{{i+1}}.</ion-note>
+        <ion-label class="ion-text-wrap">{{team}}</ion-label>
+      </ion-item>
+
+    </ion-item-group>
+  </div>
+
 </ion-content>

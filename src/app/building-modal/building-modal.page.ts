@@ -23,8 +23,8 @@ export class BuildingModalPage implements OnInit {
 
   ionViewWillEnter() {
     var length = this.building['DESCRIPTION'].length;
-    if(length/31 > 4) { //31 is width in characters shown
-      this.description = this.building['DESCRIPTION'].slice(0,4*31);
+    if(length/31+this.building["FULL_NAME"].length > 4) { //31 is width in characters shown
+      this.description = this.building['DESCRIPTION'].slice(0,4*31-this.building["FULL_NAME"].length);
     } else {
       this.description = this.building['DESCRIPTION'];
     }

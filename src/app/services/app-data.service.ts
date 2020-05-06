@@ -27,7 +27,7 @@ export class AppDataService {
     private http: HttpClient
   ) { }
 
-  //turns unparsed array to array of json objects
+  //turns unparsed array to array of json objects from sheets return data
   async arrayToJSONWithHeaders(values): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
       var tempArr = []; //returning this value
@@ -35,7 +35,7 @@ export class AppDataService {
         var tempJSON = {}; //temp data to insert into tempArr
 
         for (let j = 0; j < values[i].length; j++) {
-          tempJSON[(values[0][j]+"").toUpperCase()] = values[i][j];
+          tempJSON[(values[0][j]+"").toUpperCase()] = values[i][j]; //make everything uppercase
         }
 
         tempArr.push(tempJSON);
@@ -50,17 +50,16 @@ export class AppDataService {
     return await new Promise<any>((res,rej) => {
       this.storage.get(name).then((val) => {
         if(val && !refresh) {
+          console.log(name + " exists");
           res(val); //exists
         } else {
 
           this.http.get(this.baseURLpt1 + name + this.baseURLpt2).subscribe((data: {}) => {
 
             this.arrayToJSONWithHeaders(data['values']).then((parsedData: Array<any>) => {
-              try {
-                this.storage.set(name, parsedData);
-              } catch (error) {
-                console.log(parsedData);
-              }
+              console.log(parsedData);
+              this.storage.set(name, parsedData);
+
               res(parsedData);
             });
 
@@ -76,32 +75,35 @@ export class AppDataService {
   async getBuildingFilterNames(refresh: boolean): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
       if(this.filterNames.length != 0 && this.buildings.length != 0 && !refresh) {
+        console.log("get cache");
         resolve([this.buildings, this.filterNames]);
-      }
+      } else {
 
-      var promArr = [this.buildPromise("BUILDINGS", refresh)];
-      if(this.filterNames.length == 0) {
-        //doesnt exist
-        promArr.push(this.buildPromise("FILTERS", refresh));
-      }
-      forkJoin(promArr).subscribe((data)=> {
-        this.buildings = data[0];
+        var promArr = [this.buildPromise("BUILDINGS", refresh)];
         if(this.filterNames.length == 0) {
-          var tempFilterNames = data[1];
-          for (let i = 0; i < tempFilterNames.length; i++) {
-            var tempJSON = {};
-            tempJSON["FILTER_NAME"] = tempFilterNames[i]["NAME"].toUpperCase();
-            tempJSON["ACTIVE"] = false;
-            this.filterNames.push(tempJSON);
-          }
+          //doesnt exist
+          promArr.push(this.buildPromise("FILTERS", refresh));
         }
+        forkJoin(promArr).subscribe((data)=> {
+          this.buildings = data[0];
+          if(this.filterNames.length == 0) {
+            var tempFilterNames = data[1];
+            for (let i = 0; i < tempFilterNames.length; i++) {
+              var tempJSON = {};
+              tempJSON["FILTER_NAME"] = tempFilterNames[i]["NAME"].toUpperCase();
+              tempJSON["ACTIVE"] = false;
+              this.filterNames.push(tempJSON);
+            }
+          }
 
-        resolve([this.buildings, this.filterNames]);
-      });
+          resolve([this.buildings, this.filterNames]);
+        });
 
+      }
     });
   }
 
+  //get all specific filter data
   async getAllFilterData(refresh: boolean): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
       var promArr = []
@@ -125,13 +127,18 @@ export class AppDataService {
   async getSpecificBuildingData(id: number) {
     return await new Promise<any>((resolve, reject) => {
       this.storage.get("BUILDINGS").then((val) => {
-        const ind = val.findIndex(building => building['BUILDING_ID'] == id)
+        const ind = val.findIndex(building => building['BUILDING_ID'] == id);
+        var building = val[ind];
+        val[ind]['DESCRIPTION'] = val[ind]["DESCRIPTION"].split("---");
+        val[ind]['LEED HIGHLIGHTS'] = val[ind]['LEED HIGHLIGHTS'].split("---");
+        val[ind]['AWARDS'] = val[ind]['AWARDS'].split("---");
+        val[ind]['PROJECT TEAM'] = val[ind]['PROJECT TEAM'].split("---");
         resolve(val[ind]);
       })
     });
   }
 
-  updateFilterData(filters) {
-    this.filterNames = filters;
-  }
+  // updateFilterData(filters) {
+  //   this.filterNames = filters;
+  // }
 }
