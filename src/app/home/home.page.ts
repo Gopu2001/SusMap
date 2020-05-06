@@ -312,8 +312,7 @@ export class HomePage implements OnInit {
             `;
 
             this.htmlInfoWindow.setContent(frame, {
-              'min-height': '10vh',
-              'max-height': '20vh',
+              //css here
             });
 
             this.htmlInfoWindow.open(arr[j]['MARKER']);

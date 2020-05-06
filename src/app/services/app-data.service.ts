@@ -74,7 +74,7 @@ export class AppDataService {
 
   async getBuildingFilterNames(refresh: boolean): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
-      if(this.filterNames.length != 0 && this.buildings.length != 0 && !refresh) {
+      if(this.filterNames.length != 0 && this.buildings.length != 0) {
         console.log("get cache");
         resolve([this.buildings, this.filterNames]);
       } else {
