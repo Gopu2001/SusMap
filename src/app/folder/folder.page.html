@@ -20,6 +20,7 @@
 <ion-content [fullscreen]="true" class="leed"
 [class.platinum]="building['LEED_CERTIFICATION'] == 'PLATINUM'"
 [class.gold]="building['LEED_CERTIFICATION'] == 'GOLD'"
+[class.silver]="building['LEED_CERTIFICATION'] == 'SILVER'"
 >
 
   <div *ngIf="building['PICTURE']">
@@ -34,13 +35,13 @@
       <!-- </ion-label> -->
     </div>
 
-    <marquee *ngIf="building['LEED_CERTIFICATION']" hspace="10vw" truespeed scrollamount="10">
+    <marquee style="font-style: italic" height="30px" *ngIf="building['LEED_CERTIFICATION']" hspace="10vw" truespeed scrollamount="10">
       LEED CERTIFICATION: {{building['LEED_CERTIFICATION']}}
     </marquee>
 
-    <ion-item *ngIf="!building['LEED_CERTIFICATION']" (click)="openLeedModal()" class="ion-text-center" lines="none">
+    <ion-item color="danger" *ngIf="!building['LEED_CERTIFICATION']" class="ion-text-center" lines="none">
       <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-      <ion-label class="ion-text-wrap">No LEED CERTIFICATION</ion-label>
+      <ion-label class="ion-text-wrap">NO LEED CERTIFICATION</ion-label>
     </ion-item>
 
   </div>

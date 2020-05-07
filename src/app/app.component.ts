@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
   public selectedIndex = -1;
   public buildings = [];
   public filters = [];
+  public imageURL = "assets/icon/Sustainability_logo.png";
 
   constructor(
     private platform: Platform,

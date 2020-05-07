@@ -2,6 +2,7 @@
   <ion-split-pane contentId="main-content">
     <ion-menu menuId="insideMap" contentId="main-content" type="overlay">
       <ion-content>
+        <ion-img [src]="imageURL"></ion-img>
         <ion-list>
           <ion-list-header>Filters</ion-list-header>
           <ion-note>*Note: You can click on multiple filters</ion-note>
@@ -33,6 +34,7 @@
 
     <ion-menu menuId="outsideMap" contentId="main-content" type="overlay">
       <ion-content>
+        <ion-img [src]="imageURL"></ion-img>
 
         <ion-menu-toggle auto-hide="false">
           <ion-item (click)="selectedIndex = -1" routerDirection="backward" [routerLink]="['/']" lines="none" detail="false">
