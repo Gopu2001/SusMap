@@ -57,9 +57,11 @@ export class AppDataService {
           this.http.get(this.baseURLpt1 + name + this.baseURLpt2).subscribe((data: {}) => {
             this.arrayToJSONWithHeaders(data['values']).then((parsedData: Array<any>) => {
               try{
-                delete parsedData['marker']; //work around
-              } catch {
+                delete parsedData['MARKER']; //work around
+              } catch(e) {
+                console.log(name + " " + e);
               }
+              console.log(parsedData);
               this.storage.set(name, parsedData);
 
               res(parsedData);

@@ -197,9 +197,11 @@ export class HomePage implements OnInit {
     }
 
     addBuildings() {
-      // console.log(this.buildings);
       for (let i = 0; i < this.buildings.length; i++) {
         const building = this.buildings[i];
+
+        //set up for icons at this location
+        this.buildings[i]["ICONS"] = [];
 
         // add the coordinates
         var coords = [];
@@ -240,8 +242,8 @@ export class HomePage implements OnInit {
 
           frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
             //open modal instead
-            this.goToPage(building);
             this.htmlInfoWindow.close();
+            this.goToPage(building);
           });
 
           this.htmlInfoWindow.setContent(frame, {
@@ -266,6 +268,11 @@ export class HomePage implements OnInit {
 
     }
 
+    async addIconToBuilding(iconUrl:string, buildingID:number) {
+      const ind = this.buildings.findIndex(building => building['BUILDING_ID'] == buildingID);
+      this.buildings[ind]["ICONS"].push(iconUrl);
+    }
+
     //array of data of json objects to create the markers for
     async createFilterMarkers(arr): Promise<any> {
       return await new Promise<any>((resolve, reject) => {
@@ -285,6 +292,8 @@ export class HomePage implements OnInit {
                 height: 35
               }
             }
+            // this.addIconToBuilding(iconURL, arr[j]["BUILDING_ID"]);
+            // arr[j]['ICON'] = iconURL;
           } else {
             icon = "red";
           }
@@ -312,7 +321,13 @@ export class HomePage implements OnInit {
             `;
 
             this.htmlInfoWindow.setContent(frame, {
-              //css here
+              "text-align": 'center',
+              "min-height": "20vh",
+              "max-height": "40vh",
+              "min-width": "45vw",
+              "max-width": "65vw",
+              "padding": "0px",
+              "margin": "-4px", //offset
             });
 
             this.htmlInfoWindow.open(arr[j]['MARKER']);
@@ -347,6 +362,7 @@ export class HomePage implements OnInit {
           }
         } catch (error) {
           console.log("no redirect")
+          this.htmlInfoWindow.close();
         }
       });
 

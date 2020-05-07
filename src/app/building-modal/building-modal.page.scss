@@ -1,0 +1,23 @@
+.setSize {
+  height: 30vh !important;
+}
+
+.footer {
+  height: 10vh !important;
+}
+
+.scrollmenu {
+  margin-left: 2px;
+  float: left;
+  --background: var(--ion-color-light);
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.scrollmenu ion-icon {
+  display: inline-table;
+  color: var(--ion-color-dark);
+  text-align: center;
+  padding: 5px;
+  text-decoration: none;
+}
