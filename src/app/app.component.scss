@@ -1,5 +1,6 @@
 ion-menu ion-content {
-  --background: var(--ion-item-background, var(--ion-background-color, #fff));
+  // --background: var(--ion-item-background, var(--ion-background-color, #fff));
+  --background: linear-gradient(#26ca1a, #ffffff);
 }
 
 ion-menu.md ion-content {
@@ -114,6 +115,25 @@ ion-note {
   color: var(--ion-color-medium-shade);
 }
 
+ion-item.platinum {
+  --background: linear-gradient(#9f49fe, #ffffff);
+}
+
+ion-item.gold {
+  --background: linear-gradient(#fff30d, #ffffff);
+}
+
+ion-item.silver {
+  --background: linear-gradient(#c1c1c1, #ffffff);
+}
+
 ion-item.selected {
   --color: var(--ion-color-primary);
+}
+
+.logo {
+  top: 5px;
+  left: 5px;
+  height: 100px;
+  width: 500px;
 }

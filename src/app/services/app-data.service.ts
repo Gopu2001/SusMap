@@ -11,15 +11,15 @@ export class AppDataService {
 
   SHEETS_ID = "12jc_EN3Uh5RHPjjmI-osbys7oHBq9RPSWn71_4zhRSM";
   SHEETS_API_KEY = "AIzaSyBZgDR2xgMIi_xlt-luKmuJPj2DUxsplnk";
-  baseURLpt1 = "https://sheets.googleapis.com/v4/spreadsheets/" + this.SHEETS_ID + "/values/'";
+  private baseURLpt1 = "https://sheets.googleapis.com/v4/spreadsheets/" + this.SHEETS_ID + "/values/'";
   //surround the name of the sheet with a single quotes
-  baseURLpt2 = "'?key=" + this.SHEETS_API_KEY;
+  private baseURLpt2 = "'?key=" + this.SHEETS_API_KEY;
 
-  filters = [];
+  private filters = [];
 
-  filterNames = [];
-  allFilterData = [];
-  buildings = [];
+  private filterNames = [];
+  private allFilterData = [];
+  private buildings = [];
 
   constructor(
     private storage: Storage,
@@ -55,9 +55,11 @@ export class AppDataService {
         } else {
 
           this.http.get(this.baseURLpt1 + name + this.baseURLpt2).subscribe((data: {}) => {
-
             this.arrayToJSONWithHeaders(data['values']).then((parsedData: Array<any>) => {
-              console.log(parsedData);
+              try{
+                delete parsedData['marker']; //work around
+              } catch {
+              }
               this.storage.set(name, parsedData);
 
               res(parsedData);
@@ -116,6 +118,9 @@ export class AppDataService {
           tempJSON["FILTER_NAME"] = this.filterNames[i]["FILTER_NAME"];
           tempJSON["ACTIVE"] = this.filterNames[i]['ACTIVE'];
           tempJSON["DATA"] = data[i]
+
+          //add icons to building ids whenever and set into buildings storage
+
           this.allFilterData.push(tempJSON);
         }
         resolve(this.allFilterData);

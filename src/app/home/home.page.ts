@@ -255,13 +255,13 @@ export class HomePage implements OnInit {
             zIndex: 0
           });
 
-          this.buildings[i]['CENTER'] = centerMarker;
+          // this.buildings[i]['CENTER'] = centerMarker;
 
-          this.htmlInfoWindow.open(this.buildings[i]['CENTER']);
+          this.htmlInfoWindow.open(centerMarker);
         });
 
 
-        this.buildings[i]['polygon'] = polygon;
+        // this.buildings[i]['polygon'] = polygon;
       }
 
     }
