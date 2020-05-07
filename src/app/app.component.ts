@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
     });
 
     this.platform.ready().then(() => {
-      // google maps actual api AIzaSyDmyg-q690L-DdrczA7kI9R__msq3d93ag
+      // google maps
       //test api AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU
       Environment.setEnv({
         // api key for server

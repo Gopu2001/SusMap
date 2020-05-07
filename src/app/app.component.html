@@ -2,7 +2,7 @@
   <ion-split-pane contentId="main-content">
     <ion-menu menuId="insideMap" contentId="main-content" type="overlay">
       <ion-content>
-        <ion-img [src]="imageURL"></ion-img>
+        <ion-img class="ionImg" [src]="imageURL"></ion-img>
         <ion-list>
           <ion-list-header>Filters</ion-list-header>
           <ion-note>*Note: You can click on multiple filters</ion-note>
@@ -38,7 +38,7 @@
 
     <ion-menu menuId="outsideMap" contentId="main-content" type="overlay">
       <ion-content>
-        <ion-img [src]="imageURL"></ion-img>
+        <ion-img class="ionImg" [src]="imageURL"></ion-img>
 
         <ion-menu-toggle auto-hide="false">
           <ion-item (click)="selectedIndex = -1" routerDirection="backward" [routerLink]="['/']" lines="none" detail="false">
@@ -53,7 +53,11 @@
           <ion-note>*Note: You can also click and hold the building on the map*</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of buildings; let i = index">
-            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false" [class.selected]="selectedIndex == i">
+            <ion-item (click)="selectedIndex = i" routerDirection="forward" [routerLink]="[p['URL']]" lines="none" detail="false"
+            [class.platinum]="p['LEED_CERTIFICATION'] == 'PLATINUM'"
+            [class.gold]="p['LEED_CERTIFICATION'] == 'GOLD'"
+            [class.silver]="p['LEED_CERTIFICATION'] == 'SILVER'"
+            [class.selected]="selectedIndex == i">
             <!-- <ion-item (click)="selectedIndex = i; goToPage(selectedIndex)" lines="none" detail="false" [class.selected]="selectedIndex == i"> -->
               <ion-icon *ngIf="selectedIndex != i" slot="start" name="business-outline"></ion-icon>
               <ion-icon *ngIf="selectedIndex == i" slot="start" name="business"></ion-icon>

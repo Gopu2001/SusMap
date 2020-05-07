@@ -1,8 +1,9 @@
 ion-menu ion-content {
   // --background: var(--ion-item-background, var(--ion-background-color, #fff));
+  --background: linear-gradient(#26ca1a, #ffffff);
 }
 
-ion-img {
+.ionImg {
   --background: linear-gradient(#26ca1a, #ffffff) !important;
 }
 
