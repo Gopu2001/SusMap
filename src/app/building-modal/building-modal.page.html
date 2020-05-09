@@ -2,17 +2,31 @@
 <ion-content [fullscreen]="true">
   <div class="setSize">
     <h2 class="ion-text-center">{{building["FULL_NAME"]}}</h2>
-    <h4 class="ion-text-center" *ngIf="building['SHORTENED_NAME'] != building['FULL_NAME']">({{building['SHORTENED_NAME']}})</h4>
-
-    <p class="ion-padding ion-text-wrap ion-align-self-stretch">{{description}} <a color="blue" (click)="dismiss(true)">... more</a> </p>
+    <ion-item class="no-space" lines="none">
+      <h6 class="ion-text-center" *ngIf="building['SHORTENED_NAME'] != building['FULL_NAME']">({{building['SHORTENED_NAME']}})</h6>
+      <a slot="end" (click)="dismiss(true)"><ion-icon color="primary" name="arrow-forward-circle-outline"></ion-icon></a>
+    </ion-item>
+    <br><br>
+    <p class="ion-text-wrap ion-align-self-stretch">{{description}}</p>
   </div>
 
-  <!-- <div class="footer">
-    <div class="scrollmenu">
-      <ion-icon name="arrow-forward-circle-outline"></ion-icon>
-      <ion-icon name="arrow-forward-circle-outline"></ion-icon>
-      <ion-icon name="arrow-forward-circle-outline"></ion-icon>
-      <ion-icon name="arrow-forward-circle-outline"></ion-icon>
+  <div class="footer">
+    <div class="scrollmenu" scrollX="true">
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
+      <span><ion-icon name="arrow-forward-circle-outline"></ion-icon></span>
     </div>
-  </div> -->
+  </div>
 </ion-content>

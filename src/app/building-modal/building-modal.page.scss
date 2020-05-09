@@ -1,23 +1,75 @@
+ion-content {
+  --overflow: hidden;
+}
+
 .setSize {
-  height: 30vh !important;
+  height: 31vh;
+  --margin: 0px !important;
+  --padding: 0px !important;
 }
 
 .footer {
-  height: 10vh !important;
-}
-
-.scrollmenu {
-  margin-left: 2px;
-  float: left;
-  --background: var(--ion-color-light);
-  overflow: auto;
+  bottom: 0px;
+  height: 7vh;
+  padding-top: 1vh;
+  padding: 0px;
+  overflow: hidden;
   white-space: nowrap;
+  ::webkit-scrollbar {
+    display:none;
+  }
+  .scrollmenu {
+    overflow: auto;
+  }
 }
 
-.scrollmenu ion-icon {
-  display: inline-table;
-  color: var(--ion-color-dark);
+h6 {
+  margin-left: auto;
+  margin-top: 10px;
+  margin-right: auto;
+  padding-left: 10vw;
+}
+
+h2 {
+  margin: 1vh;
+}
+
+
+p {
+  margin: 1vh;
+  max-height: 13vh;
+  width: 95%;
   text-align: center;
-  padding: 5px;
-  text-decoration: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  bottom: 1vh;
+  margin-top: -5vh;
+  margin-bottom: inherit;
+}
+
+.no-space {
+  --margin: 0px !important;
+  margin: 0px !important;
+  --padding: 0px !important;
+  padding: 0px !important;
+}
+
+// .scrollmenu {
+//   // margin-left: 2px;
+//   float: left;
+//   --background: var(--ion-color-light);
+//   overflow: auto;
+//   white-space: nowrap;
+// }
+//
+// .scrollmenu a {
+//   display: inline-table;
+//   color: var(--ion-color-dark);
+//   text-align: center;
+//   padding: 5px;
+//   text-decoration: none;
+// }
+
+ion-icon {
+  font-size: 7vh;
 }

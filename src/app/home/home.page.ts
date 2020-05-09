@@ -237,7 +237,7 @@ export class HomePage implements OnInit {
           //animate later class="animated infinite pulse"
           frame.innerHTML = `
           <div class="infoWindow ion-text-nowrap">
-            <p>`+ building['SHORTENED_NAME'] +`</p>
+            `+ building['SHORTENED_NAME'] +`
           </div>`;
 
           frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
@@ -247,7 +247,12 @@ export class HomePage implements OnInit {
           });
 
           this.htmlInfoWindow.setContent(frame, {
-            //css here
+            "text-align": 'center',
+            "height": "5vh",
+            "width": "auto",
+            "padding": "0px",
+            "margin": "-5px", //offset
+            "margin-top" : "1vh"
           });
 
 
@@ -268,8 +273,8 @@ export class HomePage implements OnInit {
 
     }
 
-    async addIconToBuilding(iconUrl:string, buildingID:number) {
-      const ind = this.buildings.findIndex(building => building['BUILDING_ID'] == buildingID);
+    async addIconToBuilding(iconUrl:string, buildingID) {
+      const ind = this.buildings.findIndex(building => building['BUILDING_ID'] === buildingID);
       this.buildings[ind]["ICONS"].push(iconUrl);
     }
 
@@ -327,7 +332,7 @@ export class HomePage implements OnInit {
               "min-width": "45vw",
               "max-width": "65vw",
               "padding": "0px",
-              "margin": "-4px", //offset
+              "margin": "-1vw", //offset
             });
 
             this.htmlInfoWindow.open(arr[j]['MARKER']);
