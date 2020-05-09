@@ -75,12 +75,84 @@ export class HomePage implements OnInit {
     async ngOnInit() {
 
       //get building data and filter names
-      await this.appData.getBuildingFilterNames(true).then((data) => {
+      await this.events.subscribe("Building and Filter Names", async (data :any) => {
         this.buildings = data[0];
         this.filters = data[1];
-      });
+        console.log("got it");
 
-      this.loading = this.loadingController.create({
+        //below is only possible with the data recieved
+
+        // add the buildings
+        this.addBuildings();
+
+        //get the filter data whenever
+        this.appData.getAllFilterData(true).then((data: []) => {
+          this.filters = data;
+
+          var promArr = []
+          for (let i = 0; i < this.filters.length; i++) {
+            promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
+          }
+
+          forkJoin(promArr).subscribe((data: []) => {
+            //following must be included after the filters
+            for (let i = 0; i < this.filters.length; i++) {
+              this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
+                for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
+                  //set each marker visible according to active status
+                  this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
+                }
+              });
+            }
+            this.dataFlag = true;
+            //try to dismiss the loading if it is necessary
+            try {
+              this.loading.dismiss();
+            } catch (error) {
+              console.log("not needed: " + error);
+            }
+            console.log("added all markers and listeners");
+          });
+
+        });
+
+        // updated event filters active status from menu
+        for (let i = 0; i < this.filters.length; i++) {
+          //make filter active/not active
+          await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
+            // update active status
+            this.filters[i]['ACTIVE'] = data['ACTIVE'];
+
+            //first check if data has come in
+            if(!this.dataFlag) {
+              console.log("U GOTTA WAIT");
+              this.loading.present().then(() => {
+                this.loading.onWillDismiss.then(() => {
+
+                  this.changeStatus(this.filters[i]['FILTER_NAME']);
+
+                });
+              });
+            } else {
+              if(!this.filters[i]['DATA'][0]['MARKER']) {
+                console.log("NO MARKER....AHH SHIT");
+              }
+              //if it has then update the visible status
+              this.changeStatus(this.filters[i]['FILTER_NAME']);
+            }
+
+          });
+        }
+
+
+      })
+
+      // await this.appData.getBuildingFilterNames(true, "home").then((data) => {
+      //   this.buildings = data[0];
+      //   this.filters = data[1];
+      // });
+
+      this.loading = await this.loadingController.create({
         spinner: "bubbles",
         duration: 500*this.filters.length,
         message: "Fetching Data...",
@@ -89,70 +161,12 @@ export class HomePage implements OnInit {
       });
 
 
-      //get the filter data whenever
-      this.appData.getAllFilterData(true).then((data: []) => {
-        this.filters = data;
 
-        var promArr = []
-        for (let i = 0; i < this.filters.length; i++) {
-          promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
-        }
 
-        forkJoin(promArr).subscribe((data: []) => {
-          //following must be included after the filters
-          for (let i = 0; i < this.filters.length; i++) {
-            this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
-              for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-                //set each marker visible according to active status
-                this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
-              }
-            });
-          }
-          this.dataFlag = true;
-          //try to dismiss the loading if it is necessary
-          try {
-            this.loading.dismiss();
-          } catch (error) {
-            console.log("not needed: " + error);
-          }
-          console.log("added all markers and listeners");
-        });
-
-      });
-
-      // updated event filters active status from menu
-      for (let i = 0; i < this.filters.length; i++) {
-        //make filter active/not active
-        await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
-          // update active status
-          this.filters[i]['ACTIVE'] = data['ACTIVE'];
-
-          //first check if data has come in
-          if(!this.dataFlag) {
-            console.log("U GOTTA WAIT");
-            this.loading.present().then(() => {
-              this.loading.onWillDismiss.then(() => {
-
-                this.changeStatus(this.filters[i]['FILTER_NAME']);
-
-              });
-            });
-          } else {
-            if(!this.filters[i]['DATA'][0]['MARKER']) {
-              console.log("NO MARKER....AHH SHIT");
-            }
-            //if it has then update the visible status
-            this.changeStatus(this.filters[i]['FILTER_NAME']);
-          }
-
-        });
-
-      }
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       await this.platform.ready();
       await this.loadMap();
-      await this.addBuildings();
 
       // setTimeout(() => {
       //   console.log("animating camera");

@@ -19,7 +19,7 @@ export class AppDataService {
 
   private filterNames = [];
   private allFilterData = [];
-  private buildings = [];
+  private _buildings = [];
 
   constructor(
     private storage: Storage,
@@ -37,7 +37,6 @@ export class AppDataService {
         for (let j = 0; j < values[i].length; j++) {
           tempJSON[(values[0][j]+"").toUpperCase()] = values[i][j]; //make everything uppercase
         }
-
         tempArr.push(tempJSON);
       }
 
@@ -45,7 +44,7 @@ export class AppDataService {
     });
   }
 
-  async buildPromise(name: string, refresh: boolean): Promise<any> {
+  async buildPromise(name: string, refresh: boolean, debug: string): Promise<any> {
     name = (""+name).toUpperCase();//just in case
     return await new Promise<any>((res,rej) => {
       this.storage.get(name).then((val) => {
@@ -56,18 +55,30 @@ export class AppDataService {
 
           this.http.get(this.baseURLpt1 + name + this.baseURLpt2).subscribe((data: {}) => {
             this.arrayToJSONWithHeaders(data['values']).then((parsedData: Array<any>) => {
-              try{
-                delete parsedData['MARKER']; //work around
-              } catch(e) {
-                console.log(name + " " + e);
+              let copy = JSON.parse(JSON.stringify(parsedData));
+
+              for (let index = 0; index < copy.length; index++) {
+                if(!copy[index]["MARKER"]) {
+                  break;
+                } else {
+                  delete copy[index]['MARKER']; //work around
+                }
               }
-              console.log(parsedData);
-              this.storage.set(name, parsedData);
+
+              // console.log(parsedData);
+              // console.log(copy)
+              // console.log(debug);
+              this.storage.set(name, copy);
 
               res(parsedData);
             });
 
-          })
+          },
+          (error) => {
+            console.log(error);
+            res(val);
+          });
+
         }
       }).catch((err) => {
         console.log(err);
@@ -76,20 +87,17 @@ export class AppDataService {
     });
   }
 
-  async getBuildingFilterNames(refresh: boolean): Promise<any> {
+  async getBuildingFilterNames(refresh: boolean, debug: string): Promise<any> {
     return await new Promise<any>((resolve, reject) => {
-      if(this.filterNames.length != 0 && this.buildings.length != 0) {
+      if(this.filterNames.length != 0 && this._buildings.length != 0) {
         console.log("get cache");
-        resolve([this.buildings, this.filterNames]);
+        resolve([this._buildings, this.filterNames]);
       } else {
 
-        var promArr = [this.buildPromise("BUILDINGS", refresh)];
-        if(this.filterNames.length == 0) {
-          //doesnt exist
-          promArr.push(this.buildPromise("FILTERS", refresh));
-        }
+        var promArr = [this.buildPromise("BUILDINGS", refresh, debug)];
+        promArr.push(this.buildPromise("FILTERS", refresh, debug));
         forkJoin(promArr).subscribe((data)=> {
-          this.buildings = data[0];
+          this._buildings = data[0];
           if(this.filterNames.length == 0) {
             var tempFilterNames = data[1];
             for (let i = 0; i < tempFilterNames.length; i++) {
@@ -100,7 +108,7 @@ export class AppDataService {
             }
           }
 
-          resolve([this.buildings, this.filterNames]);
+          resolve([this._buildings, this.filterNames]);
         });
 
       }
@@ -112,7 +120,7 @@ export class AppDataService {
     return await new Promise<any>((resolve, reject) => {
       var promArr = []
       for (let i = 0; i < this.filterNames.length; i++) {
-        promArr.push(this.buildPromise(this.filterNames[i]["FILTER_NAME"], refresh));
+        promArr.push(this.buildPromise(this.filterNames[i]["FILTER_NAME"], refresh, "filter data"));
       }
       forkJoin(promArr).subscribe((data: []) => {
         for (let i = 0; i < data.length; i++) {
