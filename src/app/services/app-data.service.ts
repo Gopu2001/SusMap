@@ -128,6 +128,8 @@ export class AppDataService {
         for (let i = 0; i < data.length; i++) {
           var tempJSON = {};
           tempJSON["FILTER_NAME"] = this.filterNames[i]["FILTER_NAME"];
+          tempJSON["ICON"] = this.filterNames[i]["ICON"]; //dont uppercase the icons
+          tempJSON["ICON-SELECTED"] = this.filterNames[i]["ICON-SELECTED"];
           tempJSON["ACTIVE"] = this.filterNames[i]['ACTIVE'];
           tempJSON["DATA"] = data[i]
 

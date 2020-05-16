@@ -121,6 +121,7 @@ export class HomePage implements OnInit {
 
         // updated event filters active status from menu
         for (let i = 0; i < this.filters.length; i++) {
+
           //make filter active/not active
           await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
             // update active status
@@ -389,6 +390,10 @@ export class HomePage implements OnInit {
       });
 
       await modal.present();
+    }
+
+    stop_close(event: any) {
+      event.stopPropagation();
     }
 
     publishEvent(eventName: string, data: any) {
