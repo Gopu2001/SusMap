@@ -35,7 +35,7 @@ export class AppDataService {
         var tempJSON = {}; //temp data to insert into tempArr
 
         for (let j = 0; j < values[i].length; j++) {
-          tempJSON[(values[0][j]+"").toUpperCase()] = values[i][j]; //make everything uppercase
+          tempJSON[(values[0][j]+"").toUpperCase()] = values[i][j]; //make all the element identifiers uppercase not the values themselves
         }
         tempArr.push(tempJSON);
       }
@@ -102,7 +102,9 @@ export class AppDataService {
             var tempFilterNames = data[1];
             for (let i = 0; i < tempFilterNames.length; i++) {
               var tempJSON = {};
-              tempJSON["FILTER_NAME"] = tempFilterNames[i]["NAME"].toUpperCase();
+              tempJSON["FILTER_NAME"] = tempFilterNames[i]["NAME"].toUpperCase(); //uppercase the filter name for later
+              tempJSON["ICON"] = tempFilterNames[i]["ICON"]; //dont uppercase the icons
+              tempJSON["ICON-SELECTED"] = tempFilterNames[i]["ICON-SELECTED"];
               tempJSON["ACTIVE"] = false;
               this.filterNames.push(tempJSON);
             }

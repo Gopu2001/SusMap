@@ -8,8 +8,8 @@
           <ion-note>*Note: You can click on multiple filters</ion-note>
 
           <ion-item *ngFor="let filter of filters" lines="none" (click)="filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);">
-            <ion-icon *ngIf="!filter['ACTIVE']" slot="start" name="bookmark-outline"></ion-icon>
-            <ion-icon *ngIf="filter['ACTIVE']" slot="start" name="bookmark"></ion-icon>
+            <ion-icon *ngIf="!filter['ACTIVE']" slot="start" name="{{filter['ICON']}}"></ion-icon>
+            <ion-icon *ngIf="filter['ACTIVE']" slot="start" name="{{filter['ICON-SELECTED']}}"></ion-icon>
             <ion-label>{{ filter['FILTER_NAME'] }}</ion-label>
           </ion-item>
         </ion-list>

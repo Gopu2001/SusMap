@@ -80,6 +80,9 @@ export class HomePage implements OnInit {
         this.filters = data[1];
         console.log("got it");
 
+        //load the map
+        await this.loadMap();
+
         //below is only possible with the data recieved
 
         // add the buildings
@@ -166,7 +169,7 @@ export class HomePage implements OnInit {
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       await this.platform.ready();
-      await this.loadMap();
+
 
       // setTimeout(() => {
       //   console.log("animating camera");
@@ -386,6 +389,10 @@ export class HomePage implements OnInit {
       });
 
       await modal.present();
+    }
+
+    publishEvent(eventName: string, data: any) {
+      this.events.publish(eventName, data);
     }
 
     printData() {

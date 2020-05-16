@@ -13,5 +13,17 @@
 <!-- [fullscreen]="true -->
 
 <ion-content padding>
-  <div id="map_canvas"></div>
+  <div id="map_canvas">
+    <!-- <ion-fab vertical="top" horizontal="start" slot="fixed">
+      <ion-fab-button>
+        <ion-icon name="color-filter-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="bottom">
+        <ion-fab-button *ngFor="let filter of filters" (click)="filter['ACTIVE'] = !filter['ACTIVE']">
+
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab> -->
+
+  </div>
 </ion-content>
