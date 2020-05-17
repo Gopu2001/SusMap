@@ -30,6 +30,7 @@
     "cordova-plugin-googlemaps": "^2.7.1",
     "cordova-sqlite-storage": "^5.0.0",
     "core-js": "^2.5.4",
+    "hammerjs": "^2.0.8",
     "ionic-header-parallax": "^2.2.2",
     "ngx-papaparse": "^4.0.4",
     "rxjs": "~6.5.1",

@@ -39,11 +39,12 @@ h2 {
 
 p {
   margin: 1vh;
-  // max-height: 13vh;
+  max-height: 13vh;
   width: 95%;
   text-align: center;
   // text-overflow: ellipsis;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   bottom: 1vh;
   margin-top: -5vh;
   margin-bottom: inherit;

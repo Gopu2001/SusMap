@@ -19,7 +19,7 @@
         <ion-icon name="color-filter-outline"></ion-icon>
       </ion-fab-button>
       <ion-fab-list side="top">
-        <ion-fab-button class="fab-button-show" *ngFor="let filter of filters" (click)="stop_close($event); filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);" (onHold)="openFilterModal(filter);" on-hold="openFilterModal(filter);">
+        <ion-fab-button class="fab-button-show" *ngFor="let filter of filters" (click)="stop_close($event); filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);" (press)="onPress(filter)" (pressup)="onPressUp()">
           <ion-icon *ngIf="!filter['ACTIVE']" [name]="filter['ICON']"></ion-icon>
           <ion-icon *ngIf="filter['ACTIVE']" [name]="filter['ICON-SELECTED']"></ion-icon>
         </ion-fab-button>

@@ -16,6 +16,16 @@ import { IonicStorageModule } from '@ionic/storage';
 import { AppDataService } from './services/app-data.service';
 import { EventService } from './events/event.service';
 
+import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+import * as Hammer from 'hammerjs';
+export class CustomHammerConfig extends HammerGestureConfig {
+  overrides = {
+    'pan': {
+      direction: Hammer.DIRECTION_ALL
+    }
+  }
+}
+
 import { BuildingModalPageModule } from './building-modal/building-modal.module';
 
 @NgModule({
@@ -40,7 +50,8 @@ import { BuildingModalPageModule } from './building-modal/building-modal.module'
     // HTTP,
     AppDataService,
     EventService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig}
   ],
   bootstrap: [AppComponent]
 })

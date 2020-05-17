@@ -44,7 +44,8 @@ export class HomePage implements OnInit {
     public map: GoogleMap;
     private dataFlag = false;
     public loading;
-    @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
+    // @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
+    private pressFlag = false;
 
     constructor(
       public toastCtrl: ToastController,
@@ -407,6 +408,23 @@ export class HomePage implements OnInit {
 
     publishEvent(eventName: string, data: any) {
       this.events.publish(eventName, data);
+    }
+
+    onPress(filterData) {
+      console.log("press");
+      this.pressFlag = true;
+      setTimeout(() => {
+        if(this.pressFlag) {
+          this.openFilterModal(filterData);
+        } else {
+          console.log("did not hold");
+        }
+      }, 500); //hold for 500 ms
+    }
+
+    onPressUp() {
+      console.log("press up");
+      this.pressFlag = false;
     }
 
     openFilterModal(filterData) {
