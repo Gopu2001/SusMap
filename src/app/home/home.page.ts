@@ -1,5 +1,5 @@
-import { Component, NgZone, OnInit } from '@angular/core';
-import { ToastController, Platform } from '@ionic/angular';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { ToastController, Platform, MenuController, LoadingController, ModalController, IonFab } from '@ionic/angular';
 import { GoogleMaps,
   GoogleMap,
   GoogleMapsEvent,
@@ -14,13 +14,10 @@ import { GoogleMaps,
   HtmlInfoWindow,
   MarkerIcon } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
-import { MenuController } from '@ionic/angular';
 import { EventService } from './../events/event.service';
 import { AppDataService } from './../services/app-data.service';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
-import { ModalController } from '@ionic/angular';
 import { BuildingModalPage } from './../building-modal/building-modal.page';
 import { OverlayEventDetail } from '@ionic/core';
 
@@ -47,6 +44,7 @@ export class HomePage implements OnInit {
     public map: GoogleMap;
     private dataFlag = false;
     public loading;
+    @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
 
     constructor(
       public toastCtrl: ToastController,
@@ -82,6 +80,13 @@ export class HomePage implements OnInit {
 
         //load the map
         await this.loadMap();
+
+        //close the fab when map is clicked
+        this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
+          console.log("map click");
+          this.htmlInfoWindow.close();
+          // this.filterFab.activated = false;; //close the fab
+        });
 
         //below is only possible with the data recieved
 
@@ -185,6 +190,7 @@ export class HomePage implements OnInit {
       //   });
       // }, 8000);
 
+      // this.filterFab = angular.element(document.getElementsByClassName("filter_fab"));
     }
 
     loadMap() {
@@ -250,6 +256,7 @@ export class HomePage implements OnInit {
         // when clicked open htmlinfo window.
         polygon.on(GoogleMapsEvent.POLYGON_CLICK).subscribe((data) => {
           console.log("polygon clicked");
+          // this.filterFab.close(); //close the fab
           // html info window when polygon is clicked
           let frame: HTMLElement = document.createElement('div');
           //animate later class="animated infinite pulse"
@@ -328,12 +335,14 @@ export class HomePage implements OnInit {
             },
             icon: icon,
             visible: false,
-            zIndex: 2
+            zIndex: 2,
+            disableAutoPan: true
           });
 
           arr[j]['MARKER'] = marker;
 
           marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+            // this.filterFab.close(); //close the fab
             // html info window when marker is clicked
             let frame: HTMLElement = document.createElement('div');
             frame.innerHTML = `
@@ -398,6 +407,10 @@ export class HomePage implements OnInit {
 
     publishEvent(eventName: string, data: any) {
       this.events.publish(eventName, data);
+    }
+
+    openFilterModal(filterData) {
+      console.log("filter modal");
     }
 
     printData() {

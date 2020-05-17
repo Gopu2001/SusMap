@@ -131,7 +131,7 @@ export class AppDataService {
           tempJSON["ICON"] = this.filterNames[i]["ICON"]; //dont uppercase the icons
           tempJSON["ICON-SELECTED"] = this.filterNames[i]["ICON-SELECTED"];
           tempJSON["ACTIVE"] = this.filterNames[i]['ACTIVE'];
-          tempJSON["DATA"] = data[i]
+          tempJSON["DATA"] = data[i];
 
           //add icons to building ids whenever and set into buildings storage
 

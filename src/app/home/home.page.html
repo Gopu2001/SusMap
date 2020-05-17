@@ -14,12 +14,12 @@
 
 <ion-content padding>
   <div id="map_canvas">
-    <ion-fab vertical="top" horizontal="start" slot="start">
+    <ion-fab class="filter_fab" vertical="bottom" horizontal="start">
       <ion-fab-button color="success">
         <ion-icon name="color-filter-outline"></ion-icon>
       </ion-fab-button>
-      <ion-fab-list side="bottom">
-        <ion-fab-button class="fab-button-show" *ngFor="let filter of filters" (click)="stop_close($event); filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);">
+      <ion-fab-list side="top">
+        <ion-fab-button class="fab-button-show" *ngFor="let filter of filters" (click)="stop_close($event); filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);" (onHold)="openFilterModal(filter);" on-hold="openFilterModal(filter);">
           <ion-icon *ngIf="!filter['ACTIVE']" [name]="filter['ICON']"></ion-icon>
           <ion-icon *ngIf="filter['ACTIVE']" [name]="filter['ICON-SELECTED']"></ion-icon>
         </ion-fab-button>
