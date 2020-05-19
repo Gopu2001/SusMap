@@ -2,7 +2,7 @@
 <ion-header *ngIf="building['PICTURE']" parallax imageUrl="{{building['PICTURE']}}" titleColor="white">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="home"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ building['SHORTENED_NAME'] }}</ion-title>
   </ion-toolbar>
@@ -11,7 +11,7 @@
 <ion-header *ngIf="!building['PICTURE']">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="home"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ building['SHORTENED_NAME'] }}</ion-title>
   </ion-toolbar>

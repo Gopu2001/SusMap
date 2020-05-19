@@ -19,6 +19,7 @@ import { AppDataService } from './../services/app-data.service';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { BuildingModalPage } from './../building-modal/building-modal.page';
+import { FilterModalPage } from './../filter-modal/filter-modal.page';
 import { OverlayEventDetail } from '@ionic/core';
 
 @Component({
@@ -46,6 +47,10 @@ export class HomePage implements OnInit {
     public loading;
     // @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
     private pressFlag = false;
+    public search = false;
+    public itemAvailable = false;
+    public filteredItems = [];
+    private toSearch = [];
 
     constructor(
       public toastCtrl: ToastController,
@@ -85,8 +90,7 @@ export class HomePage implements OnInit {
         //close the fab when map is clicked
         this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
           console.log("map click");
-          this.htmlInfoWindow.close();
-          // this.filterFab.activated = false;; //close the fab
+          this.closeEverything();
         });
 
         //below is only possible with the data recieved
@@ -180,15 +184,15 @@ export class HomePage implements OnInit {
 
       // setTimeout(() => {
       //   console.log("animating camera");
-      //   this.map.animateCamera({
-      //     target: {lat: 37.363595, lng: -120.425361},
-      //     zoom: 16.5,
-      //     tilt: 0,
-      //     // bearing: 140,
-      //     duration: 15000
-      //   }).then(() => {
-      //     alert("Camera target has been changed");
-      //   });
+        // this.map.animateCamera({
+        //   target: {lat: 37.363595, lng: -120.425361},
+        //   zoom: 16.5,
+        //   tilt: 0,
+        //   // bearing: 140,
+        //   duration: 15000
+        // }).then(() => {
+        //   alert("Camera target has been changed");
+        // });
       // }, 8000);
 
       // this.filterFab = angular.element(document.getElementsByClassName("filter_fab"));
@@ -219,6 +223,17 @@ export class HomePage implements OnInit {
         }
       });
 
+    }
+
+    animateCamera(lat, long) {
+      console.log("animating camera");
+      this.map.animateCamera({
+        target: {lat: lat, lng: long},
+        zoom: 17,
+        tilt: 0,
+        // bearing: 140,
+        duration: 2000
+      });
     }
 
     addBuildings() {
@@ -293,8 +308,9 @@ export class HomePage implements OnInit {
           this.htmlInfoWindow.open(centerMarker);
         });
 
+        this.buildings[i]['POLYGON'] = polygon;
 
-        // this.buildings[i]['polygon'] = polygon;
+        this.toSearch.push(this.buildings[i]);
       }
 
     }
@@ -309,24 +325,20 @@ export class HomePage implements OnInit {
       return await new Promise<any>((resolve, reject) => {
         for (let j = 0; j < arr.length; j++) {
           var icon;
-          var iconURL;
           if(arr[j]['ICON'].slice(0,3) == "data") {
-            iconURL = arr[j]['ICON']; //base64 data
+            arr[j]['ICON'] = arr[j]['ICON']; //base64 data
+          } else if(arr[j]['ICON']) {
+            arr[j]['ICON'] = 'assets/icon/'+arr[j]['ICON']+'.png';
           } else {
-            iconURL = 'assets/icon/'+arr[j]['ICON']+'.png';
+            arr[j]['ICON'] = "assets/icon/favicon.png";
           }
-          if(arr[j]['ICON']) {
-            icon = {
-              url: iconURL,
-              size: {
-                width: 35,
-                height: 35
-              }
+
+          icon = {
+            url: arr[j]['ICON'],
+            size: {
+              width: 35,
+              height: 35
             }
-            // this.addIconToBuilding(iconURL, arr[j]["BUILDING_ID"]);
-            // arr[j]['ICON'] = iconURL;
-          } else {
-            icon = "red";
           }
 
           var marker = this.map.addMarkerSync({
@@ -341,6 +353,8 @@ export class HomePage implements OnInit {
           });
 
           arr[j]['MARKER'] = marker;
+
+          this.toSearch.unshift(arr[j]);
 
           marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
             // this.filterFab.close(); //close the fab
@@ -394,11 +408,10 @@ export class HomePage implements OnInit {
           if(detail.data.redirect) {
           }
         } catch (error) {
-          console.log("no redirect")
-          this.htmlInfoWindow.close();
+          console.log("no redirect");
         }
       });
-
+      this.closeEverything();
       await modal.present();
     }
 
@@ -427,8 +440,82 @@ export class HomePage implements OnInit {
       this.pressFlag = false;
     }
 
-    openFilterModal(filterData) {
+    async openFilterModal(filterData) {
       console.log("filter modal");
+      const modal = await this.modalController.create({
+        component: FilterModalPage,
+        componentProps: {
+          filter: filterData
+        },
+        swipeToClose: true,
+        cssClass: 'filter-modal'
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        try {
+          console.log(detail.data);
+          if(detail.data.redirect) {
+            const loc: ILatLng = detail.data['marker'].getPosition();
+            this.animateCamera(loc['lat'], loc['lng']);
+            detail.data['marker'].setVisible(true);
+            detail.data['marker'].trigger(GoogleMapsEvent.MARKER_CLICK, loc);
+          }
+        } catch (error) {
+          console.log("no redirect");
+        }
+      });
+
+      this.closeEverything();
+      await modal.present();
+    }
+
+    getItems(ev: any) {
+      this.filteredItems = []; //reset filteredItems
+
+      const val = ev.target.value;
+
+      if(val && val.trim() != "") {
+        this.itemAvailable = true;
+
+        //adding dynamically the fitlered items
+        for (let index = 0; index < this.toSearch.length; index++) {
+          const item = this.toSearch[index];
+          if(((item['FULL_NAME']+"").toUpperCase().search(val.toUpperCase()) > -1) || ((item['TITLE']+"").toUpperCase().search(val.toUpperCase()) > -1) || (item['DESCRIPTION'].toUpperCase().search(val.toUpperCase()) > -1) || ((item['SHORTENED_NAME']+"").toUpperCase().search(val.toUpperCase()) > -1)) {
+            this.filteredItems.push(item);
+          }
+        }
+        // this.filteredItems = this.toSearch.filter((item) => {
+          // return (((item['FULL_NAME']+"").toUpperCase().search(val.toUpperCase()) > -1) || ((item['TITLE']+"").toUpperCase().search(val.toUpperCase()) > -1) || (item['DESCRIPTION'].toUpperCase().search(val.toUpperCase()) > -1) || ((item['SHORTENED_NAME']+"").toUpperCase().search(val.toUpperCase()) > -1));
+        // });
+      } else {
+        this.itemAvailable = false;
+      }
+    }
+
+    goToItem(item) {
+      this.search = false;
+      var loc: ILatLng;
+      if(item['MARKER']) {
+        //filter item
+        loc = item['MARKER'].getPosition();
+        item['MARKER'].setVisible(true);
+        item['MARKER'].trigger(GoogleMapsEvent.MARKER_CLICK, loc);
+      } else {
+        loc = (new LatLngBounds(item['COORS'])).getCenter();
+        item['POLYGON'].trigger(GoogleMapsEvent.POLYGON_CLICK, loc);
+      }
+      this.animateCamera(loc['lat'], loc['lng']);
+    }
+
+    openAboutModal() {
+      console.log("about");
+    }
+
+    closeEverything() {
+      this.htmlInfoWindow.close();
+      this.search = false;
+      this.itemAvailable = false;
+      this.filteredItems = [];
     }
 
     printData() {

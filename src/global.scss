@@ -34,3 +34,13 @@
   --border-width: 3vh;
   --border-color: var(--ion-color-success);
 }
+
+.filter-modal .modal-wrapper {
+  top: 10vh;
+  left: 10vw;
+  --width: 80vw;
+  --min-height: 40vh;
+  --max-height: 80vh;
+  --border-width: 3vh;
+  --border-color: var(--ion-color-success);
+}

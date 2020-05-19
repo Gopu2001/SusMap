@@ -1,11 +1,23 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>
-      Sustainability Map
-    </ion-title>
+<ion-header *ngIf="search" [translucent]="true" color="translucent" no-border no-shadow>
+  <ion-toolbar color="translucent">
+
+    <img class="about-icon" slot="start" src="assets/icon/favicon.png" (click)="openAboutModal()">
+    <!-- <ion-icon slot="end" name="search" (click)="search = true"></ion-icon> -->
+
+    <ion-searchbar showCancelButton="always" type="text" placeholder="Search" inputmode="text" debounce="350" animated="true"  (ionChange)="getItems($event)" (ionCancel)="closeEverything();"></ion-searchbar>
+    <ion-list class="search-filters" *ngIf="itemAvailable">
+      <ion-item *ngFor="let it of filteredItems" (click)="closeEverything(); goToItem(it);">
+        <img class="search-icon" *ngIf="it['ICON']" src="{{it['ICON']}}" slot="end">
+        <!-- building does not have icon -->
+        <img class="search-icon" *ngIf="!it['ICON']" src="svg/business-outline.svg" slot="end">
+
+        <ion-label slot="start">
+          <p *ngIf="it['TITLE']">{{it['TITLE']}}</p>
+          <p *ngIf="!it['TITLE']">{{it['SHORTENED_NAME']}}</p>
+          <small class="ion-text-nowrap des">{{it['DESCRIPTION']}}</small>
+        </ion-label>
+      </ion-item>
+    </ion-list>
     <!-- <ion-button (click)="printData()">print</ion-button> -->
   </ion-toolbar>
 </ion-header>
@@ -13,15 +25,23 @@
 <!-- [fullscreen]="true -->
 
 <ion-content padding>
-  <div id="map_canvas">
-    <ion-fab class="filter_fab" vertical="bottom" horizontal="start">
+  <div [ngClass]="{'search' : search, 'nosearch' : !search}" id="map_canvas">
+    <ion-fab vertical="top" horizontal="start" slot="fixed">
       <ion-fab-button color="success">
         <ion-icon name="color-filter-outline"></ion-icon>
       </ion-fab-button>
-      <ion-fab-list side="top">
+      <ion-fab-list side="bottom">
         <ion-fab-button class="fab-button-show" *ngFor="let filter of filters" (click)="stop_close($event); filter['ACTIVE'] = !filter['ACTIVE']; publishEvent(filter['FILTER_NAME'], filter);" (press)="onPress(filter)" (pressup)="onPressUp()">
           <ion-icon *ngIf="!filter['ACTIVE']" [name]="filter['ICON']"></ion-icon>
           <ion-icon *ngIf="filter['ACTIVE']" [name]="filter['ICON-SELECTED']"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+      <ion-fab-list side="end">
+        <ion-fab-button>
+          <ion-icon name="search-circle-outline" (click)="search = !search"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button>
+          <ion-icon name="settings-outline" (click)="openAboutModal();"></ion-icon>
         </ion-fab-button>
       </ion-fab-list>
     </ion-fab>

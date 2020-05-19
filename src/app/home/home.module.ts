@@ -8,6 +8,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
 import { BuildingModalPageModule } from './../building-modal/building-modal.module';
+import { FilterModalPageModule } from './../filter-modal/filter-modal.module';
 
 @NgModule({
   imports: [
@@ -15,8 +16,10 @@ import { BuildingModalPageModule } from './../building-modal/building-modal.modu
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    BuildingModalPageModule
+    BuildingModalPageModule,
+    FilterModalPageModule
   ],
-  declarations: [HomePage]
+  declarations: [HomePage],
+  entryComponents: []
 })
 export class HomePageModule {}

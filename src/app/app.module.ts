@@ -27,6 +27,7 @@ export class CustomHammerConfig extends HammerGestureConfig {
 }
 
 import { BuildingModalPageModule } from './building-modal/building-modal.module';
+import { FilterModalPageModule } from './filter-modal/filter-modal.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -42,7 +43,8 @@ import { BuildingModalPageModule } from './building-modal/building-modal.module'
       name: 'awesome_db',
       driverOrder: ['indexeddb', 'websql', 'sqlite']
     }),
-    BuildingModalPageModule
+    BuildingModalPageModule,
+    FilterModalPageModule
   ],
   providers: [
     StatusBar,
