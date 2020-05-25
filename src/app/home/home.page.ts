@@ -18,9 +18,11 @@ import { EventService } from './../events/event.service';
 import { AppDataService } from './../services/app-data.service';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { OverlayEventDetail } from '@ionic/core';
 import { BuildingModalPage } from './../building-modal/building-modal.page';
 import { FilterModalPage } from './../filter-modal/filter-modal.page';
-import { OverlayEventDetail } from '@ionic/core';
+import { BuildingListModalPage } from './../building-list-modal/building-list-modal.page';
+import { AboutPage } from './../about/about.page';
 
 @Component({
   selector: 'app-home',
@@ -37,20 +39,16 @@ export class HomePage implements OnInit {
     //     active: false
     //     data: { all the filter data }
     //   },
-    //   {
-    //     Name: 'Environmental',
-    //     active: false
-    //   }
     // ];
     public map: GoogleMap;
-    private dataFlag = false;
-    public loading;
+    private dataFlag = false; //used in couplation of loading controller
+    public loading; //loading controller
     // @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
-    private pressFlag = false;
-    public search = false;
-    public itemAvailable = false;
-    public filteredItems = [];
-    private toSearch = [];
+    private pressFlag = false; //press and hold for filter items
+    public search = false; //for search functionality
+    public itemAvailable = false; //for search functionality
+    public filteredItems = []; //for search functionality
+    private toSearch = []; //for search functionality
 
     constructor(
       public toastCtrl: ToastController,
@@ -212,7 +210,7 @@ export class HomePage implements OnInit {
           tilt: 0,
         },
         'gestures': {
-          'scroll': true, 'tilt': false, 'rotate': false, 'zoom': true
+          'scroll': true, 'tilt': true, 'rotate': false, 'zoom': true
         },
         styles: style,
         preferences: {
@@ -223,6 +221,10 @@ export class HomePage implements OnInit {
         }
       });
 
+      this.map.setIndoorEnabled(true);
+      this.map.setCompassEnabled(false);
+      this.map.setMyLocationEnabled(false);
+      this.map.setMyLocationButtonEnabled(false);
     }
 
     animateCamera(lat, long) {
@@ -408,7 +410,7 @@ export class HomePage implements OnInit {
           if(detail.data.redirect) {
           }
         } catch (error) {
-          console.log("no redirect");
+          // console.log("no redirect");
         }
       });
       this.closeEverything();
@@ -430,13 +432,13 @@ export class HomePage implements OnInit {
         if(this.pressFlag) {
           this.openFilterModal(filterData);
         } else {
-          console.log("did not hold");
+          // console.log("did not hold");
         }
       }, 500); //hold for 500 ms
     }
 
     onPressUp() {
-      console.log("press up");
+      // console.log("press up");
       this.pressFlag = false;
     }
 
@@ -453,7 +455,7 @@ export class HomePage implements OnInit {
 
       modal.onDidDismiss().then((detail: OverlayEventDetail) => {
         try {
-          console.log(detail.data);
+          // console.log(detail.data);
           if(detail.data.redirect) {
             const loc: ILatLng = detail.data['marker'].getPosition();
             this.animateCamera(loc['lat'], loc['lng']);
@@ -461,7 +463,7 @@ export class HomePage implements OnInit {
             detail.data['marker'].trigger(GoogleMapsEvent.MARKER_CLICK, loc);
           }
         } catch (error) {
-          console.log("no redirect");
+          // console.log("no redirect");
         }
       });
 
@@ -469,7 +471,7 @@ export class HomePage implements OnInit {
       await modal.present();
     }
 
-    getItems(ev: any) {
+    getItems(ev: any) { //for search functionality
       this.filteredItems = []; //reset filteredItems
 
       const val = ev.target.value;
@@ -484,16 +486,13 @@ export class HomePage implements OnInit {
             this.filteredItems.push(item);
           }
         }
-        // this.filteredItems = this.toSearch.filter((item) => {
-          // return (((item['FULL_NAME']+"").toUpperCase().search(val.toUpperCase()) > -1) || ((item['TITLE']+"").toUpperCase().search(val.toUpperCase()) > -1) || (item['DESCRIPTION'].toUpperCase().search(val.toUpperCase()) > -1) || ((item['SHORTENED_NAME']+"").toUpperCase().search(val.toUpperCase()) > -1));
-        // });
       } else {
         this.itemAvailable = false;
       }
     }
 
     goToItem(item) {
-      this.search = false;
+      // this.search = false;
       var loc: ILatLng;
       if(item['MARKER']) {
         //filter item
@@ -508,7 +507,60 @@ export class HomePage implements OnInit {
     }
 
     openAboutModal() {
-      console.log("about");
+      const modal = await this.modalController.create({
+        component: AboutPage,
+        componentProps: {
+          settings: []
+        },
+        swipeToClose: true,
+        // cssClass: 'filter-modal' //same css class
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        try {
+          // if(!detail.data.redirect) {
+          //   const loc: ILatLng = (new LatLngBounds(detail.data['building']['COORS'])).getCenter();
+          //   this.animateCamera(loc['lat'], loc['lng']);
+          //   detail.data['building']['POLYGON'].trigger(GoogleMapsEvent.POLYGON_CLICK, loc);
+          // } else {
+          //   // console.log("redirect to building page");
+          // }
+        } catch (error) {
+          // console.log("regular close");
+        }
+      });
+
+      this.closeEverything();
+      await modal.present();
+    }
+
+    async openBuildingListModal() {
+      const modal = await this.modalController.create({
+        component: BuildingListModalPage,
+        componentProps: {
+          buildings: this.buildings,
+        },
+        swipeToClose: true,
+        cssClass: 'filter-modal' //same css class
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        try {
+          // console.log(detail.data);
+          if(!detail.data.redirect) {
+            const loc: ILatLng = (new LatLngBounds(detail.data['building']['COORS'])).getCenter();
+            this.animateCamera(loc['lat'], loc['lng']);
+            detail.data['building']['POLYGON'].trigger(GoogleMapsEvent.POLYGON_CLICK, loc);
+          } else {
+            // console.log("redirect to building page");
+          }
+        } catch (error) {
+          // console.log("regular close");
+        }
+      });
+
+      this.closeEverything();
+      await modal.present();
     }
 
     closeEverything() {
@@ -517,13 +569,5 @@ export class HomePage implements OnInit {
       this.itemAvailable = false;
       this.filteredItems = [];
     }
-
-    printData() {
-      for (let i = 0; i < this.filters.length; i++) {
-        console.log("Name: " + this.filters[i]["FILTER_NAME"] + ", active: " + this.filters[i]['ACTIVE']);
-      }
-      console.log(this.filters);
-    }
-
 
 }

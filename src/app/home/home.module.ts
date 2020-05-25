@@ -9,6 +9,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
 import { BuildingModalPageModule } from './../building-modal/building-modal.module';
 import { FilterModalPageModule } from './../filter-modal/filter-modal.module';
+import { AboutPageModule } from './../about/about.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { FilterModalPageModule } from './../filter-modal/filter-modal.module';
     IonicModule,
     HomePageRoutingModule,
     BuildingModalPageModule,
-    FilterModalPageModule
+    FilterModalPageModule,
+    AboutPageModule
   ],
   declarations: [HomePage],
   entryComponents: []

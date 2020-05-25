@@ -1,0 +1,18 @@
+<ion-header color="translucent" translucent="true">
+  <ion-toolbar color="translucent" translucent="true">
+    <ion-title>Buildings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item *ngFor="let p of buildings; let i = index" (click)="dismiss(false, i)" lines="none" detail="false"
+  [class.platinum]="p['LEED_CERTIFICATION'] == 'PLATINUM'"
+  [class.gold]="p['LEED_CERTIFICATION'] == 'GOLD'"
+  [class.silver]="p['LEED_CERTIFICATION'] == 'SILVER'">
+    <ion-icon (click)="dismiss(true,i);" slot="end" name="business-outline"></ion-icon>
+    <ion-label>{{ p['SHORTENED_NAME'] }}</ion-label>
+    <ion-label class="ion-text-wrap">
+      <p>{{ p['FULL_NAME'] }}</p>
+    </ion-label>
+  </ion-item>
+</ion-content>

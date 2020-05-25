@@ -10,7 +10,6 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { HttpClientModule } from '@angular/common/http';
-// import { HTTP } from '@ionic-native/http/ngx';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { AppDataService } from './services/app-data.service';
@@ -26,8 +25,11 @@ export class CustomHammerConfig extends HammerGestureConfig {
   }
 }
 
+//import all the modals
 import { BuildingModalPageModule } from './building-modal/building-modal.module';
 import { FilterModalPageModule } from './filter-modal/filter-modal.module';
+import { BuildingListModalPageModule } from './building-list-modal/building-list-modal.module';
+import { AboutPageModule } from './about/about.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -44,12 +46,12 @@ import { FilterModalPageModule } from './filter-modal/filter-modal.module';
       driverOrder: ['indexeddb', 'websql', 'sqlite']
     }),
     BuildingModalPageModule,
-    FilterModalPageModule
+    FilterModalPageModule,
+    BuildingListModalPageModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    // HTTP,
     AppDataService,
     EventService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
