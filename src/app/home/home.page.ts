@@ -49,6 +49,7 @@ export class HomePage implements OnInit {
     public itemAvailable = false; //for search functionality
     public filteredItems = []; //for search functionality
     private toSearch = []; //for search functionality
+    private about = {};
 
     constructor(
       public toastCtrl: ToastController,
@@ -157,7 +158,7 @@ export class HomePage implements OnInit {
         }
 
 
-      })
+      });
 
       // await this.appData.getBuildingFilterNames(true, "home").then((data) => {
       //   this.buildings = data[0];
@@ -179,6 +180,7 @@ export class HomePage implements OnInit {
       // you have to wait the event.
       await this.platform.ready();
 
+      this.aboutData(); //execute with low priority
 
       // setTimeout(() => {
       //   console.log("animating camera");
@@ -506,29 +508,48 @@ export class HomePage implements OnInit {
       this.animateCamera(loc['lat'], loc['lng']);
     }
 
-    openAboutModal() {
+    aboutData() {
+      this.appData.getAboutData().then((val) => {
+        this.about = val;
+        console.log(this.about);
+        var tempT = [];
+        var tempD = [];
+        for (let i = 1; i <= this.about["NUM_GOALS"]; i++) {
+          tempT.push(this.about["GOAL TITLE " + i]);
+          tempD.push(this.about["GOAL DESCRIPTION " + i]);
+        }
+
+        var img;
+        if(this.about["IMAGE"]) {
+          if(this.about["IMAGE"].slice(0,3) == "data" || this.about["IMAGE"].slice(0,3) == "http" || this.about["IMAGE"].includes('www') || this.about["IMAGE"].includes('.edu')) {
+            //do nothing base64 data or external link
+          } else {
+            //image stored in images folder
+            this.about["IMAGE"] = 'assets/images/' + this.about["IMAGE"];
+          }
+        } else {
+          //if it does not exist
+          this.about["IMAGE"] = "assets/images/campus.jpg";
+        }
+
+        this.about["GOAL TITLES"] = tempT;
+        this.about["GOAL DESCRIPTIONS"] = tempD
+        console.log(this.about);
+      });
+
+    }
+
+    async openAboutModal() {
       const modal = await this.modalController.create({
         component: AboutPage,
         componentProps: {
-          settings: []
+          about: this.about
         },
         swipeToClose: true,
-        // cssClass: 'filter-modal' //same css class
+        cssClass: 'about-modal' //same css class
       });
 
-      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
-        try {
-          // if(!detail.data.redirect) {
-          //   const loc: ILatLng = (new LatLngBounds(detail.data['building']['COORS'])).getCenter();
-          //   this.animateCamera(loc['lat'], loc['lng']);
-          //   detail.data['building']['POLYGON'].trigger(GoogleMapsEvent.POLYGON_CLICK, loc);
-          // } else {
-          //   // console.log("redirect to building page");
-          // }
-        } catch (error) {
-          // console.log("regular close");
-        }
-      });
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {});
 
       this.closeEverything();
       await modal.present();

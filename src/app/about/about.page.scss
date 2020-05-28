@@ -1,0 +1,62 @@
+.quote {
+  color: #69bb7b;
+  margin: auto;
+}
+
+.visionTitle {
+  margin-top: 4vh;
+  font-size: 37px;
+  padding-left: 13px;
+  background: linear-gradient(45deg, green, transparent);
+}
+
+.visionBody {
+  margin-top: 1vh;
+  font-size: 15px;
+  color: #78C299;
+  padding-left: 22px;
+}
+
+.goalsTitle {
+  background: gainsboro;
+}
+
+.goalsBody {
+  padding-left: 15px;
+  color: #78C299;
+}
+
+.goalTitle {
+  background: linear-gradient(45deg, green, transparent);
+  font-size: 22px;
+  margin-right: -89vw;
+}
+
+.goalBody {
+  padding-left: 15px;
+  color: #78C299;
+}
+
+.settingsIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.uniCard {
+  height: auto;
+}
+
+.credits {
+  --background: url(../../assets/images/cool-background.png) 0 0/100% 100% no-repeat
+}
+
+.creditImage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.creditText {
+  margin-top: 19px;
+  margin-bottom: -13px;
+}

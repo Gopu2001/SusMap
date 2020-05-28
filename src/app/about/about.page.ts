@@ -8,6 +8,8 @@ import { ModalController } from '@ionic/angular';
 })
 export class AboutPage implements OnInit {
 
+  about = {};
+
   constructor(
     private modalController: ModalController
   ) { }

@@ -1,9 +1,48 @@
 <ion-header color="translucent" translucent="true">
   <ion-toolbar color="translucent" translucent="true">
-    <ion-title>About the Map</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="dismiss();" onclick="dismiss();" defaultHref="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      About the Map
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-icon class="settingsIcon" name="information-circle-outline"></ion-icon>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  
+<ion-content class="ion-padding">
+  <ion-card class="uniCard" button="true" href="{{about['LINK']}}" target="_blank">
+    <img width="auto" height="auto" src="{{about['IMAGE']}}">
+    <ion-card-header>
+      <ion-card-subtitle class="ion-text-wrap">{{about["LOCATION"]}}</ion-card-subtitle>
+      <ion-card-title class="ion-text-wrap">{{about["UNIVERSITY_NAME"]}}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <i class="ion-text-center quote">"{{about['SLOGAN']}}"</i>
+    </ion-card-content>
+  </ion-card>
+  <h2 class="visionTitle">Our Vision</h2>
+  <p class="visionBody">{{about['VISION']}}</p>
+  <br><br><br>
+  <ion-item-divider class="goals" sticky="true">
+    <ion-label class="goalsTitle">{{about['GOAL_TITLE']}}</ion-label>
+  </ion-item-divider>
+  <p class="goalsBody">{{about['GOAL_BODY']}}</p>
+  <br>
+  <div *ngFor="let g of about['GOAL TITLES']; let i = index">
+    <ion-item lines="none">
+      <ion-icon slot="end" name="arrow-down-circle-outline"></ion-icon>
+      <ion-label class="ion-text-wrap goalTitle" slot=start>{{about["GOAL TITLES"][i]}}</ion-label>
+    </ion-item>
+    <p class="goalBody">{{about["GOAL DESCRIPTIONS"][i]}}</p>
+  </div>
+  <div class="credits ion-padding">
+    <img class="creditImage" width="436px" src="assets/images/Sustainability_Logo.png">
+    <h4 class="ion-text-center">Map Created by Department of Sustainability at UC Merced</h4>
+    <p class="creditText">Contact <a href="mailto:mmaxwell@ucmerced.edu?subject=Map%20feedback" target="_blank">Mark Maxwell</a> for Questions/Feedback</p>
+    <p>CREATE YOUR OWN MAP <a href="#">HERE</a> FOR YOUR OWN SCHOOL</p>
+    <small>Some icons derived from <a href="icons8.com" target="_blank">icons8.com</a></small>
+  </div>
 </ion-content>

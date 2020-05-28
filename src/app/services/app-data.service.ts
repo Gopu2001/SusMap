@@ -167,6 +167,14 @@ export class AppDataService {
     });
   }
 
+  async getAboutData() {
+    return await new Promise<any>((resolve, reject) => {
+      this.buildPromise("ABOUT", true, "about").then((val) => {
+        resolve(val[0]);
+      });
+    });
+  }
+
   // updateFilterData(filters) {
   //   this.filterNames = filters;
   // }
