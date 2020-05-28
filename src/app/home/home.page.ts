@@ -511,7 +511,7 @@ export class HomePage implements OnInit {
     aboutData() {
       this.appData.getAboutData().then((val) => {
         this.about = val;
-        console.log(this.about);
+        // console.log(this.about);
         var tempT = [];
         var tempD = [];
         for (let i = 1; i <= this.about["NUM_GOALS"]; i++) {
@@ -534,7 +534,7 @@ export class HomePage implements OnInit {
 
         this.about["GOAL TITLES"] = tempT;
         this.about["GOAL DESCRIPTIONS"] = tempD
-        console.log(this.about);
+        // console.log(this.about);
       });
 
     }

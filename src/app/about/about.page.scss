@@ -27,7 +27,7 @@
 }
 
 .goalTitle {
-  background: linear-gradient(45deg, green, transparent);
+  background: linear-gradient(-45deg, #69BC15, transparent);
   font-size: 22px;
   margin-right: -89vw;
 }
@@ -47,7 +47,9 @@
 }
 
 .credits {
-  --background: url(../../assets/images/cool-background.png) 0 0/100% 100% no-repeat
+  background: url(./../../assets/images/cool-background.png);
+  margin: -15px;
+  margin-top: 0px;
 }
 
 .creditImage {
