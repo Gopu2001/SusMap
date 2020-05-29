@@ -37,15 +37,13 @@ export class AppComponent implements OnInit {
 
   async initializeApp() {
     // get filter and building data
-    await this.appData.getBuildingFilterNames(true, "app").then((data) => {
-      // console.log(data);
-      this.events.publish("Building and Filter Names", data); //so there is no repeat
-      this.buildings = data[0];
-      for (let i = 0; i < this.buildings.length; i++) {
-        this.buildings[i]['URL'] = "/folder/" + this.buildings[i]['BUILDING_ID'];
-      }
-      this.filters = data[1];
-    });
+    // await this.events.subscribe("Building and Filter Names", async (data :any) => {
+    //   this.buildings = data[0];
+    //   for (let i = 0; i < this.buildings.length; i++) {
+    //     this.buildings[i]['URL'] = "/folder/" + this.buildings[i]['BUILDING_ID'];
+    //   }
+    //   this.filters = data[1];
+    // });
 
     this.platform.ready().then(() => {
       // google maps
