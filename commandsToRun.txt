@@ -1,3 +1,4 @@
 ionic cordova build browser --prod --release
 cp www/* docs
 inside docs run ln -s index.html 404.html
+cp platforms/browser/config.xml into docs folder
