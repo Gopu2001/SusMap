@@ -24,8 +24,8 @@ const routes: Routes = [
     loadChildren: () => import('./about/about.module').then( m => m.AboutPageModule)
   },
   {
-    path: '**',
-    redirectTo: '',
+    path: ':catchall_must_be_last',
+    redirectTo: 'home',
     pathMatch: 'full'
     // loadChildren: () => import('./error404/error404.module').then( m => m.Error404PageModule)
   },
