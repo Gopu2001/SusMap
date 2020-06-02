@@ -43,6 +43,7 @@ export class HomePage implements OnInit {
     public map: GoogleMap;
     private dataFlag = false; //used in couplation of loading controller
     public loading; //loading controller
+    private toastFlag = false;
     // @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
     private pressFlag = false; //press and hold for filter items
     public search = false; //for search functionality
@@ -82,6 +83,89 @@ export class HomePage implements OnInit {
       //   this.filters = data[1];
       // });
 
+      //get building data and filter names
+      this.appData.getBuildingFilterNames(true, "home").then(async (data) => {
+        this.buildings = data[0];
+        this.filters = data[1];
+        console.log("got it");
+
+        // this.events.publish("Building and Filter Names", data); //so there is no repeat
+
+        //load the map
+        await this.loadMap();
+
+        //close the fab when map is clicked
+        this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((latlng) => {
+          console.log("map click", latlng);
+          this.closeEverything();
+        });
+
+        //below is only possible with the data recieved
+
+        // add the buildings
+        this.addBuildings();
+
+        //get the filter data whenever
+        this.appData.getAllFilterData(true).then((data: []) => {
+          this.filters = data;
+
+          var promArr = []
+          for (let i = 0; i < this.filters.length; i++) {
+            promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
+          }
+
+          forkJoin(promArr).subscribe((data: []) => {
+            //following must be included after the filters
+            for (let i = 0; i < this.filters.length; i++) {
+              this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
+                for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
+                  //set each marker visible according to active status
+                  this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
+                }
+              });
+            }
+            this.dataFlag = true;
+            //try to dismiss the loading if it is necessary
+            try {
+              this.loading.dismiss();
+            } catch (error) {
+              console.log("not needed: " + error);
+            }
+            console.log("added all markers and listeners");
+          });
+
+        });
+
+        // updated event filters active status from menu
+        for (let i = 0; i < this.filters.length; i++) {
+
+          //make filter active/not active
+          await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
+            // update active status
+            this.filters[i]['ACTIVE'] = data['ACTIVE'];
+
+            //first check if data has come in
+            if(!this.dataFlag) {
+              console.log("U GOTTA WAIT");
+              this.loading.present().then(() => {
+                this.loading.onWillDismiss.then(() => {
+
+                  this.changeStatus(this.filters[i]['FILTER_NAME']);
+
+                });
+              });
+            } else {
+              if(!this.filters[i]['DATA'][0]['MARKER']) {
+                console.log("NO MARKER....AHH SHIT");
+              }
+              //if it has then update the visible status
+              this.changeStatus(this.filters[i]['FILTER_NAME']);
+            }
+
+          });
+        }
+      });
+
       this.loading = await this.loadingController.create({
         spinner: "bubbles",
         duration: 500*this.filters.length,
@@ -93,91 +177,7 @@ export class HomePage implements OnInit {
       // Since ngOnInit() is executed before `deviceready` event,
       // you have to wait the event.
       this.platform.ready().then(() => {
-        this.htmlInfoWindow = new HtmlInfoWindow()
-
-        //get building data and filter names
-        this.appData.getBuildingFilterNames(true, "home").then(async (data) => {
-          this.buildings = data[0];
-          this.filters = data[1];
-          console.log("got it");
-
-          // this.events.publish("Building and Filter Names", data); //so there is no repeat
-
-          //load the map
-          await this.loadMap();
-
-          //close the fab when map is clicked
-          this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
-            console.log("map click");
-            this.closeEverything();
-          });
-
-          //below is only possible with the data recieved
-
-          // add the buildings
-          this.addBuildings();
-
-          //get the filter data whenever
-          this.appData.getAllFilterData(true).then((data: []) => {
-            this.filters = data;
-
-            var promArr = []
-            for (let i = 0; i < this.filters.length; i++) {
-              promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
-            }
-
-            forkJoin(promArr).subscribe((data: []) => {
-              //following must be included after the filters
-              for (let i = 0; i < this.filters.length; i++) {
-                this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
-                  for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-                    //set each marker visible according to active status
-                    this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
-                  }
-                });
-              }
-              this.dataFlag = true;
-              //try to dismiss the loading if it is necessary
-              try {
-                this.loading.dismiss();
-              } catch (error) {
-                console.log("not needed: " + error);
-              }
-              console.log("added all markers and listeners");
-            });
-
-          });
-
-          // updated event filters active status from menu
-          for (let i = 0; i < this.filters.length; i++) {
-
-            //make filter active/not active
-            await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
-              // update active status
-              this.filters[i]['ACTIVE'] = data['ACTIVE'];
-
-              //first check if data has come in
-              if(!this.dataFlag) {
-                console.log("U GOTTA WAIT");
-                this.loading.present().then(() => {
-                  this.loading.onWillDismiss.then(() => {
-
-                    this.changeStatus(this.filters[i]['FILTER_NAME']);
-
-                  });
-                });
-              } else {
-                if(!this.filters[i]['DATA'][0]['MARKER']) {
-                  console.log("NO MARKER....AHH SHIT");
-                }
-                //if it has then update the visible status
-                this.changeStatus(this.filters[i]['FILTER_NAME']);
-              }
-
-            });
-          }
-
-        });
+        this.htmlInfoWindow = new HtmlInfoWindow();
       });
 
       this.aboutData(); //execute with low priority
