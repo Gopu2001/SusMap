@@ -117,7 +117,33 @@ export class HomePage implements OnInit {
           forkJoin(promArr).subscribe((data: []) => {
             //following must be included after the filters
             for (let i = 0; i < this.filters.length; i++) {
-              this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(() => {
+              //triggered by trigger function in changes status method
+              this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
+                if(!this.toastFlag) {
+                  const toast = await this.toastCtrl.create({
+                    header: "TIP",
+                    message: "Hold the filter icon to see a list of all filters",
+                    position: 'bottom',
+                    translucent: true,
+                    keyboardClose: true,
+                    cssClass: 'toast',
+                    color: 'light',
+                    buttons: [
+                      {
+                        side: 'end',
+                        role: 'cancel',
+                        icon: 'checkmark-done-circle',
+                        handler: () => {
+                          console.log("cancel clicked");
+                          toast.dismiss();
+                        }
+                      }
+                    ]
+                  });
+
+                  toast.present();
+                  this.toastFlag = true;
+                }
                 for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
                   //set each marker visible according to active status
                   this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
