@@ -44,7 +44,8 @@ export class HomePage implements OnInit {
     public map: GoogleMap;
     private dataFlag = false; //used in couplation of loading controller and loading data
     public loading; //loading controller
-    private toastFlag = false;
+    private toastFlagFilter = false;
+    private toastFlagLocation = false;
 
     private pressFlag = false; //press and hold for filter items
     public search = false; //for search functionality
@@ -55,7 +56,6 @@ export class HomePage implements OnInit {
     private about = {};
     private settings = {};
 
-    public locations: ILatLng[] = []; //locations to 'zoom' to
     public locationNumber = 1; //current location
 
     constructor(
@@ -152,14 +152,14 @@ export class HomePage implements OnInit {
 
       //close everything when map is clicked
       this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((latlng) => {
-        console.log("map click", latlng);
+        // console.log("map click", latlng);
         this.closeEverything();
       });
 
       //drag end check if need to add home only if no other spots
-      this.map.on(GoogleMapsEvent.MAP_DRAG_END).subscribe(() => {
-        console.log("map drag end")
-        console.log(this.map.getCameraTarget());
+      // this.map.on(GoogleMapsEvent.MAP_DRAG_END).subscribe(() => {
+      //   console.log("map drag end")
+      //   console.log(this.map.getCameraTarget());
         // var visibleReg: VisibleRegion = this.map.getVisibleRegion();
         // console.log(visibleReg.contains(this.locations[0]));
         // if(!visibleReg.contains(this.locations[0]) && this.locationNumber == -1) {
@@ -167,7 +167,7 @@ export class HomePage implements OnInit {
         // } else if(visibleReg.contains(this.locations[0]) && this.locationNumber == 0) {
         //   this.locationNumber = -1
         // }
-      });
+      // });
 
       //below is only possible with the data recieved
 
@@ -188,7 +188,7 @@ export class HomePage implements OnInit {
           for (let i = 0; i < this.filters.length; i++) {
             //triggered by trigger function in changes status method
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
-              if(!this.toastFlag) {
+              if(!this.toastFlagFilter) {
                 const toast = await this.toastCtrl.create({
                   header: "TIP",
                   message: "Hold the filter icon to see a list of all filters",
@@ -211,7 +211,7 @@ export class HomePage implements OnInit {
                 });
 
                 toast.present();
-                this.toastFlag = true;
+                this.toastFlagFilter = true;
               }
               for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
                 //set each marker visible according to active status
@@ -332,17 +332,43 @@ export class HomePage implements OnInit {
         zoom: 17,
         tilt: 0,
         // bearing: 140,
-        duration: 5000
+        duration: 10000
       });
     }
 
     handleLocationChange() {
-      this.animateCamera(this.locations[this.locationNumber]['lat'], this.locations[this.locationNumber]['lng']).then(() => {
+      this.animateCamera(this.settings["LOCATIONS"][this.locationNumber]['lat'], this.settings["LOCATIONS"][this.locationNumber]['lng']).then(() => {
         this.locationNumber += 1;
-        if(this.locationNumber ==  this.locations.length) {
+        if(this.locationNumber ==  this.settings["LOCATIONS"].length) {
           this.locationNumber = 0;
         }
       });
+
+      if(!this.toastFlagLocation) {
+        const toast = await this.toastCtrl.create({
+          header: "TIP",
+          message: "Click some filters on the top right to see what's available here in the area!",
+          position: 'bottom',
+          translucent: true,
+          keyboardClose: true,
+          cssClass: 'toast',
+          color: 'light',
+          buttons: [
+            {
+              side: 'end',
+              role: 'cancel',
+              icon: 'checkmark-done-circle',
+              handler: () => {
+                console.log("cancel clicked");
+                toast.dismiss();
+              }
+            }
+          ]
+        });
+
+        toast.present();
+        this.toastFlagLocation = true;
+      }
     }
 
     addBuildings() {
