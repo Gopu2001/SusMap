@@ -12,6 +12,7 @@ import { GoogleMaps,
   Polygon,
   Poly,
   HtmlInfoWindow,
+  VisibleRegion,
   MarkerIcon } from '@ionic-native/google-maps';
 import { mapStyle } from './mapStyle';
 import { EventService } from './../events/event.service';
@@ -41,16 +42,21 @@ export class HomePage implements OnInit {
     //   },
     // ];
     public map: GoogleMap;
-    private dataFlag = false; //used in couplation of loading controller
+    private dataFlag = false; //used in couplation of loading controller and loading data
     public loading; //loading controller
     private toastFlag = false;
-    // @ViewChild('filter_fab', {static: false}) filterFab: IonFab;
+
     private pressFlag = false; //press and hold for filter items
     public search = false; //for search functionality
     public itemAvailable = false; //for search functionality
     public filteredItems = []; //for search functionality
     private toSearch = []; //for search functionality
+
     private about = {};
+    private settings = {};
+
+    public locations: ILatLng[] = []; //locations to 'zoom' to
+    public locationNumber = 1; //current location
 
     constructor(
       public toastCtrl: ToastController,
@@ -78,118 +84,16 @@ export class HomePage implements OnInit {
 
     async ngOnInit() {
 
-      // await this.appData.getBuildingFilterNames(true, "home").then((data) => {
-      //   this.buildings = data[0];
-      //   this.filters = data[1];
-      // });
+      var pArr = []
+      pArr.push(this.appData.getOneLineData("SETTINGS"));
+      pArr.push(this.appData.getBuildingFilterNames(true, "home"));
+      pArr.push(this.appData.getOneLineData("ABOUT"));
 
-      //get building data and filter names
-      this.appData.getBuildingFilterNames(true, "home").then(async (data) => {
-        this.buildings = data[0];
-        this.filters = data[1];
-        console.log("got it");
-
-        // this.events.publish("Building and Filter Names", data); //so there is no repeat
-
-        //load the map
-        await this.loadMap();
-
-        //close the fab when map is clicked
-        this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((latlng) => {
-          console.log("map click", latlng);
-          this.closeEverything();
+      forkJoin(pArr).subscribe(async (data) => {
+        this.parseSettings(data[0]).then(() => {
+          this.parseBuildingFilterNames(data[1]); //for load map
         });
-
-        //below is only possible with the data recieved
-
-        // add the buildings
-        this.addBuildings();
-
-        //get the filter data whenever
-        this.appData.getAllFilterData(true).then((data: []) => {
-          this.filters = data;
-
-          var promArr = []
-          for (let i = 0; i < this.filters.length; i++) {
-            promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
-          }
-
-          forkJoin(promArr).subscribe((data: []) => {
-            //following must be included after the filters
-            for (let i = 0; i < this.filters.length; i++) {
-              //triggered by trigger function in changes status method
-              this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
-                if(!this.toastFlag) {
-                  const toast = await this.toastCtrl.create({
-                    header: "TIP",
-                    message: "Hold the filter icon to see a list of all filters",
-                    position: 'bottom',
-                    translucent: true,
-                    keyboardClose: true,
-                    cssClass: 'toast',
-                    color: 'light',
-                    buttons: [
-                      {
-                        side: 'end',
-                        role: 'cancel',
-                        icon: 'checkmark-done-circle',
-                        handler: () => {
-                          console.log("cancel clicked");
-                          toast.dismiss();
-                        }
-                      }
-                    ]
-                  });
-
-                  toast.present();
-                  this.toastFlag = true;
-                }
-                for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-                  //set each marker visible according to active status
-                  this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
-                }
-              });
-            }
-            this.dataFlag = true;
-            //try to dismiss the loading if it is necessary
-            try {
-              this.loading.dismiss();
-            } catch (error) {
-              console.log("not needed: " + error);
-            }
-            console.log("added all markers and listeners");
-          });
-
-        });
-
-        // updated event filters active status from menu
-        for (let i = 0; i < this.filters.length; i++) {
-
-          //make filter active/not active
-          await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
-            // update active status
-            this.filters[i]['ACTIVE'] = data['ACTIVE'];
-
-            //first check if data has come in
-            if(!this.dataFlag) {
-              console.log("U GOTTA WAIT");
-              this.loading.present().then(() => {
-                this.loading.onWillDismiss.then(() => {
-
-                  this.changeStatus(this.filters[i]['FILTER_NAME']);
-
-                });
-              });
-            } else {
-              if(!this.filters[i]['DATA'][0]['MARKER']) {
-                console.log("NO MARKER....AHH SHIT");
-              }
-              //if it has then update the visible status
-              this.changeStatus(this.filters[i]['FILTER_NAME']);
-            }
-
-          });
-        }
+        this.parseAbout(data[2]);
       });
 
       this.loading = await this.loadingController.create({
@@ -206,35 +110,197 @@ export class HomePage implements OnInit {
         this.htmlInfoWindow = new HtmlInfoWindow();
       });
 
-      this.aboutData(); //execute with low priority
+      // this.aboutData(); //execute with low priority
 
-      // setTimeout(() => {
-      //   console.log("animating camera");
-        // this.map.animateCamera({
-        //   target: {lat: 37.363595, lng: -120.425361},
-        //   zoom: 16.5,
-        //   tilt: 0,
-        //   // bearing: 140,
-        //   duration: 15000
-        // }).then(() => {
-        //   alert("Camera target has been changed");
-        // });
-      // }, 8000);
+    }
 
-      // this.filterFab = angular.element(document.getElementsByClassName("filter_fab"));
+    async parseSettings(data) {
+      return await new Promise<any>((res, rej) => {
+        try {
+          this.settings = data;
+          var locs: ILatLng[] = [];
+          for (let i = 1; i <= this.settings["LOCATIONS"]; i++) {
+            var temp: ILatLng = {
+              lat: parseFloat(this.settings["LATITUDE " + i]),
+              lng: parseFloat(this.settings["LONGITUDE " + i])
+            }
+            locs.push(temp);;
+            delete this.settings["LATITUDE " + i];
+            delete this.settings["LONGITUDE " + i];
+          }
+          this.settings["LOCATIONS"] = locs;
+          this.settings["ZOOM"] = parseFloat(this.settings["ZOOM"]);
+          this.settings["MIN_ZOOM"] = parseFloat(this.settings["MIN_ZOOM"]);
+          this.settings["MAX_ZOOM"] = parseFloat(this.settings["MAX_ZOOM"]);
+          res();
+        } catch (e) {
+          console.log(e);
+          rej();
+        }
+      });
+    }
+
+    async parseBuildingFilterNames(data) {
+      this.buildings = data[0];
+      this.filters = data[1];
+      // console.log("got it");
+
+      // this.events.publish("Building and Filter Names", data); //so there is no repeat
+
+      //load the map
+      await this.loadMap();
+
+      //close everything when map is clicked
+      this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((latlng) => {
+        // console.log("map click", this.map.getCameraTarget());
+        this.closeEverything();
+      });
+
+      //drag end check if need to add home only if no other spots
+      // this.map.on(GoogleMapsEvent.MAP_DRAG_END).subscribe(() => {
+        // console.log("map drag end")
+        // var visibleReg: VisibleRegion = this.map.getVisibleRegion();
+        // console.log(visibleReg.contains(this.locations[0]));
+        // if(!visibleReg.contains(this.locations[0]) && this.locationNumber == -1) {
+        //   this.locationNumber = 0;
+        // } else if(visibleReg.contains(this.locations[0]) && this.locationNumber == 0) {
+        //   this.locationNumber = -1
+        // }
+      // });
+
+      //below is only possible with the data recieved
+
+      // add the buildings
+      this.addBuildings();
+
+      //get the filter data whenever
+      this.appData.getAllFilterData(true).then((data: []) => {
+        this.filters = data;
+
+        var promArr = []
+        for (let i = 0; i < this.filters.length; i++) {
+          promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
+        }
+
+        forkJoin(promArr).subscribe((data: []) => {
+          //following must be included after the filters
+          for (let i = 0; i < this.filters.length; i++) {
+            //triggered by trigger function in changes status method
+            this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
+              if(!this.toastFlag) {
+                const toast = await this.toastCtrl.create({
+                  header: "TIP",
+                  message: "Hold the filter icon to see a list of all filters",
+                  position: 'bottom',
+                  translucent: true,
+                  keyboardClose: true,
+                  cssClass: 'toast',
+                  color: 'light',
+                  buttons: [
+                    {
+                      side: 'end',
+                      role: 'cancel',
+                      icon: 'checkmark-done-circle',
+                      handler: () => {
+                        console.log("cancel clicked");
+                        toast.dismiss();
+                      }
+                    }
+                  ]
+                });
+
+                toast.present();
+                this.toastFlag = true;
+              }
+              for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
+                //set each marker visible according to active status
+                this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
+              }
+            });
+          }
+          this.dataFlag = true;
+          //try to dismiss the loading if it is necessary
+          try {
+            this.loading.dismiss();
+          } catch (error) {
+            console.log("not needed: " + error);
+          }
+          console.log("added all markers and listeners");
+        });
+
+      });
+
+      // updated event filters active status from menu
+      for (let i = 0; i < this.filters.length; i++) {
+
+        //make filter active/not active
+        await this.events.subscribe(this.filters[i]['FILTER_NAME'], (data: any) => {
+          // update active status
+          this.filters[i]['ACTIVE'] = data['ACTIVE'];
+
+          //first check if data has come in
+          if(!this.dataFlag) {
+            console.log("U GOTTA WAIT");
+            this.loading.present().then(() => {
+              this.loading.onWillDismiss.then(() => {
+
+                this.changeStatus(this.filters[i]['FILTER_NAME']);
+
+              });
+            });
+          } else {
+            if(!this.filters[i]['DATA'][0]['MARKER']) {
+              console.log("NO MARKER....AHH SHIT");
+            }
+            //if it has then update the visible status
+            this.changeStatus(this.filters[i]['FILTER_NAME']);
+          }
+
+        });
+      }
+    }
+
+    parseAbout(val) {
+      this.about = val;
+      // console.log(this.about);
+      var tempT = [];
+      var tempD = [];
+      for (let i = 1; i <= this.about["NUM_GOALS"]; i++) {
+        tempT.push(this.about["GOAL TITLE " + i]);
+        tempD.push(this.about["GOAL DESCRIPTION " + i]);
+      }
+
+      var img;
+      if(this.about["IMAGE"]) {
+        if(this.about["IMAGE"].slice(0,3) == "data" || this.about["IMAGE"].slice(0,3) == "http" || this.about["IMAGE"].includes('www') || this.about["IMAGE"].includes('.edu')) {
+          //do nothing base64 data or external link
+        } else {
+          //image stored in images folder
+          this.about["IMAGE"] = 'assets/images/' + this.about["IMAGE"];
+        }
+      } else {
+        //if it does not exist
+        this.about["IMAGE"] = "assets/images/campus.jpg";
+      }
+
+      this.about["GOAL TITLES"] = tempT;
+      this.about["GOAL DESCRIPTIONS"] = tempD;
+      // console.log(this.about);
     }
 
     loadMap() {
       let style = [];
       style = mapStyle;
 
+      // const pos: ILatLng = {
+      //   lat: 37.36491424991542,
+      //   lng: -120.42406683144043
+      // };
+
       this.map = GoogleMaps.create('map_canvas', {
         camera: {
-          target: {
-            lat: 37.363595,
-            lng: -120.425361
-          },
-          zoom: 16,
+          target: this.settings["LOCATIONS"][0],
+          zoom: this.settings["ZOOM"],
           tilt: 0,
         },
         'gestures': {
@@ -243,26 +309,38 @@ export class HomePage implements OnInit {
         styles: style,
         preferences: {
           zoom: {
-            minZoom: 15,
-            maxZoom: 17.5
+            minZoom: this.settings["MIN_ZOOM"],
+            maxZoom: this.settings["MAX_ZOOM"]
           },
         }
       });
 
+      // this.locations.push(pos);
+      // this.locationNumber = -1; //only home and home is visible
+
       this.map.setIndoorEnabled(true);
-      this.map.setCompassEnabled(false);
+      // this.map.setCompassEnabled(false);
       this.map.setMyLocationEnabled(false);
       this.map.setMyLocationButtonEnabled(false);
     }
 
-    animateCamera(lat, long) {
+    async animateCamera(lat, long) {
       console.log("animating camera");
       this.map.animateCamera({
         target: {lat: lat, lng: long},
         zoom: 17,
         tilt: 0,
         // bearing: 140,
-        duration: 2000
+        duration: 5000
+      });
+    }
+
+    handleLocationChange() {
+      this.animateCamera(this.locations[this.locationNumber]['lat'], this.locations[this.locationNumber]['lng']).then(() => {
+        this.locationNumber += 1;
+        if(this.locationNumber ==  this.locations.length) {
+          this.locationNumber = 0;
+        }
       });
     }
 
@@ -400,9 +478,9 @@ export class HomePage implements OnInit {
             this.htmlInfoWindow.setContent(frame, {
               "text-align": 'center',
               "min-height": "20vh",
-              "max-height": "40vh",
+              // "max-height": "40vh",
               "min-width": "45vw",
-              "max-width": "65vw",
+              // "max-width": "65vw",
               "padding": "0px",
               "margin": "-1vw", //offset
             });
@@ -446,6 +524,7 @@ export class HomePage implements OnInit {
     }
 
     stop_close(event: any) {
+      event.preventDefault(); //to avoid error
       event.stopPropagation();
     }
 
@@ -532,37 +611,6 @@ export class HomePage implements OnInit {
         item['POLYGON'].trigger(GoogleMapsEvent.POLYGON_CLICK, loc);
       }
       this.animateCamera(loc['lat'], loc['lng']);
-    }
-
-    aboutData() {
-      this.appData.getAboutData().then((val) => {
-        this.about = val;
-        // console.log(this.about);
-        var tempT = [];
-        var tempD = [];
-        for (let i = 1; i <= this.about["NUM_GOALS"]; i++) {
-          tempT.push(this.about["GOAL TITLE " + i]);
-          tempD.push(this.about["GOAL DESCRIPTION " + i]);
-        }
-
-        var img;
-        if(this.about["IMAGE"]) {
-          if(this.about["IMAGE"].slice(0,3) == "data" || this.about["IMAGE"].slice(0,3) == "http" || this.about["IMAGE"].includes('www') || this.about["IMAGE"].includes('.edu')) {
-            //do nothing base64 data or external link
-          } else {
-            //image stored in images folder
-            this.about["IMAGE"] = 'assets/images/' + this.about["IMAGE"];
-          }
-        } else {
-          //if it does not exist
-          this.about["IMAGE"] = "assets/images/campus.jpg";
-        }
-
-        this.about["GOAL TITLES"] = tempT;
-        this.about["GOAL DESCRIPTIONS"] = tempD
-        // console.log(this.about);
-      });
-
     }
 
     async openAboutModal() {

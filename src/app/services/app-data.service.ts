@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { Papa } from 'ngx-papaparse';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 
@@ -23,7 +22,6 @@ export class AppDataService {
 
   constructor(
     private storage: Storage,
-    private papa: Papa,
     private http: HttpClient
   ) { }
 
@@ -167,13 +165,14 @@ export class AppDataService {
     });
   }
 
-  async getAboutData() {
+  async getOneLineData(name: string) {
     return await new Promise<any>((resolve, reject) => {
-      this.buildPromise("ABOUT", true, "about").then((val) => {
+      this.buildPromise(name, true, name).then((val) => {
         resolve(val[0]);
       });
     });
   }
+
 
   // updateFilterData(filters) {
   //   this.filterNames = filters;
