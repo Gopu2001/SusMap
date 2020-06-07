@@ -152,13 +152,14 @@ export class HomePage implements OnInit {
 
       //close everything when map is clicked
       this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((latlng) => {
-        // console.log("map click", this.map.getCameraTarget());
+        console.log("map click", latlng);
         this.closeEverything();
       });
 
       //drag end check if need to add home only if no other spots
-      // this.map.on(GoogleMapsEvent.MAP_DRAG_END).subscribe(() => {
-        // console.log("map drag end")
+      this.map.on(GoogleMapsEvent.MAP_DRAG_END).subscribe(() => {
+        console.log("map drag end")
+        console.log(this.map.getCameraTarget());
         // var visibleReg: VisibleRegion = this.map.getVisibleRegion();
         // console.log(visibleReg.contains(this.locations[0]));
         // if(!visibleReg.contains(this.locations[0]) && this.locationNumber == -1) {
@@ -166,7 +167,7 @@ export class HomePage implements OnInit {
         // } else if(visibleReg.contains(this.locations[0]) && this.locationNumber == 0) {
         //   this.locationNumber = -1
         // }
-      // });
+      });
 
       //below is only possible with the data recieved
 

@@ -21,7 +21,7 @@ export class BuildingListModalPage implements OnInit {
 
   dismiss(redirect: boolean, i) {
     if(redirect) {
-      this.router.navigate(['/folder/' + this.building['BUILDING_ID']]);
+      this.router.navigate(['/folder/' + this.buildings[i]['BUILDING_ID']]);
     }
     this.modalController.dismiss({
       'dismissed': true,
