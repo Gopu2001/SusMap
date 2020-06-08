@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
-import { ToastController, Platform, MenuController, LoadingController, ModalController, IonFab } from '@ionic/angular';
+import { ToastController, Platform, LoadingController, ModalController, IonFab } from '@ionic/angular';
 import { GoogleMaps,
   GoogleMap,
   GoogleMapsEvent,
@@ -61,7 +61,6 @@ export class HomePage implements OnInit {
     constructor(
       public toastCtrl: ToastController,
       private platform: Platform,
-      private menu: MenuController,
       private events: EventService,
       private appData: AppDataService,
       private router: Router,
@@ -78,11 +77,8 @@ export class HomePage implements OnInit {
       }
     }
 
-    ionViewDidEnter() {
-      this.menu.enable(true,'insideMap');
-    }
-
     async ngOnInit() {
+
 
       var pArr = []
       pArr.push(this.appData.getOneLineData("SETTINGS"));
@@ -109,8 +105,6 @@ export class HomePage implements OnInit {
       this.platform.ready().then(() => {
         this.htmlInfoWindow = new HtmlInfoWindow();
       });
-
-      // this.aboutData(); //execute with low priority
 
     }
 
@@ -231,7 +225,7 @@ export class HomePage implements OnInit {
 
       });
 
-      // updated event filters active status from menu
+      // updated event filters active status
       for (let i = 0; i < this.filters.length; i++) {
 
         //make filter active/not active
@@ -337,38 +331,38 @@ export class HomePage implements OnInit {
     }
 
     handleLocationChange() {
-      this.animateCamera(this.settings["LOCATIONS"][this.locationNumber]['lat'], this.settings["LOCATIONS"][this.locationNumber]['lng']).then(() => {
+      this.animateCamera(this.settings["LOCATIONS"][this.locationNumber]['lat'], this.settings["LOCATIONS"][this.locationNumber]['lng']).then(async () => {
         this.locationNumber += 1;
         if(this.locationNumber ==  this.settings["LOCATIONS"].length) {
           this.locationNumber = 0;
         }
+        if(!this.toastFlagLocation) {
+          const toast = await this.toastCtrl.create({
+            header: "TIP",
+            message: "Click some filters on the top right to see what's available here in the area!",
+            position: 'bottom',
+            translucent: true,
+            keyboardClose: true,
+            cssClass: 'toast',
+            color: 'light',
+            buttons: [
+              {
+                side: 'end',
+                role: 'cancel',
+                icon: 'checkmark-done-circle',
+                handler: () => {
+                  console.log("cancel clicked");
+                  toast.dismiss();
+                }
+              }
+            ]
+          });
+
+          toast.present();
+          this.toastFlagLocation = true;
+        }
       });
 
-      if(!this.toastFlagLocation) {
-        const toast = await this.toastCtrl.create({
-          header: "TIP",
-          message: "Click some filters on the top right to see what's available here in the area!",
-          position: 'bottom',
-          translucent: true,
-          keyboardClose: true,
-          cssClass: 'toast',
-          color: 'light',
-          buttons: [
-            {
-              side: 'end',
-              role: 'cancel',
-              icon: 'checkmark-done-circle',
-              handler: () => {
-                console.log("cancel clicked");
-                toast.dismiss();
-              }
-            }
-          ]
-        });
-
-        toast.present();
-        this.toastFlagLocation = true;
-      }
     }
 
     addBuildings() {
