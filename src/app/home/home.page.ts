@@ -24,6 +24,7 @@ import { BuildingModalPage } from './../building-modal/building-modal.page';
 import { FilterModalPage } from './../filter-modal/filter-modal.page';
 import { BuildingListModalPage } from './../building-list-modal/building-list-modal.page';
 import { AboutPage } from './../about/about.page';
+import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
 
 @Component({
   selector: 'app-home',

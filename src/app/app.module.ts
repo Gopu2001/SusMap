@@ -31,6 +31,8 @@ import { FilterModalPageModule } from './filter-modal/filter-modal.module';
 import { BuildingListModalPageModule } from './building-list-modal/building-list-modal.module';
 import { AboutPageModule } from './about/about.module';
 
+import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -54,6 +56,7 @@ import { AboutPageModule } from './about/about.module';
     SplashScreen,
     AppDataService,
     EventService,
+    TextToSpeech,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig}
   ],
