@@ -195,7 +195,7 @@ export class HomePage implements OnInit {
                     {
                       side: 'end',
                       role: 'cancel',
-                      icon: 'checkmark-done-circle',
+                      icon: 'checkmark-outline',
                       handler: () => {
                         console.log("cancel clicked");
                         toast.dismiss();
@@ -205,6 +205,11 @@ export class HomePage implements OnInit {
                 });
 
                 toast.present();
+
+                setTimeout(() => {
+                  toast.dismiss();
+                }, 5000);
+
                 this.toastFlagFilter = true;
               }
               for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
@@ -349,7 +354,7 @@ export class HomePage implements OnInit {
               {
                 side: 'end',
                 role: 'cancel',
-                icon: 'checkmark-done-circle',
+                icon: 'checkmark-outline',
                 handler: () => {
                   console.log("cancel clicked");
                   toast.dismiss();
@@ -359,6 +364,10 @@ export class HomePage implements OnInit {
           });
 
           toast.present();
+
+          setTimeout(() => {
+            toast.dismiss();
+          }, 5000);
           this.toastFlagLocation = true;
         }
       });
@@ -554,7 +563,7 @@ export class HomePage implements OnInit {
     }
 
     onPress(filterData) {
-      console.log("press");
+      // console.log("press");
       this.pressFlag = true;
       setTimeout(() => {
         if(this.pressFlag) {
@@ -571,7 +580,7 @@ export class HomePage implements OnInit {
     }
 
     async openFilterModal(filterData) {
-      console.log("filter modal");
+      // console.log("filter modal");
       const modal = await this.modalController.create({
         component: FilterModalPage,
         componentProps: {
