@@ -555,8 +555,13 @@ export class HomePage implements OnInit {
     }
 
     stop_close(event: any) {
-      event.preventDefault(); //to avoid error
-      event.stopPropagation();
+      try {
+        event.preventDefault();
+      } catch(e) {}
+      try {
+        event.stopPropagation();
+      } catch(e) {}
+      return false;
     }
 
     publishEvent(eventName: string, data: any) {
