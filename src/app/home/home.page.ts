@@ -420,11 +420,13 @@ export class HomePage implements OnInit {
             `+ building['SHORTENED_NAME'] +`
           </div>`;
 
-          frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
-            //open modal instead
-            this.htmlInfoWindow.close();
-            this.goToPage(building);
-          });
+          if(building['LEED_CERTIFICATION']) { //if the building has a leed certification
+            frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
+              //open modal instead
+              this.htmlInfoWindow.close();
+              this.goToPage(building);
+            });
+          }
 
           this.htmlInfoWindow.setContent(frame, {
             "text-align": 'center',

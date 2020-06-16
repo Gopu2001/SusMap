@@ -30,10 +30,4 @@ export class BuildingListModalPage implements OnInit {
     });
   }
 
-  dismissReg() {
-    this.modalController.dismiss({
-      'dismissed': true,
-    });
-  }
-
 }

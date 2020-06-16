@@ -9,7 +9,8 @@
   [class.platinum]="p['LEED_CERTIFICATION'] == 'PLATINUM'"
   [class.gold]="p['LEED_CERTIFICATION'] == 'GOLD'"
   [class.silver]="p['LEED_CERTIFICATION'] == 'SILVER'">
-    <ion-icon (click)="dismiss(true,i);" slot="end" name="business-outline"></ion-icon>
+    <ion-icon *ngIf="!p['LEED_CERTIFICATION']" slot="end" name="business-outline"></ion-icon>
+    <ion-icon *ngIf="p['LEED_CERTIFICATION']" (click)="dismiss(true,i);" slot="end" name="business-outline"></ion-icon>
     <ion-label>{{ p['SHORTENED_NAME'] }}</ion-label>
     <ion-label class="ion-text-wrap">
       <p>{{ p['FULL_NAME'] }}</p>
