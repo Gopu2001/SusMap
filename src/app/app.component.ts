@@ -16,10 +16,6 @@ import { MenuController } from '@ionic/angular';
 })
 
 export class AppComponent implements OnInit {
-  public selectedIndex = -1;
-  public buildings = [];
-  public filters = [];
-  public imageURL = "assets/icon/Sustainability_logo.png";
 
   constructor(
     private platform: Platform,
@@ -56,29 +52,15 @@ export class AppComponent implements OnInit {
         'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU'
       });
 
-      //moved to a new building page
-      this.events.subscribe('page', (data: number) => {
-        this.selectedIndex = data-1;
-      });
-
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
-      console.log("inside plaform");
+      // console.log("inside plaform");
     });
-    console.log("after plaform");
+    // console.log("after plaform");
   }
 
   ngOnInit() {
-    const path = window.location.pathname.split('folder/')[1];
-    if (path !== undefined) {
-      this.selectedIndex = this.buildings.findIndex(page => page['BUILDING_ID'] === path);
-    }
-  }
-
-  publishEvent(eventName: string, data: any) {
-    this.events.publish(eventName, data);
-    // this.appData.updateFilterData(this.filters);
   }
 
 }
