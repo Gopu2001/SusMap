@@ -80,8 +80,6 @@ export class HomePage implements OnInit {
     }
 
     async ngOnInit() {
-
-
       var pArr = []
       pArr.push(this.appData.getOneLineData("SETTINGS"));
       pArr.push(this.appData.getBuildingFilterNames(true, "home"));
@@ -108,6 +106,8 @@ export class HomePage implements OnInit {
         this.htmlInfoWindow = new HtmlInfoWindow();
       });
 
+      //lowest priority
+      this.setToastFlags();
     }
 
     async parseSettings(data) {
@@ -324,6 +324,15 @@ export class HomePage implements OnInit {
       // this.map.setCompassEnabled(false);
       this.map.setMyLocationEnabled(false);
       this.map.setMyLocationButtonEnabled(false);
+    }
+
+    setToastFlags() {
+      this.appData.getUpdatedToastTips("Filter").then((val) => {
+        this.toastFlagFilter = val;
+      });
+      this.appData.getUpdatedToastTips("Location").then((val) => {
+        this.toastFlagLocation = val;
+      });
     }
 
     async animateCamera(lat, long) {

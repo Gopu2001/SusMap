@@ -165,6 +165,22 @@ export class AppDataService {
     });
   }
 
+  async getUpdatedToastTips(name: string) {
+    var n = name + "_TIPS";
+    return await new Promise<any>((resolve, reject) => {
+      this.storage.get(n).then((val) => {
+        if(val && val == true) {
+          resolve(true);
+        } else {
+          this.storage.set(n, true);
+          resolve(false);
+        }
+      }).catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+    });
+  }
 
   // updateFilterData(filters) {
   //   this.filterNames = filters;
