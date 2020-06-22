@@ -393,7 +393,7 @@ export class HomePage implements OnInit {
           {
             min: 3,
             max: 200,
-            url: 'assets/icon/parking_cluster.png',
+            url: 'assets/icon/parking.png',
             label: {
               bold: true,
               fontSize: 32,
