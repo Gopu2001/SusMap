@@ -452,6 +452,7 @@ export class HomePage implements OnInit {
             },
             flat: true,
             visible: true,
+            disableAutoPan: true,
             zIndex: 2,
             name: building['FULL_NAME'],
             des: building['DESCRIPTION']
