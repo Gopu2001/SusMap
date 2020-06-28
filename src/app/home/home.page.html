@@ -37,6 +37,10 @@
         </ion-fab-button>
       </ion-fab-list>
       <ion-fab-list side="end">
+        <ion-fab-button (click)="changeStatus('PARKING_MARKER_CLUSTER')">
+          <ion-icon *ngIf="!parkingMarkerFlag" name="car-sport-outline"></ion-icon>
+          <ion-icon *ngIf="parkingMarkerFlag" name="car-sport"></ion-icon>
+        </ion-fab-button>
         <ion-fab-button>
           <ion-icon name="business-outline" (click)="openBuildingListModal();"></ion-icon>
         </ion-fab-button>

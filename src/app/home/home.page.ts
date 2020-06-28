@@ -5,6 +5,7 @@ import { GoogleMaps,
   GoogleMapsEvent,
   Marker,
   MarkerCluster,
+  MarkerClusterOptions,
   GoogleMapsAnimation,
   MyLocation,
   ILatLng,
@@ -43,21 +44,34 @@ export class HomePage implements OnInit {
     //     data: { all the filter data }
     //   },
     // ];
+
+    //parking cluster feature
+    public parkingMarkerCluster; //type marker cluster
+    private parkingMarkerOpts = [];
+    private parkingMarkerClusterOpts: MarkerClusterOptions;
+    public parkingMarkerFlag = true;
+
+    //map
     public map: GoogleMap;
+
+    //toast and loading
     private dataFlag = false; //used in couplation of loading controller and loading data
     public loading; //loading controller
     private toastFlagFilter = false;
     private toastFlagLocation = false;
 
+    //press, hold, search features
     private pressFlag = false; //press and hold for filter items
     public search = false; //for search functionality
     public itemAvailable = false; //for search functionality
     public filteredItems = []; //for search functionality
     private toSearch = []; //for search functionality
 
+    //settings and about page
     private about = {};
     private settings = {};
 
+    //location feature
     public locationNumber = 1; //current location
 
     constructor(
@@ -386,24 +400,6 @@ export class HomePage implements OnInit {
     }
 
     addBuildings() {
-      //set up for parking marker cluster
-      let parkingMarkerCluster: MarkerCluster = this.map.addMarkerClusterSync({
-        markers: [],
-        icons: [
-          {
-            min: 3,
-            max: 200,
-            url: 'assets/icon/parking.png',
-            label: {
-              bold: true,
-              fontSize: 32,
-              color: "black"
-            }
-          }
-        ],
-        boundsDraw: false,
-        maxZoomLevel: 18
-      });
 
       for (let i = 0; i < this.buildings.length; i++) {
         const building = this.buildings[i];
@@ -468,11 +464,16 @@ export class HomePage implements OnInit {
             des: building['DESCRIPTION']
           }
 
-          parkingMarkerCluster.addMarker(parkingMarkerOpt);
+          //add to cluster and opts array
+          // this.parkingMarkerCluster.addMarker(parkingMarkerOpt, true);
+          this.parkingMarkerOpts.push(parkingMarkerOpt);
 
         }
         // when clicked open htmlinfo window.
         polygon.on(GoogleMapsEvent.POLYGON_CLICK).subscribe((data) => {
+          // if parking then set polygon clickable to false
+          polygon.setClickable(!building['PARKING']);
+
           // console.log("polygon clicked");
           // this.filterFab.close(); //close the fab
           // html info window when polygon is clicked
@@ -483,7 +484,7 @@ export class HomePage implements OnInit {
           `+ building['SHORTENED_NAME'] +`
           </div>`;
 
-          if(building['LEED_CERTIFICATION']) { //if the building has a leed certification
+          if(building['LEED_CERTIFICATION']) { //if the building has a leed certification, parking building do not have leed certifications
             frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
               //open modal instead
               this.htmlInfoWindow.close();
@@ -505,9 +506,6 @@ export class HomePage implements OnInit {
             zIndex: 0
           });
           this.htmlInfoWindow.open(centerMarker);
-
-          // if parking then set polygon clickable to false
-          polygon.setClickable(!building['PARKING']);
         });
 
         this.buildings[i]['POLYGON'] = polygon;
@@ -515,8 +513,40 @@ export class HomePage implements OnInit {
         this.toSearch.push(this.buildings[i]);
       }
 
+      //set up for parking marker cluster
+      this.parkingMarkerClusterOpts = {
+        markers: this.parkingMarkerOpts,
+        icons: [
+          {
+            min: 3,
+            max: 200,
+            url: 'assets/icon/parking.png',
+            label: {
+              bold: true,
+              fontSize: 32,
+              color: "black" //#24f42f
+            }
+          }
+        ],
+        boundsDraw: false,
+        maxZoomLevel: 18
+      };
+      this.parkingMarkerCluster = this.map.addMarkerClusterSync(this.parkingMarkerClusterOpts);
+
+      // turn on and off the parking
+      this.map.addEventListener("PARKING_MARKER_CLUSTER").subscribe(() => {
+        // console.log("parking marker cluster");
+        this.parkingMarkerFlag = !this.parkingMarkerFlag
+        if(this.parkingMarkerFlag) {
+          //if from false to true create marker cluster.
+          this.parkingMarkerCluster = this.map.addMarkerClusterSync(this.parkingMarkerClusterOpts);
+        } else {
+          this.parkingMarkerCluster.remove();
+        }
+      });
+
       //open html info window when parking marker is clicked
-      parkingMarkerCluster.on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
+      this.parkingMarkerCluster.on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
         let marker: Marker = params[1];
         let frame: HTMLElement = document.createElement('div');
 
@@ -538,6 +568,7 @@ export class HomePage implements OnInit {
 
         this.htmlInfoWindow.open(marker);
       });
+
     }
 
     async addIconToBuilding(iconUrl:string, buildingID) {
@@ -545,7 +576,7 @@ export class HomePage implements OnInit {
       this.buildings[ind]["ICONS"].push(iconUrl);
     }
 
-    //array of data of json objects to create the markers for
+    //array of data of json objects to create the markers for. This is only for one filter
     async createFilterMarkers(arr): Promise<any> {
       return await new Promise<any>((resolve, reject) => {
         for (let j = 0; j < arr.length; j++) {
