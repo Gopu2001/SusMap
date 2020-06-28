@@ -228,6 +228,8 @@ export class HomePage implements OnInit {
 
                 this.toastFlagFilter = true;
               }
+
+              //actual code to toggle the visibility of the markers
               for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
                 //set each marker visible according to active status
                 this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
@@ -308,10 +310,6 @@ export class HomePage implements OnInit {
       let style = [];
       style = mapStyle;
 
-      // const pos: ILatLng = {
-      //   lat: 37.36491424991542,
-      //   lng: -120.42406683144043
-      // };
 
       this.map = GoogleMaps.create('map_canvas', {
         camera: {
@@ -331,11 +329,7 @@ export class HomePage implements OnInit {
         }
       });
 
-      // this.locations.push(pos);
-      // this.locationNumber = -1; //only home and home is visible
-
       this.map.setIndoorEnabled(true);
-      // this.map.setCompassEnabled(false);
       this.map.setMyLocationEnabled(false);
       this.map.setMyLocationButtonEnabled(false);
     }
@@ -399,8 +393,7 @@ export class HomePage implements OnInit {
 
     }
 
-    addBuildings() {
-
+    async addBuildings() {
       for (let i = 0; i < this.buildings.length; i++) {
         const building = this.buildings[i];
 
@@ -533,10 +526,15 @@ export class HomePage implements OnInit {
       };
       this.parkingMarkerCluster = this.map.addMarkerClusterSync(this.parkingMarkerClusterOpts);
 
+      // this is for events from model in settings if possible
+      this.events.subscribe("PARKING_MARKER_CLUSTER", (data: any) => {
+        this.changeStatus("PARKING_MARKER_CLUSTER");
+      });
+
       // turn on and off the parking
       this.map.addEventListener("PARKING_MARKER_CLUSTER").subscribe(() => {
         // console.log("parking marker cluster");
-        this.parkingMarkerFlag = !this.parkingMarkerFlag
+        this.parkingMarkerFlag = !this.parkingMarkerFlag;
         if(this.parkingMarkerFlag) {
           //if from false to true create marker cluster.
           this.parkingMarkerCluster = this.map.addMarkerClusterSync(this.parkingMarkerClusterOpts);
@@ -568,8 +566,8 @@ export class HomePage implements OnInit {
 
         this.htmlInfoWindow.open(marker);
       });
-
     }
+
 
     async addIconToBuilding(iconUrl:string, buildingID) {
       const ind = this.buildings.findIndex(building => building['BUILDING_ID'] === buildingID);
