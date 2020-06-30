@@ -4,6 +4,7 @@ import { GoogleMaps,
   GoogleMap,
   GoogleMapsEvent,
   Marker,
+  MarkerOptions,
   MarkerCluster,
   MarkerClusterOptions,
   GoogleMapsAnimation,
@@ -40,8 +41,17 @@ export class HomePage implements OnInit {
     public filters = [];
     //   {
     //     Name: 'Economic',
-    //     active: false
-    //     data: { all the filter data }
+    //     active: false,
+    //     data: [{ all the filter data }],
+    //     markerData: [ {
+    //      title: //for the search only
+    //      description: //for the search only
+    //      icon: //for comparison purposes and marker clusterered icon
+    //      marker cluster:
+    //      marker cluster options: //so that you can recreate the cluster
+    //      marker options: //for the cluster. used to add multiple marker option data. if only size one then a singular marker will be created
+    //      marker: //for regular singular markers
+    //      }, ...]
     //   },
     // ];
 
@@ -190,7 +200,7 @@ export class HomePage implements OnInit {
 
         var promArr = []
         for (let i = 0; i < this.filters.length; i++) {
-          promArr.push(this.createFilterMarkers(this.filters[i]["DATA"]));
+          promArr.push(this.createFilterMarkers(this.filters[i]));
         }
 
         forkJoin(promArr).subscribe((data: []) => {
@@ -260,7 +270,7 @@ export class HomePage implements OnInit {
           if(!this.dataFlag) {
             console.log("U GOTTA WAIT");
             this.loading.present().then(() => {
-              this.loading.onWillDismiss.then(() => {
+              this.loading.onWillDismiss().then(() => {
 
                 this.changeStatus(this.filters[i]['FILTER_NAME']);
 
@@ -551,7 +561,7 @@ export class HomePage implements OnInit {
 
         frame.innerHTML = `
         <div class="ion-text-wrap">
-        <p>` + marker.get('name') + `</p>`
+        <p>` + marker.get('name') + `</p>`;
 
         for (let i = 0; i < marker.get('des').length; i++) {
           frame.innerHTML += `<small>`+ marker.get('des')[i] + `</small>`;
@@ -569,82 +579,151 @@ export class HomePage implements OnInit {
       });
     }
 
-
     async addIconToBuilding(iconUrl:string, buildingID) {
       const ind = this.buildings.findIndex(building => building['BUILDING_ID'] === buildingID);
       this.buildings[ind]["ICONS"].push(iconUrl);
     }
 
+    async createHtmlInfoWindow(marker: Marker) {
+      let frame: HTMLElement = document.createElement('div');
+
+      frame.innerHTML = `
+      <div class="markerInfoWindow">
+        <h5>` + marker.get('title') + `</h5>
+        <p><small>` + marker.get('description') + `<small></p>
+      </div>
+      `;
+
+      this.htmlInfoWindow.setContent(frame, {
+        "text-align": 'center',
+        "min-height": "20vh",
+        // "max-height": "40vh",
+        "min-width": "45vw",
+        // "max-width": "65vw",
+        "padding": "0px",
+        "margin": "-1vw", //offset
+      });
+
+      this.htmlInfoWindow.open(marker);
+    }
+
+    async createClusterMarkerOptions(markerDataIndv) {
+      let markerClusterDataOpt: MarkerClusterOptions;
+      // console.log(markerDataIndv['ICON']);
+      markerClusterDataOpt = {
+        markers: markerDataIndv['MARKER_OPTIONS'],
+        icons: [
+          {
+            min: 3,
+            max: 200,
+            url: markerDataIndv['ICON']['url'],
+            label: {
+              bold: true,
+              fontSize: 32,
+              color: "#24f42f"
+            }
+          }
+        ],
+        boundsDraw: false,
+        maxZoomLevel: 18
+      };
+      markerDataIndv['MARKER_CLUSTER_OPTIONS'] = markerClusterDataOpt;
+      markerDataIndv['MARKER_CLUSTER'] = this.map.addMarkerClusterSync(markerClusterDataOpt);
+
+      markerDataIndv['MARKER_CLUSTER'].on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
+        let marker: Marker = params[1];
+        this.createHtmlInfoWindow(marker);
+      });
+    }
+
     //array of data of json objects to create the markers for. This is only for one filter
-    async createFilterMarkers(arr): Promise<any> {
+    async createFilterMarkers(filt): Promise<any> {
       return await new Promise<any>((resolve, reject) => {
-        for (let j = 0; j < arr.length; j++) {
-          var icon;
-          if(arr[j]['ICON'].slice(0,3) == "data") {
-            arr[j]['ICON'] = arr[j]['ICON']; //base64 data
-          } else if(arr[j]['ICON']) {
-            arr[j]['ICON'] = 'assets/icon/'+arr[j]['ICON']+'.png';
+        //collapse the data
+        filt['MARKER_DATA'] = [];
+
+        for (let i = 0; i < filt['DATA'].length; i++) {
+          // current item = filt['DATA'][i]; or arr[j]
+
+          if(filt['DATA'][i]['ICON'].slice(0,3) == "data") {
+            filt['DATA'][i]['ICON'] = filt['DATA'][i]['ICON']; //base64 data
+          } else if(filt['DATA'][i]['ICON']) {
+            filt['DATA'][i]['ICON'] = 'assets/icon/'+ filt['DATA'][i]['ICON']+'.png';
           } else {
-            arr[j]['ICON'] = "assets/icon/favicon.png";
+            filt['DATA'][i]['ICON'] = "assets/icon/favicon.png";
           }
 
-          icon = {
-            url: arr[j]['ICON'],
+          var icon = {
+            url: filt['DATA'][i]['ICON'],
             size: {
               width: 35,
               height: 35
             }
           };
 
-          var marker = this.map.addMarkerSync({
+          if(parseInt(filt['DATA'][i]['BUILDING_ID']) != 0) {
+            this.addIconToBuilding(filt['DATA'][i]['ICON'], filt['DATA'][i]['BUILDING_ID']);
+          }
+
+          var markerOpt = {
             position: {
-              lat: arr[j]['LATITUDE'],
-              lng: arr[j]['LONGITUDE']
+              lat: filt['DATA'][i]['LATITUDE'],
+              lng: filt['DATA'][i]['LONGITUDE']
             },
             icon: icon,
-            visible: false,
+            visible: true,
             zIndex: 2,
-            disableAutoPan: true
-          });
+            disableAutoPan: true,
+            title: filt['DATA'][i]['TITLE'],
+            description: filt['DATA'][i]['DESCRIPTION']
+          }
 
-          arr[j]['MARKER'] = marker;
+          //if marker data is not empty check last elemnet of marker data and see if the icons match
+          if(filt['MARKER_DATA'].length != 0 && filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]['ICON']['url'] == filt['DATA'][i]['ICON']) {
+            //add into the list of markers
+            filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]['MARKER_OPTIONS'].push(markerOpt);
 
-          this.toSearch.unshift(arr[j]);
+          } else {
+            //then simply add a new one into marker data
+            var markerDataOPT = {};
+            markerDataOPT['TITLE'] = filt['DATA'][i]['TITLE'];
+            markerDataOPT['DESCRIPTION'] = filt['DATA'][i]['DESCRIPTION'];
+            markerDataOPT['ICON'] = icon;
+            markerDataOPT['MARKER_OPTIONS'] = [markerOpt];
 
-          marker.addEventListener(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-            // this.filterFab.close(); //close the fab
-            // html info window when marker is clicked
-            let frame: HTMLElement = document.createElement('div');
-            frame.innerHTML = `
-            <div class="markerInfoWindow">
-              <h5>` + arr[j]['TITLE'] + `</h5>
-              <p><small>` + arr[j]['DESCRIPTION'] + `<small></p>
-            </div>
-            `;
+            filt['MARKER_DATA'].push(markerDataOPT);
 
-            this.htmlInfoWindow.setContent(frame, {
-              "text-align": 'center',
-              "min-height": "20vh",
-              // "max-height": "40vh",
-              "min-width": "45vw",
-              // "max-width": "65vw",
-              "padding": "0px",
-              "margin": "-1vw", //offset
+          }
+
+        } //end for
+
+        for (let i = 0; i < filt['MARKER_DATA'].length; i++) {
+          // element = filt['MARKER_DATA'][i];
+          if(filt['MARKER_DATA'][i]['MARKER_OPTIONS'].length > 1) {
+            // marker options length is greater than 1 then cluster else create individual marker
+            this.createClusterMarkerOptions(filt['MARKER_DATA'][i]);
+          } else {
+            //create the individual marker
+            // console.log(filt['MARKER_DATA'][i]['MARKER_OPTIONS'][0]);
+            filt['MARKER_DATA'][i]['MARKER'] = this.map.addMarkerSync(filt['MARKER_DATA'][i]['MARKER_OPTIONS'][0]);
+
+            filt['MARKER_DATA'][i]['MARKER'].on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+              this.createHtmlInfoWindow(filt['MARKER_DATA'][i]['MARKER']);
             });
-
-            this.htmlInfoWindow.open(arr[j]['MARKER']);
-          });
-
-
-          if(j == arr.length - 1) {
-            resolve(j);
           }
         }
+        console.log(filt['MARKER_DATA']);
+        //go across and make markers for each of the ones that are not clustered
+        //otherwise form marker cluster options and THEN make a function call to create the marker cluster with parameter on whether to remove the marker cluster or create one.
+        //add into tosearch within this new loop
+        this.toSearch.unshift(filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]);
+
+        resolve(filt);
       });
     }
 
-    changeStatus(cluster) {
-      this.map.trigger(cluster);
+    changeStatus(filter_name) {
+      this.map.trigger(filter_name);
     }
 
     async goToPage(buildingData) { //open modal

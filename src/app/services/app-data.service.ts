@@ -13,7 +13,7 @@ export class AppDataService {
   private baseURLpt1 = "https://sheets.googleapis.com/v4/spreadsheets/" + this.SHEETS_ID + "/values/'";
   //surround the name of the sheet with a single quotes
   private baseURLpt2 = "'?key=" + this.SHEETS_API_KEY;
-
+  // ex api call https://sheets.googleapis.com/v4/spreadsheets/12jc_EN3Uh5RHPjjmI-osbys7oHBq9RPSWn71_4zhRSM/values/'ECONOMIC'?key=AIzaSyBZgDR2xgMIi_xlt-luKmuJPj2DUxsplnk
   private filters = [];
 
   private filterNames = [];
