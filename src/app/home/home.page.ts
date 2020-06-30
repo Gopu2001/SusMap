@@ -98,7 +98,7 @@ export class HomePage implements OnInit {
 
     async ionViewWillEnter() {
       try {
-        this.htmlInfoWindow.close();
+        this.closeEverything();
       } catch (error) {
       }
     }
@@ -240,9 +240,15 @@ export class HomePage implements OnInit {
               }
 
               //actual code to toggle the visibility of the markers
-              for (let j = 0; j < this.filters[i]['DATA'].length; j++) {
-                //set each marker visible according to active status
-                this.filters[i]['DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
+              for (let j = 0; j < this.filters[i]['MARKER_DATA'].length; j++) {
+                // const element = this.filters[i]['MARKER_DATA'][j];
+                if(this.filters[i]['MARKER_DATA'][j]['MARKER']) {
+                  //if it is an individual marker then
+                  this.filters[i]['MARKER_DATA'][j]['MARKER'].setVisible(this.filters[i]['ACTIVE']);
+                } else {
+                  // if it is a cluster then call function
+                  this.toggleClusterMarker(this.filters[i]['MARKER_DATA'][j], this.filters[i]['ACTIVE']);
+                }
               }
             });
           }
@@ -277,9 +283,9 @@ export class HomePage implements OnInit {
               });
             });
           } else {
-            if(!this.filters[i]['DATA'][0]['MARKER']) {
-              console.log("NO MARKER....AHH SHIT");
-            }
+            // if(!this.filters[i]['DATA'][0]['MARKER']) {
+            //   console.log("NO MARKER....AHH SHIT");
+            // }
             //if it has then update the visible status
             this.changeStatus(this.filters[i]['FILTER_NAME']);
           }
@@ -585,6 +591,7 @@ export class HomePage implements OnInit {
     }
 
     async createHtmlInfoWindow(marker: Marker) {
+      this.closeEverything();
       let frame: HTMLElement = document.createElement('div');
 
       frame.innerHTML = `
@@ -605,6 +612,20 @@ export class HomePage implements OnInit {
       });
 
       this.htmlInfoWindow.open(marker);
+    }
+
+    async toggleClusterMarker(markerDataIndv, create: boolean) {
+      if(create) {
+        markerDataIndv['MARKER_CLUSTER'] = this.map.addMarkerClusterSync(markerDataIndv['MARKER_CLUSTER_OPTIONS']);
+
+        markerDataIndv['MARKER_CLUSTER'].on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
+          let marker: Marker = params[1];
+          this.createHtmlInfoWindow(marker);
+        });
+      } else {
+        //otherwise remove the cluster
+        markerDataIndv['MARKER_CLUSTER'].remove();
+      }
     }
 
     async createClusterMarkerOptions(markerDataIndv) {
@@ -628,12 +649,6 @@ export class HomePage implements OnInit {
         maxZoomLevel: 18
       };
       markerDataIndv['MARKER_CLUSTER_OPTIONS'] = markerClusterDataOpt;
-      markerDataIndv['MARKER_CLUSTER'] = this.map.addMarkerClusterSync(markerClusterDataOpt);
-
-      markerDataIndv['MARKER_CLUSTER'].on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
-        let marker: Marker = params[1];
-        this.createHtmlInfoWindow(marker);
-      });
     }
 
     //array of data of json objects to create the markers for. This is only for one filter
@@ -650,7 +665,7 @@ export class HomePage implements OnInit {
           } else if(filt['DATA'][i]['ICON']) {
             filt['DATA'][i]['ICON'] = 'assets/icon/'+ filt['DATA'][i]['ICON']+'.png';
           } else {
-            filt['DATA'][i]['ICON'] = "assets/icon/favicon.png";
+            filt['DATA'][i]['ICON'] = "assets/icon/favicon_cluster.png";
           }
 
           var icon = {
@@ -671,7 +686,7 @@ export class HomePage implements OnInit {
               lng: filt['DATA'][i]['LONGITUDE']
             },
             icon: icon,
-            visible: true,
+            visible: false,
             zIndex: 2,
             disableAutoPan: true,
             title: filt['DATA'][i]['TITLE'],
@@ -712,7 +727,6 @@ export class HomePage implements OnInit {
             });
           }
         }
-        console.log(filt['MARKER_DATA']);
         //go across and make markers for each of the ones that are not clustered
         //otherwise form marker cluster options and THEN make a function call to create the marker cluster with parameter on whether to remove the marker cluster or create one.
         //add into tosearch within this new loop

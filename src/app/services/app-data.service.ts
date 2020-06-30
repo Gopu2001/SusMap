@@ -55,19 +55,6 @@ export class AppDataService {
             this.arrayToJSONWithHeaders(data['values']).then((parsedData: Array<any>) => {
               let copy = JSON.parse(JSON.stringify(parsedData));
 
-              //for filter and building with or without parking
-              for (let index = 0; index < copy.length; index++) {
-                try {
-                  delete copy[index]['MARKER'];
-                } catch (e) { }
-                try {
-                  delete copy[index]['POLYGON'];
-                } catch (e) { }
-              }
-
-              // console.log(parsedData);
-              // console.log(copy)
-              // console.log(debug);
               this.storage.set(name, copy);
 
               res(parsedData);
