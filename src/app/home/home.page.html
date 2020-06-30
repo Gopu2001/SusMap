@@ -7,7 +7,7 @@
     <ion-searchbar showCancelButton="always" type="text" placeholder="Search" inputmode="text" debounce="350" animated="true"  (ionChange)="getItems($event)" (ionCancel)="closeEverything();"></ion-searchbar>
     <ion-list class="search-filters" *ngIf="itemAvailable">
       <ion-item *ngFor="let it of filteredItems" (click)="closeEverything(); goToItem(it);">
-        <img class="search-icon" *ngIf="it['ICON']" src="{{it['ICON']}}" slot="end">
+        <img class="search-icon" *ngIf="it['ICON']" src="{{it['ICON']['url']}}" slot="end">
         <!-- building does not have icon -->
         <img class="search-icon" *ngIf="!it['ICON']" src="svg/business-outline.svg" slot="end">
 

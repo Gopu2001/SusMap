@@ -596,8 +596,8 @@ export class HomePage implements OnInit {
 
       frame.innerHTML = `
       <div class="markerInfoWindow">
-        <h5>` + marker.get('title') + `</h5>
-        <p><small>` + marker.get('description') + `<small></p>
+        <h5>` + marker.get('TITLE') + `</h5>
+        <p><small>` + marker.get('DESCRIPTION') + `<small></p>
       </div>
       `;
 
@@ -616,15 +616,18 @@ export class HomePage implements OnInit {
 
     async toggleClusterMarker(markerDataIndv, create: boolean) {
       if(create) {
-        markerDataIndv['MARKER_CLUSTER'] = this.map.addMarkerClusterSync(markerDataIndv['MARKER_CLUSTER_OPTIONS']);
+        if(!markerDataIndv['MARKER_CLUSTER']) {
+          markerDataIndv['MARKER_CLUSTER'] = this.map.addMarkerClusterSync(markerDataIndv['MARKER_CLUSTER_OPTIONS']);
 
-        markerDataIndv['MARKER_CLUSTER'].on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
-          let marker: Marker = params[1];
-          this.createHtmlInfoWindow(marker);
-        });
+          markerDataIndv['MARKER_CLUSTER'].on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
+            let marker: Marker = params[1];
+            this.createHtmlInfoWindow(marker);
+          });
+        }
       } else {
         //otherwise remove the cluster
         markerDataIndv['MARKER_CLUSTER'].remove();
+        delete markerDataIndv['MARKER_CLUSTER'];
       }
     }
 
@@ -689,12 +692,16 @@ export class HomePage implements OnInit {
             visible: false,
             zIndex: 2,
             disableAutoPan: true,
-            title: filt['DATA'][i]['TITLE'],
-            description: filt['DATA'][i]['DESCRIPTION']
+            "TITLE": filt['DATA'][i]['TITLE'],
+            "DESCRIPTION": filt['DATA'][i]['DESCRIPTION']
           }
 
           //if marker data is not empty check last elemnet of marker data and see if the icons match
           if(filt['MARKER_DATA'].length != 0 && filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]['ICON']['url'] == filt['DATA'][i]['ICON']) {
+            //set viisibility to true
+            filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]['MARKER_OPTIONS'][0]['visible'] = true;
+            markerOpt['visible'] = true;
+
             //add into the list of markers
             filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]['MARKER_OPTIONS'].push(markerOpt);
 
@@ -726,11 +733,11 @@ export class HomePage implements OnInit {
               this.createHtmlInfoWindow(filt['MARKER_DATA'][i]['MARKER']);
             });
           }
+          this.toSearch.unshift(filt['MARKER_DATA'][i]);
         }
         //go across and make markers for each of the ones that are not clustered
         //otherwise form marker cluster options and THEN make a function call to create the marker cluster with parameter on whether to remove the marker cluster or create one.
         //add into tosearch within this new loop
-        this.toSearch.unshift(filt['MARKER_DATA'][filt['MARKER_DATA'].length - 1]);
 
         resolve(filt);
       });
@@ -851,10 +858,17 @@ export class HomePage implements OnInit {
         loc = item['MARKER'].getPosition();
         item['MARKER'].setVisible(true);
         item['MARKER'].trigger(GoogleMapsEvent.MARKER_CLICK, loc);
-      } else {
+      } else if (item['POLYGON']){
         //building or parking
         loc = (new LatLngBounds(item['COORS'])).getCenter();
         item['POLYGON'].trigger(GoogleMapsEvent.POLYGON_CLICK, loc);
+      } else if(item['MARKER_CLUSTER_OPTIONS']) {
+        //cluster item
+        //see if cluster is active
+        loc = item['MARKER_OPTIONS'][0]['position'];
+        if(!item['MARKER_CLUSTER']) {
+          this.toggleClusterMarker(item, true);
+        }
       }
       this.animateCamera(loc['lat'], loc['lng']);
     }
