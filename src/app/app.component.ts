@@ -46,10 +46,10 @@ export class AppComponent implements OnInit {
       //test api AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU
       Environment.setEnv({
         // api key for server
-        'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU',
+        'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyDmyg-q690L-DdrczA7kI9R__msq3d93ag',
 
         // api key for local development
-        'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU'
+        'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyDmyg-q690L-DdrczA7kI9R__msq3d93ag'
       });
 
       this.statusBar.styleDefault();
