@@ -47,7 +47,7 @@ export class HomePage implements OnInit {
     //      title: //for the search only
     //      description: //for the search only
     //      icon: //for comparison purposes and marker clusterered icon
-    //      marker cluster:
+    //      marker cluster: //actual object?
     //      marker cluster options: //so that you can recreate the cluster
     //      marker options: //for the cluster. used to add multiple marker option data. if only size one then a singular marker will be created
     //      marker: //for regular singular markers
@@ -804,7 +804,7 @@ export class HomePage implements OnInit {
     }
 
     async openFilterModal(filterData) {
-      // console.log("filter modal");
+      // console.log(filterData);
       const modal = await this.modalController.create({
         component: FilterModalPage,
         componentProps: {
@@ -818,10 +818,7 @@ export class HomePage implements OnInit {
         try {
           // console.log(detail.data);
           if(detail.data.redirect) {
-            const loc: ILatLng = detail.data['marker'].getPosition();
-            this.animateCamera(loc['lat'], loc['lng']);
-            detail.data['marker'].setVisible(true);
-            detail.data['marker'].trigger(GoogleMapsEvent.MARKER_CLICK, loc);
+            this.goToItem(detail.data['markerDataItem']);
           }
         } catch (error) {
           // console.log("no redirect");

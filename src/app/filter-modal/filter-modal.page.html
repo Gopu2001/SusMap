@@ -17,10 +17,10 @@
     <ion-label>{{filter['DESCRIPTION']}}</ion-label>
   </ion-header> -->
 
-  <div class="ion-padding" *ngFor="let filt of filter['DATA']">
+  <div class="ion-padding" *ngFor="let filt of filter['MARKER_DATA']">
     <ion-item lines="none">
       <ion-label class="ion-text-wrap title" slot="start">{{filt['TITLE']}}</ion-label>
-      <img class="icon-filter" *ngIf="filt['ICON']" src="{{filt['ICON']}}" slot="end" (click)="dismiss(true, filt['MARKER'])">
+      <img class="icon-filter" *ngIf="filt['ICON']" src="{{filt['ICON']['url']}}" slot="end" (click)="dismiss(true, filt)">
     </ion-item>
     <p class="text">{{filt['DESCRIPTION']}}</p>
     <hr>

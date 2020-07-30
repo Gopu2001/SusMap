@@ -17,11 +17,11 @@ export class FilterModalPage implements OnInit {
   ngOnInit() {
   }
 
-  dismiss(redirect: boolean, marker) {
+  dismiss(redirect: boolean, markerDataItem) {
     this.modalController.dismiss({
       'dismissed': true,
       'redirect': redirect,
-      'marker': marker,
+      'markerDataItem': markerDataItem,
     });
   }
 

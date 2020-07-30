@@ -24,7 +24,7 @@ export class BuildingModalPage implements OnInit {
 
   ionViewWillEnter() {
     this.description = this.building['DESCRIPTION'].replace("---", "\n");
-    console.log(this.building);
+    // console.log(this.building);
     // var length = this.description.length;
     // var lines = 4;
     // //around 35 charcters per line for mobile
