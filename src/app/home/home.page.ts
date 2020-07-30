@@ -172,7 +172,7 @@ export class HomePage implements OnInit {
 
       //close everything when map is clicked
       this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((latlng) => {
-        // console.log("map click", latlng);
+        console.log("map click");
         this.closeEverything();
       });
 
@@ -437,7 +437,7 @@ export class HomePage implements OnInit {
         var strokeC = '#537ed0';
 
         //if it is a parking structure
-        if(building['PARKING'] == "TRUE") {
+        if(building['PARKING'].toUpperCase() == "TRUE") {
           fillC = '#808080';
           strokeC = '#454545';
         }
@@ -456,6 +456,7 @@ export class HomePage implements OnInit {
           //If this building is a parking lot
 
           polygon.setClickable(false);
+          // console.log("setting building clickable to false...")
 
           let parkingMarkerOpt = {
             position: (new LatLngBounds(this.buildings[i]['COORS'])).getCenter(),
@@ -482,7 +483,8 @@ export class HomePage implements OnInit {
         // when clicked open htmlinfo window.
         polygon.on(GoogleMapsEvent.POLYGON_CLICK).subscribe((data) => {
           // if parking then set polygon clickable to false
-          polygon.setClickable(!building['PARKING']);
+          polygon.setClickable(building['PARKING'].toUpperCase() == "FALSE");
+          // console.log("setting building clickable to " + building['PARKING'] == "FALSE")
 
           // console.log("polygon clicked");
           // this.filterFab.close(); //close the fab
