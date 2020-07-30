@@ -157,7 +157,7 @@ export class AppDataService {
     return await new Promise<any>((resolve, reject) => {
       this.storage.get(n).then((val) => {
         if(val && val == true) {
-          resolve(true);
+          resolve(false); //true
         } else {
           this.storage.set(n, true);
           resolve(false);
@@ -168,6 +168,7 @@ export class AppDataService {
       });
     });
   }
+
 
   // updateFilterData(filters) {
   //   this.filterNames = filters;

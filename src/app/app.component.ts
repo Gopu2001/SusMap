@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
         'API_KEY_FOR_BROWSER_RELEASE': 'AIzaSyDmyg-q690L-DdrczA7kI9R__msq3d93ag',
 
         // api key for local development
-        'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyDmyg-q690L-DdrczA7kI9R__msq3d93ag'
+        'API_KEY_FOR_BROWSER_DEBUG': 'AIzaSyB3DJoHHWjMK4ikT4XDom_sxxX2wzYrsfU'
       });
 
       this.statusBar.styleDefault();

@@ -1,6 +1,8 @@
 
 <ion-content [fullscreen]="true">
-  <div class="setSize">
+  <div class="setSize"
+  [class.withfooter] = "building['ICONS'].length != 0"
+  [class.nofooter] = "building['ICONS'].length == 0">
     <h2 class="ion-text-center">{{building["FULL_NAME"]}}</h2>
     <ion-item class="no-space" lines="none">
       <!-- <h6 class="ion-text-center" *ngIf="building['SHORTENED_NAME'] != building['FULL_NAME']">({{building['SHORTENED_NAME']}})</h6> -->
@@ -10,10 +12,13 @@
       <a *ngIf="building['LEED_CERTIFICATION']" slot="end" (click)="dismiss(true)"><ion-icon color="primary" name="arrow-forward-circle-outline"></ion-icon></a>
     </ion-item>
     <br><br>
-    <p scrollY="true" scrollX="False" class="ion-text-wrap ion-align-self-stretch">{{description}}</p>
+    <p scrollY="true" scrollX="False" class="ion-text-wrap ion-align-self-stretch description"
+    [class.withfooter] = "building['ICONS'].length != 0"
+    [class.nofooter] = "building['ICONS'].length == 0"
+    >{{description}}</p>
   </div>
 
-  <div class="footer">
+  <div *ngIf="building['ICONS'].length != 0" class="footer">
     <div class="scrollmenu" scrollX="true">
       <span *ngFor="let ic of building['ICONS']">
         <img src="{{ic}}" alt="" width="50px" height="50px">
