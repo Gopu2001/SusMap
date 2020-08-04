@@ -557,11 +557,17 @@ export class HomePage implements OnInit {
         if(this.parkingMarkerFlag) {
           //if from false to true create marker cluster.
           this.parkingMarkerCluster = this.map.addMarkerClusterSync(this.parkingMarkerClusterOpts);
+          this.openParkingMarkerCluster();
         } else {
           this.parkingMarkerCluster.remove();
         }
       });
 
+      this.openParkingMarkerCluster();
+
+    }
+
+    openParkingMarkerCluster() {
       //open html info window when parking marker is clicked
       this.parkingMarkerCluster.on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
         let marker: Marker = params[1];
