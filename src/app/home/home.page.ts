@@ -104,6 +104,8 @@ export class HomePage implements OnInit {
     }
 
     async ngOnInit() {
+      this.filters = [];
+      this.buildings = [];
       var pArr = []
       pArr.push(this.appData.getOneLineData("SETTINGS"));
       pArr.push(this.appData.getBuildingFilterNames(true, "home"));
