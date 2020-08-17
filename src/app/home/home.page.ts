@@ -28,7 +28,7 @@ import { FilterModalPage } from './../filter-modal/filter-modal.page';
 import { BuildingListModalPage } from './../building-list-modal/building-list-modal.page';
 import { AboutPage } from './../about/about.page';
 // import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-home',
@@ -86,7 +86,11 @@ export class HomePage implements OnInit {
     public locationNumber = 1; //current location
 
     //my location feature
-    public mylocationEnabled; //empty = blue
+    public mylocationEnabled = false;
+    private watch;
+    public mylocationMarker;
+    public mylocationCircle;
+    private mylocationFlag = false;
 
     constructor(
       public toastCtrl: ToastController,
@@ -633,7 +637,83 @@ export class HomePage implements OnInit {
       setTimeout(() => {
         toast.dismiss();
       }, 5000);
+    }
 
+    createMyLocation(lat, lng) {
+      this.mylocationMarker = this.map.addMarkerSync({
+        position: {
+          lat: lat,
+          lng: lng
+        },
+        title: "You are here!",
+        animation: "DROP",
+      });
+      this.mylocationMarker.on(GoogleMapsEvent.MARKER_CLICK).subscribe((p) => {
+        console.log("marker click");
+        this.mylocationMarker.showInfoWindow();
+      })
+
+      this.mylocationCircle = this.map.addCircleSync({
+        center: this.mylocationMarker.getPosition(),
+        radius: 10,
+        fillColor: "green",
+        strokeWidth: 1
+      });
+
+      // this.mylocationMarker.bindTo("position", this.mylocationCircle, "center");
+    }
+
+    updateMyLocation(lat, lng) {
+      try {
+        this.mylocationMarker.setPosition({
+          lat: lat,
+          lng: lng
+        });
+        this.mylocationCircle.setCenter(this.mylocationMarker.getPosition());
+      } catch (error) {
+        console.log(error); //in case the markers were not created
+        this.createMyLocation(lat, lng);
+      }
+
+    }
+
+    toggleMyLocation() {
+      console.log(this.mylocationEnabled);
+      if(!this.mylocationEnabled) {
+        this.geolocation.getCurrentPosition().then((data: Geoposition) => {
+          console.log(data.coords);
+          if(!this.mylocationFlag) {
+            this.createMyLocation(data.coords.latitude, data.coords.longitude);
+            this.mylocationFlag = true;
+          } else {
+            this.mylocationMarker.setVisible(true);
+            this.mylocationCircle.setVisible(true);
+            this.updateMyLocation(data.coords.latitude, data.coords.longitude);
+          }
+          this.animateCamera(data.coords.latitude, data.coords.longitude);
+          this.mylocationMarker.showInfoWindow();
+          this.mylocationEnabled = true;
+        }).catch((err) => {
+          console.log(err);
+          this.mylocationEnabled = false;
+        });
+
+        this.watch = this.geolocation.watchPosition().subscribe((data: Geoposition) => {
+          try {
+            this.updateMyLocation(data.coords.latitude, data.coords.longitude);
+          } catch (err) {
+            console.log(err);
+            this.mylocationEnabled = false;
+          }
+
+        })
+
+      } else {
+        this.mylocationEnabled = false;
+        this.mylocationMarker.setVisible(false);
+        this.mylocationCircle.setVisible(false);
+        this.watch.unsubscribe();
+      }
     }
 
     async addIconToBuilding(iconUrl:string, buildingID) {

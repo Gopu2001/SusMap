@@ -61,7 +61,7 @@
     <div class="mylocation ion-float-right ion-justify-content-end ion-align-items-center"
     [class.enabled]="mylocationEnabled"
     [class.disabled]="!mylocationEnabled">
-      <img src="assets/icon/location.png" alt="my-location">
+      <img (click)="toggleMyLocation();" src="assets/icon/location.png" alt="my-location">
     </div>
   </div>
 </ion-content>
