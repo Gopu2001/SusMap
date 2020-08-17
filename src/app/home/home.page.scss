@@ -61,7 +61,37 @@ ion-header {
 }
 
 .toast {
+  --background: var(--ion-color-light);
+}
 
+.loading {
+  .toast-container{
+    background: var(--ion-color-warning) !important;
+    --background: var(--ion-color-warning) !important;
+    background-color: var(--ion-color-warning) !important;
+    --background-color: var(--ion-color-warning) !important;
+  }
+  .toast-md .toast-message{
+    color: red !important;
+    --color: red !important;
+  }
+
+  ion-toast {
+    background: var(--ion-color-warning) !important;
+    --background: var(--ion-color-warning) !important;
+  }
+}
+
+.done {
+  background: var(--ion-color-success);
+}
+
+.error {
+  --background: var(--ion-color-danger);
+}
+
+.closed {
+  background: var(--ion-color-tertiary);
 }
 
 .location {

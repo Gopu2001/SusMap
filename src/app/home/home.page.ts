@@ -65,6 +65,9 @@ export class HomePage implements OnInit {
     //map
     public map: GoogleMap;
 
+    //main toast variable
+    private toast;
+
     //toast and loading
     private dataFlag = false; //used in couplation of loading controller and loading data
     public loading; //loading controller
@@ -91,6 +94,12 @@ export class HomePage implements OnInit {
     public mylocationMarker;
     public mylocationCircle;
     private mylocationFlag = false;
+    private geoOptions = {
+      maximumAge: 4000,
+      timeout: 5000,
+      enableHighAccuracy: true
+    }
+    private pressUpLocation = false;
 
     constructor(
       public toastCtrl: ToastController,
@@ -224,34 +233,7 @@ export class HomePage implements OnInit {
             //triggered by trigger function in changes status method
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
               if(!this.toastFlagFilter) {
-                this.createToast("TIP", "Hold the filter icon to see a list of all filters", 'light');
-                // const toast = await this.toastCtrl.create({
-                //   header: "TIP",
-                //   message: "Hold the filter icon to see a list of all filters",
-                //   position: 'bottom',
-                //   translucent: true,
-                //   keyboardClose: true,
-                //   cssClass: 'toast',
-                //   color: 'light',
-                //   buttons: [
-                //     {
-                //       side: 'end',
-                //       role: 'cancel',
-                //       icon: 'checkmark-outline',
-                //       handler: () => {
-                //         console.log("cancel clicked");
-                //         toast.dismiss();
-                //       }
-                //     }
-                //   ]
-                // });
-                //
-                // toast.present();
-                //
-                // setTimeout(() => {
-                //   toast.dismiss();
-                // }, 5000);
-
+                this.createToast("TIP", "Hold the filter icon to see a list of all filters");
                 this.toastFlagFilter = true;
               }
 
@@ -393,33 +375,7 @@ export class HomePage implements OnInit {
           this.locationNumber = 0;
         }
         if(!this.toastFlagLocation) {
-          this.createToast("TIP", "Click some filters on the top right to see what's available here in the area!", 'light');
-          // const toast = await this.toastCtrl.create({
-          //   header: "TIP",
-          //   message: "Click some filters on the top right to see what's available here in the area!",
-          //   position: 'bottom',
-          //   translucent: true,
-          //   keyboardClose: true,
-          //   cssClass: 'toast',
-          //   color: 'light',
-          //   buttons: [
-          //     {
-          //       side: 'end',
-          //       role: 'cancel',
-          //       icon: 'checkmark-outline',
-          //       handler: () => {
-          //         console.log("cancel clicked");
-          //         toast.dismiss();
-          //       }
-          //     }
-          //   ]
-          // });
-          //
-          // toast.present();
-          //
-          // setTimeout(() => {
-          //   toast.dismiss();
-          // }, 5000);
+          this.createToast("TIP", "Click some filters on the top right to see what's available here in the area!");
           this.toastFlagLocation = true;
         }
       });
@@ -610,15 +566,23 @@ export class HomePage implements OnInit {
       });
     }
 
-    async createToast(header, message, color) {
-      const toast = await this.toastCtrl.create({
+    async dismissActiveToast() {
+      try {
+        await this.toast.dismiss();
+      } catch (error) {
+      }
+    }
+
+    async createToast(header, message, cssClass="toast") {
+      await this.dismissActiveToast();
+      this.toast = await this.toastCtrl.create({
         header: header,
         message: message,
         position: 'bottom',
         translucent: true,
         keyboardClose: true,
-        cssClass: 'toast',
-        color: color,
+        cssClass: cssClass, //doesnt work
+        duration: 5000,
         buttons: [
           {
             side: 'end',
@@ -626,20 +590,20 @@ export class HomePage implements OnInit {
             icon: 'checkmark-outline',
             handler: () => {
               console.log("cancel clicked");
-              toast.dismiss();
+              this.toast.dismiss();
             }
           }
         ]
       });
 
-      toast.present();
+      await this.toast.present();
 
-      setTimeout(() => {
-        toast.dismiss();
-      }, 5000);
+      // setTimeout(() => {
+      //   this.dismissActiveToast();
+      // }, 5000);
     }
 
-    createMyLocation(lat, lng) {
+    createMyLocation(lat, lng, acc) {
       this.mylocationMarker = this.map.addMarkerSync({
         position: {
           lat: lat,
@@ -655,7 +619,7 @@ export class HomePage implements OnInit {
 
       this.mylocationCircle = this.map.addCircleSync({
         center: this.mylocationMarker.getPosition(),
-        radius: 10,
+        radius: Math.abs(20-acc),
         fillColor: "green",
         strokeWidth: 1
       });
@@ -663,52 +627,61 @@ export class HomePage implements OnInit {
       // this.mylocationMarker.bindTo("position", this.mylocationCircle, "center");
     }
 
-    updateMyLocation(lat, lng) {
+    updateMyLocation(lat, lng, acc) {
       try {
         this.mylocationMarker.setPosition({
           lat: lat,
           lng: lng
         });
         this.mylocationCircle.setCenter(this.mylocationMarker.getPosition());
+        this.mylocationCircle.setRadius(Math.abs(20-acc));
       } catch (error) {
         console.log(error); //in case the markers were not created
-        this.createMyLocation(lat, lng);
+        this.createMyLocation(lat, lng, acc);
       }
 
     }
 
-    toggleMyLocation() {
+    async toggleMyLocation() {
       console.log(this.mylocationEnabled);
       if(!this.mylocationEnabled) {
-        this.geolocation.getCurrentPosition().then((data: Geoposition) => {
+        await this.createToast("Loading", "Retrieving location...", "loading");
+        this.geolocation.getCurrentPosition(this.geoOptions).then(async (data: Geoposition) => {
           console.log(data.coords);
+          //creating toast sucess
+          await this.createToast("Sucessfully turning on Location Service", "Hit the location (World) button to turn off location service. Hold the button for more options.", "done");
+
           if(!this.mylocationFlag) {
-            this.createMyLocation(data.coords.latitude, data.coords.longitude);
+            this.createMyLocation(data.coords.latitude, data.coords.longitude, data.coords.accuracy);
             this.mylocationFlag = true;
           } else {
             this.mylocationMarker.setVisible(true);
             this.mylocationCircle.setVisible(true);
-            this.updateMyLocation(data.coords.latitude, data.coords.longitude);
+            this.updateMyLocation(data.coords.latitude, data.coords.longitude, data.coords.accuracy);
           }
           this.animateCamera(data.coords.latitude, data.coords.longitude);
           this.mylocationMarker.showInfoWindow();
           this.mylocationEnabled = true;
+
+          this.watch = this.geolocation.watchPosition(this.geoOptions).subscribe((data: Geoposition) => {
+            try {
+              this.updateMyLocation(data.coords.latitude, data.coords.longitude, data.coords.accuracy);
+            } catch (err) {
+              console.log(err);
+              this.createToast("Error in Retrieving Location", "You may have disabled location on the device. Error message: " + err, "error");
+              this.mylocationEnabled = false;
+            }
+          });
         }).catch((err) => {
           console.log(err);
+          this.createToast("Error in Retrieving Location", "You may have disabled location on the device. Error message: " + err, "error");
           this.mylocationEnabled = false;
         });
 
-        this.watch = this.geolocation.watchPosition().subscribe((data: Geoposition) => {
-          try {
-            this.updateMyLocation(data.coords.latitude, data.coords.longitude);
-          } catch (err) {
-            console.log(err);
-            this.mylocationEnabled = false;
-          }
 
-        })
 
       } else {
+        this.createToast("Sucessfully turned off Location Service", "Hit the location (World) button to turn on location service again or hold for more options.", "closed");
         this.mylocationEnabled = false;
         this.mylocationMarker.setVisible(false);
         this.mylocationCircle.setVisible(false);
@@ -915,22 +888,34 @@ export class HomePage implements OnInit {
       this.events.publish(eventName, data);
     }
 
-    onPress(filterData) {
-      // console.log("press");
+    onPress(data, filter=true) {
+      console.log("press");
       this.pressFlag = true;
+      // this.pressUpLocation = true;
       setTimeout(() => {
         if(this.pressFlag) {
-          this.openFilterModal(filterData);
+          if(filter) {
+            this.openFilterModal(data);
+          } else {
+            console.log("mylocation hold");
+            // this.pressUpLocation = false;
+          }
+          this.pressFlag = false
         } else {
           // console.log("did not hold");
         }
       }, 500); //hold for 500 ms
     }
 
-    onPressUp() {
-      // console.log("press up");
-      this.pressFlag = false;
-    }
+    // onPressUp(filter=true) {
+    //   // console.log("press up");
+    //   // if(!filter && this.pressFlag){
+    //   //   console.log("press up location");
+    //   //   this.pressUpLocation = false;
+    //   //   this.toggleMyLocation();
+    //   // }
+    //   this.pressFlag = false;
+    // }
 
     async openFilterModal(filterData) {
       // console.log(filterData);
@@ -1047,6 +1032,17 @@ export class HomePage implements OnInit {
     }
 
     closeEverything() {
+      this.htmlInfoWindow.close();
+      let dummymarker = this.map.addMarkerSync({
+        title: 'dummy marker',
+        icon: 'red',
+        visible: false,
+        position: {
+          lat: 0,
+          lng: 0
+        }
+      });
+      this.htmlInfoWindow.open(dummymarker);
       this.htmlInfoWindow.close();
       this.search = false;
       this.itemAvailable = false;
