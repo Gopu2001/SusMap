@@ -113,6 +113,7 @@ export class HomePage implements OnInit {
     async ngOnInit() {
       console.log("inside ngoninit");
     }
+
     async buildMap() {
       var pArr = []
       pArr.push(this.appData.getOneLineData("SETTINGS"));
@@ -219,32 +220,33 @@ export class HomePage implements OnInit {
             //triggered by trigger function in changes status method
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
               if(!this.toastFlagFilter) {
-                const toast = await this.toastCtrl.create({
-                  header: "TIP",
-                  message: "Hold the filter icon to see a list of all filters",
-                  position: 'bottom',
-                  translucent: true,
-                  keyboardClose: true,
-                  cssClass: 'toast',
-                  color: 'light',
-                  buttons: [
-                    {
-                      side: 'end',
-                      role: 'cancel',
-                      icon: 'checkmark-outline',
-                      handler: () => {
-                        console.log("cancel clicked");
-                        toast.dismiss();
-                      }
-                    }
-                  ]
-                });
-
-                toast.present();
-
-                setTimeout(() => {
-                  toast.dismiss();
-                }, 5000);
+                this.createToast("TIP", "Hold the filter icon to see a list of all filters", 'light');
+                // const toast = await this.toastCtrl.create({
+                //   header: "TIP",
+                //   message: "Hold the filter icon to see a list of all filters",
+                //   position: 'bottom',
+                //   translucent: true,
+                //   keyboardClose: true,
+                //   cssClass: 'toast',
+                //   color: 'light',
+                //   buttons: [
+                //     {
+                //       side: 'end',
+                //       role: 'cancel',
+                //       icon: 'checkmark-outline',
+                //       handler: () => {
+                //         console.log("cancel clicked");
+                //         toast.dismiss();
+                //       }
+                //     }
+                //   ]
+                // });
+                //
+                // toast.present();
+                //
+                // setTimeout(() => {
+                //   toast.dismiss();
+                // }, 5000);
 
                 this.toastFlagFilter = true;
               }
@@ -387,32 +389,33 @@ export class HomePage implements OnInit {
           this.locationNumber = 0;
         }
         if(!this.toastFlagLocation) {
-          const toast = await this.toastCtrl.create({
-            header: "TIP",
-            message: "Click some filters on the top right to see what's available here in the area!",
-            position: 'bottom',
-            translucent: true,
-            keyboardClose: true,
-            cssClass: 'toast',
-            color: 'light',
-            buttons: [
-              {
-                side: 'end',
-                role: 'cancel',
-                icon: 'checkmark-outline',
-                handler: () => {
-                  console.log("cancel clicked");
-                  toast.dismiss();
-                }
-              }
-            ]
-          });
-
-          toast.present();
-
-          setTimeout(() => {
-            toast.dismiss();
-          }, 5000);
+          this.createToast("TIP", "Click some filters on the top right to see what's available here in the area!", 'light');
+          // const toast = await this.toastCtrl.create({
+          //   header: "TIP",
+          //   message: "Click some filters on the top right to see what's available here in the area!",
+          //   position: 'bottom',
+          //   translucent: true,
+          //   keyboardClose: true,
+          //   cssClass: 'toast',
+          //   color: 'light',
+          //   buttons: [
+          //     {
+          //       side: 'end',
+          //       role: 'cancel',
+          //       icon: 'checkmark-outline',
+          //       handler: () => {
+          //         console.log("cancel clicked");
+          //         toast.dismiss();
+          //       }
+          //     }
+          //   ]
+          // });
+          //
+          // toast.present();
+          //
+          // setTimeout(() => {
+          //   toast.dismiss();
+          // }, 5000);
           this.toastFlagLocation = true;
         }
       });
@@ -601,6 +604,36 @@ export class HomePage implements OnInit {
 
         this.htmlInfoWindow.open(marker);
       });
+    }
+
+    async createToast(header, message, color) {
+      const toast = await this.toastCtrl.create({
+        header: header,
+        message: message,
+        position: 'bottom',
+        translucent: true,
+        keyboardClose: true,
+        cssClass: 'toast',
+        color: color,
+        buttons: [
+          {
+            side: 'end',
+            role: 'cancel',
+            icon: 'checkmark-outline',
+            handler: () => {
+              console.log("cancel clicked");
+              toast.dismiss();
+            }
+          }
+        ]
+      });
+
+      toast.present();
+
+      setTimeout(() => {
+        toast.dismiss();
+      }, 5000);
+
     }
 
     async addIconToBuilding(iconUrl:string, buildingID) {
