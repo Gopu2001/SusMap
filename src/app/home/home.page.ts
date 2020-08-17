@@ -27,7 +27,8 @@ import { BuildingModalPage } from './../building-modal/building-modal.page';
 import { FilterModalPage } from './../filter-modal/filter-modal.page';
 import { BuildingListModalPage } from './../building-list-modal/building-list-modal.page';
 import { AboutPage } from './../about/about.page';
-import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
+// import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-home',
@@ -84,6 +85,9 @@ export class HomePage implements OnInit {
     //location feature
     public locationNumber = 1; //current location
 
+    //my location feature
+    public mylocationEnabled; //empty = blue
+
     constructor(
       public toastCtrl: ToastController,
       private platform: Platform,
@@ -92,8 +96,11 @@ export class HomePage implements OnInit {
       private router: Router,
       private zone: NgZone,
       public loadingController: LoadingController,
-      private modalController: ModalController
+      private modalController: ModalController,
+      private geolocation: Geolocation
     ) {
+      console.log("in constructor");
+      this.buildMap();
     }
 
     async ionViewWillEnter() {
@@ -104,8 +111,9 @@ export class HomePage implements OnInit {
     }
 
     async ngOnInit() {
-      this.filters = [];
-      this.buildings = [];
+      console.log("inside ngoninit");
+    }
+    async buildMap() {
       var pArr = []
       pArr.push(this.appData.getOneLineData("SETTINGS"));
       pArr.push(this.appData.getBuildingFilterNames(true, "home"));

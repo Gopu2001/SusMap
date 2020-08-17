@@ -52,9 +52,16 @@
         </ion-fab-button>
       </ion-fab-list>
     </ion-fab>
+
     <ion-button class="location" (click)="closeEverything(); handleLocationChange();" shape="round">
       <ion-icon *ngIf="locationNumber == 0" slot="icon-only" name="home-outline"></ion-icon>
       <ion-icon *ngIf="locationNumber != 0" slot="icon-only" name="locate-outline"></ion-icon>
     </ion-button>
+
+    <div class="mylocation ion-float-right ion-justify-content-end ion-align-items-center"
+    [class.enabled]="mylocationEnabled"
+    [class.disabled]="!mylocationEnabled">
+      <img src="assets/icon/location.png" alt="my-location">
+    </div>
   </div>
 </ion-content>
