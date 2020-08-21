@@ -5,9 +5,9 @@
   [class.nofooter] = "building['ICONS'].length == 0">
     <h2 class="ion-text-center">{{building["FULL_NAME"]}}</h2>
     <ion-item class="no-space" lines="none">
-      <!-- <h6 class="ion-text-center" *ngIf="building['SHORTENED_NAME'] != building['FULL_NAME']">({{building['SHORTENED_NAME']}})</h6> -->
-      <h6 class="ion-text-center" *ngIf="building['SHORTENED_NAME']">({{building['SHORTENED_NAME']}})</h6>
-      <h6 class="ion-text-center" *ngIf="!building['SHORTENED_NAME']">({{building['FULL_NAME']}})</h6>
+      <h6 class="ion-text-center" *ngIf="building['SHORTENED_NAME'] != building['FULL_NAME']">({{building['SHORTENED_NAME']}})</h6>
+      <!-- <h6 class="ion-text-center" *ngIf="building['SHORTENED_NAME']">({{building['SHORTENED_NAME']}})</h6> -->
+      <!-- <h6 class="ion-text-center" *ngIf="!building['SHORTENED_NAME']">({{building['FULL_NAME']}})</h6> -->
       <a *ngIf="!building['LEED_CERTIFICATION']" slot="end"><ion-icon color="medium" name="arrow-forward-circle-outline"></ion-icon></a>
       <a *ngIf="building['LEED_CERTIFICATION']" slot="end" (click)="dismiss(true)"><ion-icon color="primary" name="arrow-forward-circle-outline"></ion-icon></a>
     </ion-item>

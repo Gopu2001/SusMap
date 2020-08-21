@@ -466,16 +466,21 @@ export class HomePage implements OnInit {
 
           frame.innerHTML = `
           <div class="infoWindow ion-text-nowrap">
-          `+ building['SHORTENED_NAME'] +`
+          `+ building['FULL_NAME'] +`
           </div>`;
 
-          if(building['LEED_CERTIFICATION']) { //if the building has a leed certification, parking building do not have leed certifications
-            frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
-              //open modal instead
-              this.htmlInfoWindow.close();
-              this.goToPage(building);
-            });
+          if(building['LEED_CERTIFICATION'] && building['PARKING']) { //if the building has a leed certification, parking building do not have leed certifications
+            frame.innerHTML = `
+            <div class="infoWindow ion-text-nowrap">
+            `+ building['SHORTENED_NAME'] +`
+            </div>`;
           }
+          
+          frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
+            //open modal instead
+            // this.htmlInfoWindow.close();
+            this.goToPage(building);
+          });
           this.htmlInfoWindow.setContent(frame, {
             "text-align": 'center',
             "height": "5vh",
@@ -907,16 +912,6 @@ export class HomePage implements OnInit {
       }, 500); //hold for 500 ms
     }
 
-    // onPressUp(filter=true) {
-    //   // console.log("press up");
-    //   // if(!filter && this.pressFlag){
-    //   //   console.log("press up location");
-    //   //   this.pressUpLocation = false;
-    //   //   this.toggleMyLocation();
-    //   // }
-    //   this.pressFlag = false;
-    // }
-
     async openFilterModal(filterData) {
       // console.log(filterData);
       const modal = await this.modalController.create({
@@ -1032,18 +1027,19 @@ export class HomePage implements OnInit {
     }
 
     closeEverything() {
-      this.htmlInfoWindow.close();
-      let dummymarker = this.map.addMarkerSync({
-        title: 'dummy marker',
-        icon: 'red',
-        visible: false,
-        position: {
-          lat: 0,
-          lng: 0
-        }
-      });
-      this.htmlInfoWindow.open(dummymarker);
-      this.htmlInfoWindow.close();
+      // this.htmlInfoWindow.close();
+
+      // let dummymarker = this.map.addMarkerSync({
+      //   title: 'dummy marker',
+      //   icon: 'red',
+      //   visible: false,
+      //   position: {
+      //     lat: 0,
+      //     lng: 0
+      //   }
+      // });
+      // this.htmlInfoWindow.open(dummymarker);
+      // this.htmlInfoWindow.close();
       this.search = false;
       this.itemAvailable = false;
       this.filteredItems = [];

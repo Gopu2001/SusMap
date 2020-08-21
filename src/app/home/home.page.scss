@@ -95,17 +95,21 @@ ion-header {
 }
 
 .location {
-  top: 88vh;
+  // top: 88vh;
+  position: absolute;
+  bottom: 3vh;
 }
 
 .mylocation {
-  // top: 79vh;
-  // right: 1vw;
+  // top: 77vh;
+  // border-radius: 30px;
+  // width: 7vh;
+  // height: 7vh;
   top: 77vh;
-  // right: 2vw;
   border-radius: 30px;
-  width: 7vh;
-  height: 7vh;
+  width: 6vh;
+  height: 6vh;
+  right: 1vw;
 }
 
 .mylocation.enabled {
