@@ -41,6 +41,9 @@ MIT
 @ionic-native/core
 MIT
 
+@ionic-native/geolocation
+MIT
+
 @ionic-native/google-maps
 MIT
 
@@ -48,9 +51,6 @@ MIT
 MIT
 
 @ionic-native/status-bar
-MIT
-
-@ionic-native/text-to-speech
 MIT
 
 @ionic/angular

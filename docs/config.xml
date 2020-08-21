@@ -15,6 +15,15 @@
         <error-code>404</error-code>
         <location>/404.html</location>
     </error-page>
+    <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
+        <string>Enable Location access to see where you are and other sustainability features near you</string>
+    </edit-config>
+    <edit-config file="*-Info.plist" mode="merge" target="NSLocationAlwaysAndWhenInUseUsageDescription">
+        <string>Enable Location access to see where you are and other sustainability features near you</string>
+    </edit-config>
+    <edit-config file="*-Info.plist" mode="merge" target="NSLocationAlwaysUsageDescription">
+        <string>Enable Location access to see where you are and other sustainability features near you</string>
+    </edit-config>
     <preference name="ScrollEnabled" value="false" />
     <preference name="android-minSdkVersion" value="19" />
     <preference name="BackupWebStorage" value="none" />
