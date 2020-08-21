@@ -233,7 +233,7 @@ export class HomePage implements OnInit {
             //triggered by trigger function in changes status method
             this.map.addEventListener(this.filters[i]['FILTER_NAME']).subscribe(async () => {
               if(!this.toastFlagFilter) {
-                this.createToast("TIP", "Hold the filter icon to see a list of all filters");
+                this.createToast("TIP", "Hold the filter icon to see a list of all filters", "light");
                 this.toastFlagFilter = true;
               }
 
@@ -375,7 +375,7 @@ export class HomePage implements OnInit {
           this.locationNumber = 0;
         }
         if(!this.toastFlagLocation) {
-          this.createToast("TIP", "Click some filters on the top right to see what's available here in the area!");
+          this.createToast("TIP", "Click some filters on the top right to see what's available here in the area!", "light");
           this.toastFlagLocation = true;
         }
       });
@@ -469,13 +469,13 @@ export class HomePage implements OnInit {
           `+ building['FULL_NAME'] +`
           </div>`;
 
-          if(building['LEED_CERTIFICATION'] && building['PARKING']) { //if the building has a leed certification, parking building do not have leed certifications
+          if(building['LEED_CERTIFICATION'] && !(building['PARKING']=="TRUE") && building['SHORTENED_NAME']) { //if the building has a leed certification, parking building do not have leed certifications
             frame.innerHTML = `
             <div class="infoWindow ion-text-nowrap">
             `+ building['SHORTENED_NAME'] +`
             </div>`;
           }
-          
+
           frame.getElementsByClassName("infoWindow")[0].addEventListener("click", () => {
             //open modal instead
             // this.htmlInfoWindow.close();
@@ -578,15 +578,16 @@ export class HomePage implements OnInit {
       }
     }
 
-    async createToast(header, message, cssClass="toast") {
+    async createToast(header, message, toastC) {
       await this.dismissActiveToast();
       this.toast = await this.toastCtrl.create({
         header: header,
         message: message,
         position: 'bottom',
-        translucent: true,
+        translucent: (toastC == "light"),
         keyboardClose: true,
-        cssClass: cssClass, //doesnt work
+        // cssClass: cssClass, //doesnt work
+        color: toastC,
         duration: 5000,
         buttons: [
           {
@@ -648,13 +649,13 @@ export class HomePage implements OnInit {
     }
 
     async toggleMyLocation() {
-      console.log(this.mylocationEnabled);
+      // console.log(this.mylocationEnabled);
       if(!this.mylocationEnabled) {
-        await this.createToast("Loading", "Retrieving location...", "loading");
+        await this.createToast("Loading", "Retrieving location...", "warning");
         this.geolocation.getCurrentPosition(this.geoOptions).then(async (data: Geoposition) => {
-          console.log(data.coords);
+          // console.log(data.coords);
           //creating toast sucess
-          await this.createToast("Sucessfully turning on Location Service", "Hit the location (World) button to turn off location service. Hold the button for more options.", "done");
+          await this.createToast("Sucessfully turned ON Location Service", "Hit the location (World) button to turn off location service. Hold the button for more options.", "success");
 
           if(!this.mylocationFlag) {
             this.createMyLocation(data.coords.latitude, data.coords.longitude, data.coords.accuracy);
@@ -669,24 +670,25 @@ export class HomePage implements OnInit {
           this.mylocationEnabled = true;
 
           this.watch = this.geolocation.watchPosition(this.geoOptions).subscribe((data: Geoposition) => {
+            // console.log("getting location");
             try {
               this.updateMyLocation(data.coords.latitude, data.coords.longitude, data.coords.accuracy);
             } catch (err) {
-              console.log(err);
-              this.createToast("Error in Retrieving Location", "You may have disabled location on the device. Error message: " + err, "error");
+              // console.log(err);
+              this.createToast("Error in Retrieving Location", "You may have disabled location on the device. Error message: " + err.message, "danger");
               this.mylocationEnabled = false;
             }
           });
         }).catch((err) => {
-          console.log(err);
-          this.createToast("Error in Retrieving Location", "You may have disabled location on the device. Error message: " + err, "error");
+          // console.log(err);
+          this.createToast("Error in Retrieving Location", "You may have disabled location on the device. Error message: " + err.message, "danger");
           this.mylocationEnabled = false;
         });
 
 
 
       } else {
-        this.createToast("Sucessfully turned off Location Service", "Hit the location (World) button to turn on location service again or hold for more options.", "closed");
+        this.createToast("Sucessfully turned OFF Location Service", "Hit the location (World) button to turn on location service again or hold for more options.", "tertiary");
         this.mylocationEnabled = false;
         this.mylocationMarker.setVisible(false);
         this.mylocationCircle.setVisible(false);

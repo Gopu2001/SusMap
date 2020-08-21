@@ -60,39 +60,55 @@ ion-header {
   overflow: hidden;
 }
 
-.toast {
-  --background: var(--ion-color-light);
-}
-
-.loading {
-  .toast-container{
-    background: var(--ion-color-warning) !important;
-    --background: var(--ion-color-warning) !important;
-    background-color: var(--ion-color-warning) !important;
-    --background-color: var(--ion-color-warning) !important;
-  }
-  .toast-md .toast-message{
-    color: red !important;
-    --color: red !important;
-  }
-
-  ion-toast {
-    background: var(--ion-color-warning) !important;
-    --background: var(--ion-color-warning) !important;
-  }
-}
-
-.done {
-  background: var(--ion-color-success);
-}
-
-.error {
-  --background: var(--ion-color-danger);
-}
-
-.closed {
-  background: var(--ion-color-tertiary);
-}
+// .toast {
+//   --background: var(--ion-color-light);
+// }
+//
+// .loading {
+//   .toast-content{
+//     background: var(--ion-color-warning) !important;
+//     // --background: var(--ion-color-warning) !important;
+//     // background-color: var(--ion-color-warning) !important;
+//     // --background-color: var(--ion-color-warning) !important;
+//   }
+//   .toast-button-group {
+//     background: var(--ion-color-warning-shade) !important;
+//   }
+//   // .toast-md .toast-message{
+//   // color: red !important;
+//   // --color: red !important;
+//   // }
+//
+//   // background: var(--ion-color-warning) !important;
+//   // --background: var(--ion-color-warning) !important;
+// }
+//
+// .done {
+//   .toast-content {
+//     background: var(--ion-color-success);
+//   }
+//   .toast-button-group {
+//     background: var(--ion-color-success-shade);
+//   }
+// }
+//
+// .error {
+//   .toast-content {
+//     background: var(--ion-color-danger);
+//   }
+//   .toast-button-group {
+//     background: var(--ion-color-danger-shade);
+//   }
+// }
+//
+// .closed {
+//   .toast-content {
+//     background: var(--ion-color-tertiary);
+//   }
+//   .toast-button-group {
+//     background: var(--ion-color-tertiary-shade);
+//   }
+// }
 
 .location {
   // top: 88vh;
