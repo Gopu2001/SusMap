@@ -27,6 +27,7 @@ import { BuildingModalPage } from './../building-modal/building-modal.page';
 import { FilterModalPage } from './../filter-modal/filter-modal.page';
 import { BuildingListModalPage } from './../building-list-modal/building-list-modal.page';
 import { AboutPage } from './../about/about.page';
+import { TosPpPage } from './../tos-pp/tos-pp.page';
 // import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 
@@ -881,65 +882,6 @@ export class HomePage implements OnInit {
       await modal.present();
     }
 
-    stop_close(event: any) {
-      try {
-        event.preventDefault();
-      } catch(e) {}
-      try {
-        event.stopPropagation();
-      } catch(e) {}
-      return false;
-    }
-
-    publishEvent(eventName: string, data: any) {
-      this.events.publish(eventName, data);
-    }
-
-    onPress(data, filter=true) {
-      console.log("press");
-      this.pressFlag = true;
-      // this.pressUpLocation = true;
-      setTimeout(() => {
-        if(this.pressFlag) {
-          if(filter) {
-            this.openFilterModal(data);
-          } else {
-            console.log("mylocation hold");
-            // this.pressUpLocation = false;
-          }
-          this.pressFlag = false
-        } else {
-          // console.log("did not hold");
-        }
-      }, 500); //hold for 500 ms
-    }
-
-    async openFilterModal(filterData) {
-      // console.log(filterData);
-      const modal = await this.modalController.create({
-        component: FilterModalPage,
-        componentProps: {
-          filter: filterData
-        },
-        swipeToClose: true,
-        cssClass: 'filter-modal'
-      });
-
-      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
-        try {
-          // console.log(detail.data);
-          if(detail.data.redirect) {
-            this.goToItem(detail.data['markerDataItem']);
-          }
-        } catch (error) {
-          // console.log("no redirect");
-        }
-      });
-
-      this.closeEverything();
-      await modal.present();
-    }
-
     getItems(ev: any) { //for search functionality
       this.filteredItems = []; //reset filteredItems
 
@@ -983,6 +925,66 @@ export class HomePage implements OnInit {
       this.animateCamera(loc['lat'], loc['lng']);
     }
 
+    stop_close(event: any) {
+      try {
+        event.preventDefault();
+      } catch(e) {}
+      try {
+        event.stopPropagation();
+      } catch(e) {}
+      return false;
+    }
+
+    publishEvent(eventName: string, data: any) {
+      this.events.publish(eventName, data);
+    }
+
+    onPress(data, filter=true) {
+      // console.log("press");
+      this.pressFlag = true;
+      // this.pressUpLocation = true;
+      setTimeout(() => {
+        if(this.pressFlag) {
+          if(filter) {
+            this.openFilterModal(data);
+          } else {
+            // console.log("mylocation hold");
+            this.openTosPPModal();
+            // this.pressUpLocation = false;
+          }
+          this.pressFlag = false
+        } else {
+          // console.log("did not hold");
+        }
+      }, 500); //hold for 500 ms
+    }
+
+    async openFilterModal(filterData) {
+      // console.log(filterData);
+      const modal = await this.modalController.create({
+        component: FilterModalPage,
+        componentProps: {
+          filter: filterData
+        },
+        swipeToClose: true,
+        cssClass: 'filter-modal'
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        try {
+          // console.log(detail.data);
+          if(detail.data.redirect) {
+            this.goToItem(detail.data['markerDataItem']);
+          }
+        } catch (error) {
+          // console.log("no redirect");
+        }
+      });
+
+      this.closeEverything();
+      await modal.present();
+    }
+
     async openAboutModal() {
       const modal = await this.modalController.create({
         component: AboutPage,
@@ -991,6 +993,22 @@ export class HomePage implements OnInit {
         },
         swipeToClose: true,
         cssClass: 'about-modal' //same css class
+      });
+
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {});
+
+      this.closeEverything();
+      await modal.present();
+    }
+
+    async openTosPPModal() {
+      const modal = await this.modalController.create({
+        component: TosPpPage,
+        componentProps: {
+          agreeButton: true
+        },
+        swipeToClose: true,
+        cssClass: 'filter-modal' //take up most of the page but not all of it
       });
 
       modal.onDidDismiss().then((detail: OverlayEventDetail) => {});

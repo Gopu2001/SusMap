@@ -10,6 +10,7 @@ import { HomePage } from './home.page';
 import { BuildingModalPageModule } from './../building-modal/building-modal.module';
 import { FilterModalPageModule } from './../filter-modal/filter-modal.module';
 import { AboutPageModule } from './../about/about.module';
+import { TosPpPageModule } from './../tos-pp/tos-pp.module';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { AboutPageModule } from './../about/about.module';
     HomePageRoutingModule,
     BuildingModalPageModule,
     FilterModalPageModule,
-    AboutPageModule
+    AboutPageModule,
+    TosPpPageModule
   ],
   declarations: [HomePage],
   entryComponents: []

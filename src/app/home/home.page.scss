@@ -121,11 +121,13 @@ ion-header {
   // border-radius: 30px;
   // width: 7vh;
   // height: 7vh;
-  top: 77vh;
+  // top: 77vh;
+  position: fixed;
   border-radius: 30px;
-  width: 6vh;
-  height: 6vh;
-  right: 1vw;
+  width: 3em;
+  height: 3em;
+  right: 0.5em;
+  bottom: 7em;
 }
 
 .mylocation.enabled {

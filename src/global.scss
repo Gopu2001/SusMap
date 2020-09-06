@@ -25,7 +25,7 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-.my-modal .modal-wrapper{
+.my-modal .modal-wrapper{ //building modal with short description and list of items
   top: 30vh;
   left: 10vw;
   --width: 80vw;
@@ -35,7 +35,7 @@
   --border-color: var(--ion-color-success);
 }
 
-.filter-modal .modal-wrapper {
+.filter-modal .modal-wrapper { //filter and building-list modals
   top: 10vh;
   left: 10vw;
   --width: 80vw;
@@ -50,5 +50,5 @@
   left: 0px;
   --width: 100%;
   --height: 100%;
-  
+
 }
