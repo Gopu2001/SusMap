@@ -156,7 +156,7 @@ export class AppDataService {
     var n = name + "_TIPS";
     return await new Promise<any>((resolve, reject) => {
       this.storage.get(n).then((val) => {
-        if(val && val == true) {
+        if(val && val === true) {
           resolve(false); //set to true in production
         } else {
           this.storage.set(n, true);

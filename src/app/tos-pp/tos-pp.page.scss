@@ -7,6 +7,12 @@
   padding-top: 0vh;
 }
 
+.titleSlide {
+  padding: 0vh;
+  margin: 0vh;
+  padding-top: 10em;
+}
+
 .agree {
   height: fit-content;
   width: fit-content;
@@ -14,6 +20,36 @@
   display: inline-block;
 }
 
+.titleAgree {
+  padding-top: 4em;
+}
+
 .slide {
   display: block;
+
+  // height: auto;
+  // overflow-y: auto;
+  // overflow-x: hidden;
+}
+
+ion-content {
+  --background: linear-gradient(192deg, #13BE1C, transparent);
+  // height: 100%;
+}
+
+.slider-wrapper:not(.swiper-slide-active) > div {
+    display:none;
+}
+
+.swipe-container {
+  height: initial
+}
+
+.slider-slides {
+   display: flex;
+   flex-direction: row;
+}
+
+.slider-slide {
+   height: auto;
 }

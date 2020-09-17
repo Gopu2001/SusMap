@@ -114,7 +114,14 @@ export class HomePage implements OnInit {
       private geolocation: Geolocation
     ) {
       console.log("in constructor");
-      this.buildMap();
+      //check if new to the map
+      this.appData.getUpdatedToastTips("TOSPP").then((val) => {
+        if(val === false) {
+          this.openTosPPModal(true); //build the map after tos accepted
+        } else {
+          this.buildMap();
+        }
+      });
     }
 
     async ionViewWillEnter() {
@@ -949,7 +956,7 @@ export class HomePage implements OnInit {
             this.openFilterModal(data);
           } else {
             // console.log("mylocation hold");
-            this.openTosPPModal();
+            this.openTosPPModal(false);
             // this.pressUpLocation = false;
           }
           this.pressFlag = false
@@ -1001,17 +1008,21 @@ export class HomePage implements OnInit {
       await modal.present();
     }
 
-    async openTosPPModal() {
+    async openTosPPModal(agreeBtn: boolean) {
       const modal = await this.modalController.create({
         component: TosPpPage,
         componentProps: {
-          agreeButton: true
+          agreeButton: agreeBtn
         },
-        swipeToClose: true,
-        cssClass: 'filter-modal' //take up most of the page but not all of it
+        swipeToClose: !agreeBtn,
+        cssClass: agreeBtn? 'about-modal' : 'filter-modal' //take up most of the page but not all of it
       });
 
-      modal.onDidDismiss().then((detail: OverlayEventDetail) => {});
+      modal.onDidDismiss().then((detail: OverlayEventDetail) => {
+        if(agreeBtn) {
+          this.buildMap();
+        }
+      });
 
       this.closeEverything();
       await modal.present();
