@@ -21,7 +21,7 @@
         Terms of Service (Terms and Conditions)
       </ion-label>
     </ion-item-divider> -->
-  <ion-slides *ngIf="didInit" class="slider" [pager]="!agreeButton" [options]="sliderOpts" #tosSlider (ionSlideDidChange)="scroll()">
+  <ion-slides *ngIf="didInit" class="slider" [pager]="!agreeButton" [options]="slideOpts" #tosSlider (ionSlideDidChange)="scroll()">
     <ion-slide class="">
       <div class="titleSlide slide">
         <div class="ion-text-center" *ngIf="agreeButton">
