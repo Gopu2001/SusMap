@@ -1,7 +1,7 @@
 ionic cordova build browser --prod --release
 rm -rf docs
 git commit
-cp www/* docs -R
+cp -R www/* docs
 inside docs run:
   ln -s index.html 404.html
   ln -s favicon.ico apple-touch-icon.png
