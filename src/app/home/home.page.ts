@@ -857,7 +857,7 @@ export class HomePage implements OnInit {
         //go across and make markers for each of the ones that are not clustered
         //otherwise form marker cluster options and THEN make a function call to create the marker cluster with parameter on whether to remove the marker cluster or create one.
         //add into tosearch within this new loop
-
+        // console.log(this.toSearch);
         resolve(filt);
       });
     }
@@ -896,7 +896,7 @@ export class HomePage implements OnInit {
 
       if(val && val.trim() != "") {
         this.itemAvailable = true;
-        console.log(this.toSearch);
+        // console.log(this.toSearch);
 
         //adding dynamically the fitlered items
         for (let index = 0; index < this.toSearch.length; index++) {
