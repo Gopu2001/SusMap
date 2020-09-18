@@ -947,15 +947,16 @@ export class HomePage implements OnInit {
     }
 
     onPress(data, filter=true) {
-      // console.log("press");
+      console.log("press");
       this.pressFlag = true;
       // this.pressUpLocation = true;
       setTimeout(() => {
         if(this.pressFlag) {
           if(filter) {
+            console.log("filter modal hold")
             this.openFilterModal(data);
           } else {
-            // console.log("mylocation hold");
+            console.log("mylocation hold");
             this.openTosPPModal(false);
             // this.pressUpLocation = false;
           }

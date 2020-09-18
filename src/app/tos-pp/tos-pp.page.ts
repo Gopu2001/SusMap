@@ -9,7 +9,7 @@ import { ModalController, IonSlides, Platform, IonContent } from '@ionic/angular
 export class TosPpPage {
 
   public agreeButton: boolean;
-  @ViewChild('tosSlider', {static: false}) slides: IonSlides;
+  @ViewChild('tosSlider') slides: IonSlides;
   slideOpts = {
     initialSlide: 1,
     speed: 400,
