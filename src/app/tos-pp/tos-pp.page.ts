@@ -36,7 +36,9 @@ export class TosPpPage {
       this.didInit = true;
       console.log(this.agreeButton);
       // this.slides.lockSwipeToNext(true);
-      this.slides.lockSwipes(this.agreeButton);
+      setTimeout(() => {
+        this.slides.lockSwipes(this.agreeButton);
+      }, 300);
       // this.slides.lockSwipes(true);
     });
   }
