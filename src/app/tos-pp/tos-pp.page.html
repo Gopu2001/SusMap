@@ -11,7 +11,7 @@
         Terms of Service (Terms and Conditions)
       </ion-label>
     </ion-item-divider> -->
-  <ion-slides class="slider" [pager]="!agreeButton" [options]="sliderOpts" #tosSlider (ionSlideDidChange)="scroll()">
+  <ion-slides *ngIf="didInit" class="slider" [pager]="!agreeButton" [options]="sliderOpts" #tosSlider (ionSlideDidChange)="scroll()">
     <ion-slide class="">
       <div class="titleSlide slide">
         <div class="ion-text-center" *ngIf="agreeButton">
@@ -21,12 +21,16 @@
           <ion-button class="ion-text-wrap ion-text-center ion-padding agree titleAgree dispBlock" size="large" expand="block" color="primary" fill="outline" (click)="nextSlide()">Welcome</ion-button>
         </div>
         <div class="ion-text-center" *ngIf="!agreeButton">
-          <h1>See</h1>
+          <h1>Swipe to See</h1>
           <ul>
             <li>Terms and Condition</li>
             <li>Privacy Policy</li>
             <li>Cookie Policy</li>
           </ul>
+          <ion-button class="ion-text-wrap ion-text-center ion-padding agree titleAgree dispBlock" size="large" expand="block" color="primary" fill="outline" (click)="nextSlide()">Next Slide</ion-button>
+          <!-- <ion-button class="ion-text-wrap ion-text-center ion-padding agree dispBlock" size="large" expand="block" fill="outline" (click)="slidetoNext(0)">Next Slide 0</ion-button>
+          <ion-button class="ion-text-wrap ion-text-center ion-padding agree dispBlock" size="large" expand="block" fill="outline" (click)="slidetoNext(1)">Next Slide 1</ion-button>
+          <ion-button class="ion-text-wrap ion-text-center ion-padding agree dispBlock" size="large" expand="block" fill="outline" (click)="slidetoNext(2)">Next Slide 2</ion-button> -->
         </div>
       </div>
     </ion-slide>

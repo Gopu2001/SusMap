@@ -4,7 +4,7 @@
     <img class="about-icon" slot="start" src="assets/icon/favicon.png" (click)="openAboutModal()">
     <!-- <ion-icon slot="end" name="search" (click)="search = true"></ion-icon> -->
 
-    <ion-searchbar showCancelButton="always" type="text" placeholder="Search" inputmode="text" debounce="350" animated="true"  (ionChange)="getItems($event)" (ionCancel)="closeEverything();"></ion-searchbar>
+    <ion-searchbar showCancelButton="always" type="text" placeholder="Search" inputmode="text" debounce="250" animated="true"  (ionChange)="getItems($event)" (ionCancel)="closeEverything();"></ion-searchbar>
     <ion-list class="search-filters" *ngIf="itemAvailable">
       <ion-item *ngFor="let it of filteredItems" (click)="closeEverything(); goToItem(it);">
         <img class="search-icon" *ngIf="it['ICON']" src="{{it['ICON']['url']}}" slot="end">

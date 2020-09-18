@@ -17,6 +17,7 @@ export class TosPpPage {
     // allowTouchMove: false
   };
   @ViewChild(IonContent, {static: true}) content: IonContent;
+  public didInit: boolean = false;
 
   constructor(
     private modalController: ModalController,
@@ -24,13 +25,19 @@ export class TosPpPage {
   ) {
   }
 
+  // ngAfterViewInit() {
+  //     // this.didInit = true;
+  // }
+
   ionViewWillEnter() {
     // @ViewChild('tosSlider', {static: true}) this.slides;
     // @ViewChild(IonContent, {static: true}) this.content: IonContent;
     this.platform.ready().then(() => {
+      this.didInit = true;
       console.log(this.agreeButton);
       // this.slides.lockSwipeToNext(true);
       this.slides.lockSwipes(this.agreeButton);
+      // this.slides.lockSwipes(true);
     });
   }
 

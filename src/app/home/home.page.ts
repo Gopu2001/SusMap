@@ -896,6 +896,7 @@ export class HomePage implements OnInit {
 
       if(val && val.trim() != "") {
         this.itemAvailable = true;
+        console.log(this.toSearch);
 
         //adding dynamically the fitlered items
         for (let index = 0; index < this.toSearch.length; index++) {
@@ -1023,8 +1024,10 @@ export class HomePage implements OnInit {
           this.buildMap();
         }
       });
+      if(!agreeBtn) {
+        this.closeEverything();
+      }
 
-      this.closeEverything();
       await modal.present();
     }
 
@@ -1070,7 +1073,11 @@ export class HomePage implements OnInit {
       //   }
       // });
       // this.htmlInfoWindow.open(dummymarker);
-      // this.htmlInfoWindow.close();
+      try {
+        this.htmlInfoWindow.close();
+      } catch (error) {
+
+      }
       this.search = false;
       this.itemAvailable = false;
       this.filteredItems = [];
