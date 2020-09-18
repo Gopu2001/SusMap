@@ -1,11 +1,16 @@
-language: node_js
-node_js:
- — 12
 branches:
  only:
  — master
 notifications:
   email: akapoor3@ucmerced.com
+jobs:
+  include:
+  - os: linux
+    dist: xenial
+    language: node_js
+    node_js:
+      - 12
+    env: TRGT=browser
 cache:
   npm: false
 before_script:
@@ -13,18 +18,18 @@ before_script:
  — npm install -g @ionic/cli@6.11.8 cordova@10.0.0
  — npm ci
 script:
- — ionic build --prod -- --base-href ./
+ — ./buildproj.sh
 deploy:
- provider: pages
- skip_cleanup: true
- cleanup: true
- github-token: $GITHUB_TOKEN
- keep_history: true
- on:
-   branch: master
- local_dir: www
- repo: Apro123/SusMap
- target_branch: gh-pages
- project_name: Sustainability Map
- name: Armaan Kapoor
- email: akapoor3@ucmerced.edu
+ - provider: pages
+   skip_cleanup: true
+   cleanup: true
+   github-token: $GITHUB_TOKEN
+   keep_history: true
+   on:
+     branch: master
+   local_dir: www
+   repo: Apro123/SusMap
+   target_branch: gh-pages
+   project_name: Sustainability Map PWA
+   name: Armaan Kapoor
+   email: akapoor3@ucmerced.edu
