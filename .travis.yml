@@ -24,7 +24,7 @@ deploy:
    skip_cleanup: true
    cleanup: true
    github-token: $GITHUB_TOKEN
-   keep_history: true
+   keep_history: false
    on:
      branch: master
    local_dir: www
