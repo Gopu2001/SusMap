@@ -7,6 +7,6 @@ case "${TRGT}" in
   ln -s www/index.html www/404.html
   ln -s www/favicon.ico www/apple-touch-icon.png
   ln -s www/favicon.ico www/apple-touch-icon-precomposed.png
-  cp platforms/browser/config.xml
+  cp platforms/browser/config.xml www/
   ;;
 esac
