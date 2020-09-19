@@ -30,6 +30,5 @@ deploy:
    local_dir: www
    repo: Apro123/SusMap
    target_branch: gh-pages
-   project_name: Sustainability Map PWA
    name: Armaan Kapoor
    email: akapoor3@ucmerced.edu
