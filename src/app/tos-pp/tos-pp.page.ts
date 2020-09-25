@@ -11,7 +11,7 @@ export class TosPpPage {
   public agreeButton: boolean;
   @ViewChild('tosSlider', {static: false}) slides: IonSlides;
   slideOpts = {
-    initialSlide: 1,
+    initialSlide: 0,
     speed: 400,
     autoHeight: true
     // allowTouchMove: false
@@ -37,8 +37,11 @@ export class TosPpPage {
       console.log(this.agreeButton);
       // this.slides.lockSwipeToNext(true);
       setTimeout(() => {
+        // this.slides.getActiveIndex().then((n) => {
+        //   console.log(n);
+        // });
         this.slides.lockSwipes(this.agreeButton);
-      }, 300);
+      }, 400);
       // this.slides.lockSwipes(true);
     });
   }
