@@ -11,7 +11,7 @@
 Sustainability Map (or SusMap) is build with Ionic/Angular (Cordova) and is meant to show off the sustainability Features for UC Merced.
 
   - See all Sustainability features of UC Merced at url()
-  - Build your own map using this following the guide [here]("#")
+  - Build your own map using this following the guide [here](#build-your-own-map)
   - :star: this repo if you support this project
 
 # Features! :ok_hand:
@@ -20,13 +20,13 @@ Sustainability Map (or SusMap) is build with Ionic/Angular (Cordova) and is mean
     - When clicked, the right menu shows 4 items
        - Parking spots (Automatically enabled): Shows you icons where parking is allowed. :parking:
        - Building List: Lists all the buildings. When you click on the name you are directed to the location of the building. When you click on the building icon, you are directed to the building page. :office:
-       - A Search feature: Searches all of the items and buildings.
-       - About: An about section about the school's Sustainable goals
+       - A Search feature: Searches all of the items and buildings. :mag_right:
+       - About: An about section about the school's Sustainable goals ::information_source:
     - When clicked, the bottom menu shows up with the different categories
        - When clicked the group of items associated with the specific filter of items toggle their show/hide status on the map.
        - When held down you can see the list of the filters and can click on any one to see the location of that specific item.
   - Icon/Item: when clicked will give you the title of the item and a short customized description
-  - There is a location change button on the bottom left. This changes your lcoation to major areas that may not be together that are still part of the SusMap for the school.
+  - There is a location change button on the bottom left. This changes your lcoation to major areas that may not be together that are still part of the SusMap for the university/school. :school:
   - There is also a bottom right world location button. When clicked on, it shows you your location if you have enabled it. The location will have a circle underneath it, which corresponds to the accuracy of your location. When this button is held you get to view the terms of service, privacy policy, and cookie policy for the app.
   - Icons are also automatically grouped **under certain conditions**
   - The greatest thing about this is that all the data come from an google sheets, which makes it easy for editing information on the app directly for non-developers
@@ -44,7 +44,7 @@ SusMap uses a number of open source projects to work properly:
 
 ### Installation
 
-Dillinger tested on [Node.js](https://nodejs.org/) v12.8.3,  [NPM](https://www.npmjs.com/) v6.14.8, and [AngularJS](http://angularjs.org) v8
+SusMap tested on [Node.js](https://nodejs.org/) v12.8.3,  [NPM](https://www.npmjs.com/) v6.14.8, and [AngularJS](http://angularjs.org) v8
 
 Install the dependencies and devDependencies and start the server.
 
@@ -92,11 +92,12 @@ There are a couple of steps to do when building your own app:
 4. Replace the sheets api key and the sheets ID in the src/app/services/app-data.service.ts file
 5. Get your Google Maps API key
 6. Replace google maps api key where is says "API_KEY_FOR_BROWSER_RELEASE" in src/app/app.component.ts
-7. Fill data into sheets using the specified format below.
+7. Fill data into sheets using the specified format [below](#google-sheets-formatting)
 8. Build project using instructions above
 9. Run project and Voila!
 
 ### Google Sheets Formatting
+
 SusMap uses google sheets to store and change data on the app
 [CURRENT VERSION SAMPLE](https://docs.google.com/spreadsheets/d/12jc_EN3Uh5RHPjjmI-osbys7oHBq9RPSWn71_4zhRSM/edit?usp=sharing)
 1. A sheet called "SETTINGS" which has the ZOOM you must specify and the locations for the location button feature.
