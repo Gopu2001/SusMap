@@ -11,7 +11,7 @@
 Sustainability Map (or SusMap) is build with Ionic/Angular (Cordova) and is meant to show off the sustainability Features for UC Merced.
 
   - See all Sustainability features of UC Merced at url()
-  - Build your own map using this following the guide [here]("#build-your-own-map")
+  - Build your own map using this following the guide [here](#build-your-own-map)
   - :star: this repo if you support this project
 
 # Features! :ok_hand:
@@ -92,7 +92,7 @@ There are a couple of steps to do when building your own app:
 4. Replace the sheets api key and the sheets ID in the src/app/services/app-data.service.ts file
 5. Get your Google Maps API key
 6. Replace google maps api key where is says "API_KEY_FOR_BROWSER_RELEASE" in src/app/app.component.ts
-7. Fill data into sheets using the specified format [below]("#google-sheets-formatting)
+7. Fill data into sheets using the specified format [below](#google-sheets-formatting)
 8. Build project using instructions above
 9. Run project and Voila!
 
