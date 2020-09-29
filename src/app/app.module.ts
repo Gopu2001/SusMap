@@ -33,6 +33,8 @@ import { AboutPageModule } from './about/about.module';
 
 // import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -50,7 +52,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
     }),
     BuildingModalPageModule,
     FilterModalPageModule,
-    BuildingListModalPageModule
+    BuildingListModalPageModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     StatusBar,

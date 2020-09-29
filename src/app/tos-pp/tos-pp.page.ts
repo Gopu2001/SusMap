@@ -51,19 +51,19 @@ export class TosPpPage {
   }
 
   nextSlide() {
-    console.log("next sldie")
-    this.slides.getActiveIndex().then((n) => {
-      console.log(n);
-    });
+    // console.log("next sldie")
+    // this.slides.getActiveIndex().then((n) => {
+    //   console.log(n);
+    // });
     // console.log(this.agreeButton);
     if(this.agreeButton) {
         this.slides.lockSwipes(false).then(() => {
-          console.log("callingnfunct")
+          // console.log("callingnfunct")
           this.slides.slideNext();
           this.slides.lockSwipes(true);
         });
     } else {
-      console.log("in jhere");
+      // console.log("in jhere");
       this.slides.slideNext();
     }
 

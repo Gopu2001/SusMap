@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="io.apro.susmap" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>SusMap</name>
-    <description>An awesome Ionic/Cordova app build by Armaan Kapoor.</description>
+    <description>A Map to show all the Sustainability Features of UC Merced</description>
     <author email="akapoor3@ucmerced.edu" href="https://github.com/Apro123/SusMap">Armaan Kapoor</author>
     <content src="index.html" />
     <access origin="*" />
